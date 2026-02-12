@@ -20,10 +20,10 @@ export default function DashboardLayout({
     const router = useRouter()
 
     useEffect(() => {
-        async function checkAuth() {
+        const checkAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession()
             if (!session) {
-                router.push('/login')
+                router.replace('/login')
             } else {
                 setAuthenticated(true)
             }
