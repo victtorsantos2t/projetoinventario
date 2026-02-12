@@ -1,12 +1,29 @@
+"use client"
+
+import { useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
-export default async function RootPage() {
-    const { data: { session } } = await supabase.auth.getSession();
+export default function RootPage() {
+    const router = useRouter();
 
-    if (session) {
-        redirect("/inventory");
-    } else {
-        redirect("/login");
-    }
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                router.replace("/inventory");
+            } else {
+                router.replace("/login");
+            }
+        };
+
+        checkSession();
+    }, [router]);
+
+    return (
+        <div className="h-screen flex items-center justify-center bg-slate-50">
+            <Loader2 className="h-10 w-10 text-primary animate-spin" />
+        </div>
+    );
 }
