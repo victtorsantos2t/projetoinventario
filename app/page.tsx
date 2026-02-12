@@ -9,8 +9,14 @@ export default function RootPage() {
     const router = useRouter();
 
     useEffect(() => {
+        let isMounted = true;
+
         const checkSession = async () => {
+            // Give a tiny bit of time for Supabase to recover session from storage
             const { data: { session } } = await supabase.auth.getSession();
+
+            if (!isMounted) return;
+
             if (session) {
                 router.replace("/inventory");
             } else {
@@ -19,6 +25,8 @@ export default function RootPage() {
         };
 
         checkSession();
+
+        return () => { isMounted = false; };
     }, [router]);
 
     return (

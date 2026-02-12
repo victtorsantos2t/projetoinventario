@@ -20,16 +20,29 @@ export default function DashboardLayout({
     const router = useRouter()
 
     useEffect(() => {
-        const checkAuth = async () => {
+        // Initials check
+        const initAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession()
-            if (!session) {
-                router.replace('/login')
-            } else {
+            if (session) {
                 setAuthenticated(true)
+            } else {
+                router.replace('/login')
             }
             setLoading(false)
         }
-        checkAuth()
+        initAuth()
+
+        // Listener for changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT' || !session) {
+                setAuthenticated(false)
+                router.replace('/login')
+            } else if (session) {
+                setAuthenticated(true)
+            }
+        })
+
+        return () => subscription.unsubscribe()
     }, [router])
 
     if (loading) {
