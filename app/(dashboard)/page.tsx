@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { motion } from "framer-motion"
 
 interface DashboardStats {
   total: number
@@ -213,12 +214,16 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-8"
+    >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 mb-1">Dashboard</h1>
-          <p className="text-slate-500 font-medium">Visão geral do inventário de TI</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-1">Dashboard</h1>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">Visão geral do inventário de TI</p>
         </div>
       </div>
 
@@ -351,6 +356,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
