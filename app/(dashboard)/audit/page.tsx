@@ -17,6 +17,8 @@ export default function AuditPage() {
     const [isScanning, setIsScanning] = useState(false)
     const [currentAudit, setCurrentAudit] = useState<any>(null)
     const [stats, setStats] = useState({ total: 0, checked: 0 })
+    const [recentItems, setRecentItems] = useState<any[]>([])
+    const [showAllItems, setShowAllItems] = useState(false)
 
     useEffect(() => {
         fetchActiveAudit()
@@ -39,6 +41,28 @@ export default function AuditPage() {
         if (data) {
             setCurrentAudit(data)
             fetchAuditStats(data.id)
+            fetchRecentItems(data.id)
+        }
+    }
+
+    const fetchRecentItems = async (auditId: string) => {
+        const { data, error } = await supabase
+            .from('auditoria_itens')
+            .select(`
+                id,
+                created_at,
+                status_conferido,
+                ativos (
+                    nome,
+                    patrimonio
+                )
+            `)
+            .eq('auditoria_id', auditId)
+            .order('created_at', { ascending: false })
+            .limit(showAllItems ? 100 : 5)
+
+        if (!error && data) {
+            setRecentItems(data)
         }
     }
 
@@ -55,6 +79,12 @@ export default function AuditPage() {
 
         setStats({ total: total || 0, checked: checked || 0 })
     }
+
+    useEffect(() => {
+        if (currentAudit?.id) {
+            fetchRecentItems(currentAudit.id)
+        }
+    }, [showAllItems])
 
     const startNewAudit = async () => {
         if (!profile?.id) {
@@ -76,6 +106,7 @@ export default function AuditPage() {
 
         if (data) {
             setCurrentAudit(data)
+            fetchAuditStats(data.id)
             toast.success("Nova auditoria iniciada")
         }
     }
@@ -129,6 +160,7 @@ export default function AuditPage() {
         if (!error) {
             toast.success("Ativo verificado com sucesso!")
             fetchAuditStats(currentAudit.id)
+            fetchRecentItems(currentAudit.id)
             setIsScanning(false)
         } else {
             toast.error("Erro ao registrar verificação")
@@ -168,7 +200,7 @@ export default function AuditPage() {
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <p className="text-indigo-100 text-[10px] font-black uppercase tracking-widest mb-1">Auditoria em Progresso</p>
-                                    <h4 className="text-2xl font-bold">Gerencial Jan/2026</h4>
+                                    <h4 className="text-2xl font-bold">Ciclo Atual</h4>
                                 </div>
                                 <Badge className="bg-white/20 text-white border-0">ATIVO</Badge>
                             </div>
@@ -189,7 +221,7 @@ export default function AuditPage() {
                             <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
                                 <div
                                     className="h-full bg-white transition-all duration-500"
-                                    style={{ width: `${(stats.checked / stats.total) * 100}%` }}
+                                    style={{ width: `${(stats.checked / (stats.total || 1)) * 100}%` }}
                                 />
                             </div>
                         </CardContent>
@@ -204,22 +236,39 @@ export default function AuditPage() {
 
                     <div className="space-y-3">
                         <div className="flex items-center justify-between px-1">
-                            <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">Últimas Verificações</h5>
-                            <Button variant="link" className="text-[10px] font-bold text-indigo-600 h-auto p-0">Ver Todos</Button>
+                            <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                                {showAllItems ? 'Todas as Verificações' : 'Últimas Verificações'}
+                            </h5>
+                            <Button
+                                onClick={() => setShowAllItems(!showAllItems)}
+                                variant="link"
+                                className="text-[10px] font-bold text-indigo-600 h-auto p-0"
+                            >
+                                {showAllItems ? 'Ver Menos' : 'Ver Todos'}
+                            </Button>
                         </div>
 
-                        {/* Lista de itens verificados (mock/subset) */}
                         <div className="space-y-2">
-                            <div className="p-4 bg-white rounded-2xl border border-slate-100 flex items-center gap-3">
-                                <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-                                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                            {recentItems.length === 0 ? (
+                                <div className="p-8 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-100">
+                                    <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Nenhum item escaneado ainda</p>
                                 </div>
-                                <div className="flex-1">
-                                    <p className="text-sm font-bold text-slate-800">Note-Dell-123</p>
-                                    <p className="text-[10px] text-slate-400">Verificado há 5 min</p>
-                                </div>
-                                <Badge variant="outline" className="text-[9px] font-bold">OK</Badge>
-                            </div>
+                            ) : (
+                                recentItems.map((item) => (
+                                    <div key={item.id} className="p-4 bg-white rounded-2xl border border-slate-100 flex items-center gap-3">
+                                        <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                                            <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-bold text-slate-800 truncate">{item.ativos?.nome}</p>
+                                            <p className="text-[10px] text-slate-400">
+                                                Patrimônio: {item.ativos?.patrimonio || 'S/P'} • {new Date(item.created_at).toLocaleTimeString()}
+                                            </p>
+                                        </div>
+                                        <Badge variant="outline" className="text-[9px] font-bold">{item.status_conferido}</Badge>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
