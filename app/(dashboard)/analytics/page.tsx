@@ -547,7 +547,7 @@ function SoftwareAnalyticsSection() {
     useEffect(() => {
         const fetchSoftwareData = async () => {
             try {
-                const { data: sData } = await supabase.from('softwares').select('id, nome, fabricante, categoria')
+                const { data: sData } = await supabase.from('softwares').select('id, nome, desenvolvedor, categoria')
                 if (sData) setSoftwares(sData)
 
                 const { data: lData } = await supabase.from('licencas').select('*')

@@ -27,6 +27,15 @@ export function AuditScanner({ onResult, onClose }: AuditScannerProps) {
                         qrbox: { width: 250, height: 250 },
                     },
                     (decodedText) => {
+                        // Feedback sensorial
+                        if (navigator.vibrate) navigator.vibrate(100)
+
+                        // Feedback visual (flash)
+                        const flash = document.createElement('div')
+                        flash.className = 'fixed inset-0 bg-white z-[60] animate-out fade-out duration-300'
+                        document.body.appendChild(flash)
+                        setTimeout(() => flash.remove(), 300)
+
                         onResult(decodedText)
                         scanner.stop()
                     },

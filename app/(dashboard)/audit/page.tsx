@@ -19,6 +19,10 @@ export default function AuditPage() {
     const [stats, setStats] = useState({ total: 0, checked: 0 })
     const [recentItems, setRecentItems] = useState<any[]>([])
     const [showAllItems, setShowAllItems] = useState(false)
+    const [pendingAsset, setPendingAsset] = useState<any>(null)
+    const [manualSearch, setManualSearch] = useState("")
+    const [observation, setObservation] = useState("")
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     useEffect(() => {
         fetchActiveAudit()
@@ -52,9 +56,12 @@ export default function AuditPage() {
                 id,
                 created_at,
                 status_conferido,
+                obs,
                 ativos (
                     nome,
-                    patrimonio
+                    patrimonio,
+                    setor,
+                    colaborador
                 )
             `)
             .eq('auditoria_id', auditId)
@@ -122,48 +129,78 @@ export default function AuditPage() {
         }
 
         // 2. Buscar Ativo (Ordem: ID -> Serial -> Patrimônio)
-        let assetId: string | null = null
+        let asset: any = null
 
         // Tenta por ID (UUID)
         if (idToSearch.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-            const { data } = await supabase.from('ativos').select('id').eq('id', idToSearch).maybeSingle()
-            if (data) assetId = data.id
+            const { data } = await supabase.from('ativos').select('*').eq('id', idToSearch).maybeSingle()
+            if (data) asset = data
         }
 
         // Tenta por Serial
-        if (!assetId) {
-            const { data } = await supabase.from('ativos').select('id').eq('serial', scannedValue).maybeSingle()
-            if (data) assetId = data.id
+        if (!asset) {
+            const { data } = await supabase.from('ativos').select('*').eq('serial', scannedValue).maybeSingle()
+            if (data) asset = data
         }
 
         // Tenta por Patrimônio
-        if (!assetId) {
-            const { data } = await supabase.from('ativos').select('id').eq('patrimonio', scannedValue).maybeSingle()
-            if (data) assetId = data.id
+        if (!asset) {
+            const { data } = await supabase.from('ativos').select('*').eq('patrimonio', scannedValue).maybeSingle()
+            if (data) asset = data
         }
 
-        if (!assetId) {
+        if (!asset) {
             toast.error("Ativo não encontrado")
             return
         }
 
-        // 2. Registrar item na auditoria
-        const { error } = await supabase
-            .from('auditoria_itens')
-            .upsert({
-                auditoria_id: currentAudit.id,
-                ativo_id: assetId,
-                verificado_por: profile?.id,
-                status_conferido: 'OK'
-            }, { onConflict: 'auditoria_id,ativo_id' })
+        setPendingAsset(asset)
+        setIsScanning(false)
+        setManualSearch("")
+    }
 
-        if (!error) {
-            toast.success("Ativo verificado com sucesso!")
+    const confirmVerification = async () => {
+        if (!pendingAsset || !currentAudit) return
+
+        setIsSubmitting(true)
+        try {
+            const { error } = await supabase
+                .from('auditoria_itens')
+                .upsert({
+                    auditoria_id: currentAudit.id,
+                    ativo_id: pendingAsset.id,
+                    verificado_por: profile?.id,
+                    status_conferido: 'OK',
+                    obs: observation || null
+                }, { onConflict: 'auditoria_id,ativo_id' })
+
+            if (error) throw error
+
+            toast.success("Ativo registrado!")
             fetchAuditStats(currentAudit.id)
             fetchRecentItems(currentAudit.id)
-            setIsScanning(false)
+            setPendingAsset(null)
+            setObservation("")
+        } catch (error: any) {
+            toast.error("Erro ao registrar: " + error.message)
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    const finalizeAudit = async () => {
+        if (!currentAudit || !confirm("Deseja realmente finalizar este ciclo de auditoria?")) return
+
+        const { error } = await supabase
+            .from('auditorias')
+            .update({ status: 'concluido', finished_at: new Date().toISOString() })
+            .eq('id', currentAudit.id)
+
+        if (!error) {
+            toast.success("Auditoria finalizada com sucesso!")
+            setCurrentAudit(null)
         } else {
-            toast.error("Erro ao registrar verificação")
+            toast.error("Erro ao finalizar")
         }
     }
 
@@ -227,12 +264,33 @@ export default function AuditPage() {
                         </CardContent>
                     </Card>
 
-                    <Button
-                        onClick={() => setIsScanning(true)}
-                        className="w-full h-16 rounded-[2rem] text-lg font-black gap-3 shadow-xl"
-                    >
-                        <QrCode className="h-6 w-6" /> ESCANEAR ATIVO
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button
+                            onClick={() => setIsScanning(true)}
+                            className="flex-1 h-16 rounded-[2rem] text-lg font-black gap-3 shadow-xl"
+                        >
+                            <QrCode className="h-6 w-6" /> ESCANEAR
+                        </Button>
+                        <Button
+                            variant="outline"
+                            onClick={finalizeAudit}
+                            className="h-16 w-16 rounded-[2rem] border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all flex items-center justify-center p-0"
+                            title="Finalizar Auditoria"
+                        >
+                            <ShieldCheck className="h-8 w-8" />
+                        </Button>
+                    </div>
+
+                    <div className="relative group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-indigo-500 transition-colors" />
+                        <Input
+                            placeholder="Buscar patrimônio ou serial manualmente..."
+                            value={manualSearch}
+                            onChange={(e) => setManualSearch(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleScanResult(manualSearch)}
+                            className="h-12 pl-12 rounded-2xl bg-white border-slate-100 shadow-sm focus:ring-indigo-500"
+                        />
+                    </div>
 
                     <div className="space-y-3">
                         <div className="flex items-center justify-between px-1">
@@ -255,22 +313,100 @@ export default function AuditPage() {
                                 </div>
                             ) : (
                                 recentItems.map((item) => (
-                                    <div key={item.id} className="p-4 bg-white rounded-2xl border border-slate-100 flex items-center gap-3">
+                                    <div key={item.id} className="p-4 bg-white rounded-2xl border border-slate-100 flex items-center gap-3 relative group">
                                         <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center">
                                             <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-bold text-slate-800 truncate">{item.ativos?.nome}</p>
-                                            <p className="text-[10px] text-slate-400">
-                                                Patrimônio: {item.ativos?.patrimonio || 'S/P'} • {new Date(item.created_at).toLocaleTimeString()}
-                                            </p>
+                                            <div className="flex items-center gap-2 text-[10px] text-slate-400">
+                                                <span className="font-mono bg-slate-100 px-1 rounded text-slate-500">{item.ativos?.patrimonio || 'S/P'}</span>
+                                                <span>•</span>
+                                                <span>{item.ativos?.setor || 'Sem Setor'}</span>
+                                                <span>•</span>
+                                                <span>{new Date(item.created_at).toLocaleTimeString()}</span>
+                                            </div>
                                         </div>
+                                        {item.obs && (
+                                            <div className="h-6 w-6 rounded bg-amber-50 flex items-center justify-center" title={item.obs}>
+                                                <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                                            </div>
+                                        )}
                                         <Badge variant="outline" className="text-[9px] font-bold">{item.status_conferido}</Badge>
                                     </div>
                                 ))
                             )}
                         </div>
                     </div>
+                </div>
+            )}
+
+            {pendingAsset && (
+                <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                    <Card className="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border-0 animate-in fade-in slide-in-from-bottom-10 duration-300">
+                        <CardContent className="p-8">
+                            <div className="flex justify-center mb-6">
+                                <div className="h-20 w-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center">
+                                    <div className="h-14 w-14 rounded-2xl bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+                                        <ShieldCheck className="h-8 w-8" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="text-center mb-8">
+                                <h3 className="text-2xl font-black text-slate-900 leading-tight mb-1">{pendingAsset.nome}</h3>
+                                <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Confirmação de Inventário</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 mb-8">
+                                <div className="p-4 bg-slate-50 rounded-3xl border border-slate-100">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Setor Atual</p>
+                                    <p className="text-sm font-bold text-slate-700">{pendingAsset.setor || 'Não definido'}</p>
+                                </div>
+                                <div className="p-4 bg-slate-50 rounded-3xl border border-slate-100">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Patrimônio</p>
+                                    <p className="text-sm font-bold text-slate-700">{pendingAsset.patrimonio || 'S/P'}</p>
+                                </div>
+                                <div className="col-span-2 p-4 bg-slate-50 rounded-3xl border border-slate-100">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Responsável</p>
+                                    <p className="text-sm font-bold text-slate-700">{pendingAsset.colaborador || 'Sem responsável'}</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1.5 block">Observações (Opcional)</label>
+                                    <Input
+                                        placeholder="Ex: Teclado falhando, gabinete arranhado..."
+                                        value={observation}
+                                        onChange={(e) => setObservation(e.target.value)}
+                                        className="h-14 rounded-2xl bg-slate-50 border-slate-100"
+                                    />
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            setPendingAsset(null)
+                                            setObservation("")
+                                        }}
+                                        disabled={isSubmitting}
+                                        className="flex-1 h-14 rounded-2xl font-bold border-slate-200 text-slate-500"
+                                    >
+                                        Cancelar
+                                    </Button>
+                                    <Button
+                                        onClick={confirmVerification}
+                                        disabled={isSubmitting}
+                                        className="flex-[2] h-14 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-200"
+                                    >
+                                        {isSubmitting ? 'Salvando...' : 'Confirmar'}
+                                    </Button>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             )}
 
