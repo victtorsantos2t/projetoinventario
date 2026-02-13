@@ -456,6 +456,64 @@ export default function ReportsPage() {
         }
     }
 
+    const generateAuditReport = async () => {
+        if (!selectedAudit) {
+            toast.error("Selecione um ciclo de auditoria")
+            return
+        }
+        setGenerating('audit')
+        try {
+            const { data: items, error } = await supabase
+                .from('auditoria_itens')
+                .select(`
+                    *,
+                    ativo:ativos(nome, patrimonio, setor, colaborador),
+                    usuario:profiles(full_name)
+                `)
+                .eq('auditoria_id', selectedAudit)
+                .order('created_at', { ascending: true })
+
+            if (error) throw error
+
+            const doc = new jsPDF()
+            const auditDetails = auditorias.find(a => a.id === selectedAudit)
+            const auditDate = auditDetails ? new Date(auditDetails.created_at).toLocaleDateString('pt-BR') : ''
+
+            const tableData = items.map(item => [
+                item.ativo?.nome || '-',
+                item.ativo?.patrimonio || '-',
+                item.ativo?.setor || '-',
+                item.status_conferido,
+                item.tem_nao_conformidade ? (item.tipo_nao_conformidade || 'Sim') : 'Não',
+                item.obs || '-'
+            ])
+
+            autoTable(doc, {
+                ...tableStyles,
+                head: [['Ativo', 'Patrimônio', 'Setor Origem', 'Status', 'Não Conformidade', 'Observações']],
+                body: tableData,
+                startY: getStartY(),
+                headStyles: { ...tableStyles.headStyles },
+                didParseCell: (data) => {
+                    if (data.section === 'body' && data.column.index === 4 && data.cell.raw !== 'Não') {
+                        data.cell.styles.textColor = [225, 29, 72] // Rose 600
+                        data.cell.styles.fontStyle = 'bold'
+                    }
+                },
+                margin: { top: 60, bottom: 25 },
+            })
+
+            addModernBranding(doc, `Relatório de Auditoria — Ciclo ${auditDate}`, items.length)
+            doc.save(`relatorio_auditoria_${auditDate.replace(/\//g, '-')}.pdf`)
+            toast.success("Relatório de auditoria gerado!")
+        } catch (error) {
+            console.error(error)
+            toast.error("Erro ao gerar relatório")
+        } finally {
+            setGenerating(null)
+        }
+    }
+
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-20">
