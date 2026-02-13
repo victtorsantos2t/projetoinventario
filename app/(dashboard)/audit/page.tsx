@@ -11,6 +11,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { AuditScanner } from "@/components/audit-scanner"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import {
+    LayoutGrid,
+    Building2,
+    ArrowRight,
+    Loader2
+} from "lucide-react"
 
 export default function AuditPage() {
     const { profile } = useUser()
@@ -25,10 +31,40 @@ export default function AuditPage() {
     const [hasNC, setHasNC] = useState(false)
     const [ncType, setNcType] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [setores, setSetores] = useState<any[]>([])
+    const [selectedStartSetor, setSelectedStartSetor] = useState<string>("")
+    const [preCount, setPreCount] = useState<number | null>(null)
+    const [loadingPreCount, setLoadingPreCount] = useState(false)
 
     useEffect(() => {
         fetchActiveAudit()
+        fetchSetores()
     }, [])
+
+    const fetchSetores = async () => {
+        const { data } = await supabase.from('setores').select('*').order('nome')
+        if (data) setSetores(data)
+    }
+
+    useEffect(() => {
+        if (selectedStartSetor) {
+            updatePreCount(selectedStartSetor)
+        } else {
+            setPreCount(null)
+        }
+    }, [selectedStartSetor])
+
+    const updatePreCount = async (setorNome: string) => {
+        setLoadingPreCount(true)
+        const { count } = await supabase
+            .from('ativos')
+            .select('*', { count: 'exact', head: true })
+            .eq('setor', setorNome)
+            .neq('status', 'Baixado')
+
+        setPreCount(count || 0)
+        setLoadingPreCount(false)
+    }
 
     const fetchActiveAudit = async () => {
         const { data, error } = await supabase
@@ -76,10 +112,16 @@ export default function AuditPage() {
     }
 
     const fetchAuditStats = async (auditId: string) => {
-        const { count: total } = await supabase
+        let query = supabase
             .from('ativos')
             .select('*', { count: 'exact', head: true })
             .neq('status', 'Baixado')
+
+        if (currentAudit?.setor_alvo) {
+            query = query.eq('setor', currentAudit.setor_alvo)
+        }
+
+        const { count: total } = await query
 
         const { count: checked } = await supabase
             .from('auditoria_itens')
@@ -103,7 +145,11 @@ export default function AuditPage() {
 
         const { data, error } = await supabase
             .from('auditorias')
-            .insert({ criado_por: profile.id, status: 'em_progresso' })
+            .insert({
+                criado_por: profile.id,
+                status: 'em_progresso',
+                setor_alvo: selectedStartSetor || null
+            })
             .select()
             .single()
 
@@ -232,8 +278,46 @@ export default function AuditPage() {
                         <ClipboardList className="h-12 w-12 text-slate-300 mx-auto mb-4" />
                         <h3 className="text-lg font-bold text-slate-800 mb-2">Nenhuma auditoria ativa</h3>
                         <p className="text-sm text-slate-500 mb-6">Inicie um novo ciclo de conferência para escanear os ativos físicos do escritório.</p>
-                        <Button onClick={startNewAudit} className="w-full h-12 rounded-2xl font-bold gap-2">
-                            <Plus className="h-4 w-4" /> Começar Auditoria
+                        <div className="space-y-4 mb-6">
+                            <div className="relative group">
+                                <label className="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1.5 block text-left">Setor para Auditoria</label>
+                                <div className="relative">
+                                    <select
+                                        value={selectedStartSetor}
+                                        onChange={(e) => setSelectedStartSetor(e.target.value)}
+                                        className="w-full h-14 rounded-2xl bg-white border-2 border-slate-100 px-11 text-sm font-bold text-slate-700 focus:border-indigo-500 focus:ring-0 outline-none appearance-none cursor-pointer transition-all"
+                                    >
+                                        <option value="">Todos os setores</option>
+                                        {setores.map(s => (
+                                            <option key={s.id} value={s.nome}>{s.nome}</option>
+                                        ))}
+                                    </select>
+                                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-hover:text-indigo-500 transition-colors" />
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        <LayoutGrid className="h-4 w-4 text-slate-300" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {selectedStartSetor && (
+                                <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+                                    <div className="text-left">
+                                        <p className="text-[10px] font-black text-indigo-600 uppercase">Ativos Localizados</p>
+                                        <p className="text-sm font-bold text-slate-700">Setor {selectedStartSetor}</p>
+                                    </div>
+                                    <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center font-black text-indigo-600 shadow-sm border border-indigo-100">
+                                        {loadingPreCount ? <Loader2 className="h-4 w-4 animate-spin" /> : preCount}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <Button
+                            onClick={startNewAudit}
+                            disabled={loadingPreCount}
+                            className="w-full h-14 rounded-2xl font-black text-sm gap-3 shadow-xl shadow-indigo-200 group bg-indigo-600 hover:bg-slate-900 transition-all"
+                        >
+                            Começar Auditoria <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
                     </CardContent>
                 </Card>
@@ -246,7 +330,9 @@ export default function AuditPage() {
                         <CardContent className="p-6 relative">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <p className="text-indigo-100 text-[10px] font-black uppercase tracking-widest mb-1">Auditoria em Progresso</p>
+                                    <p className="text-indigo-100 text-[10px] font-black uppercase tracking-widest mb-1">
+                                        {currentAudit?.setor_alvo ? `Auditoria: Setor ${currentAudit.setor_alvo}` : "Auditoria Geral"}
+                                    </p>
                                     <h4 className="text-2xl font-bold">Ciclo Atual</h4>
                                 </div>
                                 <Badge className="bg-white/20 text-white border-0">ATIVO</Badge>
@@ -395,6 +481,15 @@ export default function AuditPage() {
                                     <p className="text-sm font-bold text-slate-700">{pendingAsset.colaborador || 'Sem responsável'}</p>
                                 </div>
                             </div>
+
+                            {currentAudit?.setor_alvo && pendingAsset.setor !== currentAudit.setor_alvo && (
+                                <div className="flex items-center gap-2 p-3 bg-rose-50 border border-rose-100 rounded-2xl animate-in zoom-in duration-300">
+                                    <AlertCircle className="h-4 w-4 text-rose-500" />
+                                    <p className="text-[11px] font-bold text-rose-600">
+                                        Divergência: Este ativo pertence ao setor {pendingAsset.setor} e não ao {currentAudit.setor_alvo}.
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between p-4 bg-rose-50/50 rounded-3xl border border-rose-100">
