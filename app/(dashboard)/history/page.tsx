@@ -25,6 +25,9 @@ export default function HistoryPage() {
 
     const [historico, setHistorico] = useState<Movimentacao[]>([])
     const [loading, setLoading] = useState(true)
+    const [page, setPage] = useState(0)
+    const [pageSize] = useState(20)
+    const [totalCount, setTotalCount] = useState(0)
 
     // Filters State
     const [searchTerm, setSearchTerm] = useState("")
@@ -45,7 +48,7 @@ export default function HistoryPage() {
                 *,
                 ativo:ativos!inner (id, nome, serial, setor_id),
                 usuario:profiles (id, full_name, avatar_url)
-            `)
+            `, { count: 'exact' })
             .order('data_movimentacao', { ascending: false })
 
         // Apply filters
@@ -67,10 +70,11 @@ export default function HistoryPage() {
             }
         }
 
-        const { data, error } = await query
+        const { data, count, error } = await query.range(page * pageSize, (page + 1) * pageSize - 1)
 
         if (!error && data) {
             setHistorico(data as unknown as Movimentacao[])
+            setTotalCount(count || 0)
         }
         setLoading(false)
     }, [selectedAction, selectedUser, selectedSetor])

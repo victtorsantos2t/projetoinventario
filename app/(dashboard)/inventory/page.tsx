@@ -25,7 +25,7 @@ function InventoryContent() {
     const [ativos, setAtivos] = useState<Ativo[]>([])
     const [loading, setLoading] = useState(true)
     const [page, setPage] = useState(0)
-    const [pageSize] = useState(12)
+    const [pageSize] = useState(20)
     const [totalCount, setTotalCount] = useState(0)
     const [categories, setCategories] = useState<any[]>([])
 
