@@ -8,6 +8,14 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Inventário IT | CRM Style",
   description: "Gerenciamento de ativos de TI com design premium",
+  manifest: "/manifest.json",
+  themeColor: "#4f46e5",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Inventário IT",
+  },
 };
 
 export default function RootLayout({

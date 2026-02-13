@@ -20,11 +20,14 @@ export function Header() {
     }
 
     return (
-        <header className="h-16 bg-white border-b border-slate-100 pl-20 pr-8 lg:px-8 flex items-center justify-between shrink-0">
-            <div>
+        <header className="h-16 bg-white border-b border-slate-100 pl-16 pr-4 lg:px-8 flex items-center justify-between shrink-0">
+            <div className="hidden sm:block">
                 <h2 className="text-sm font-bold text-slate-700">
                     Bem-vindo, <span className="text-primary">{profile?.full_name || 'Usuário'}</span>
                 </h2>
+            </div>
+            <div className="sm:hidden font-black text-xs text-slate-900 tracking-tighter">
+                IT INV
             </div>
 
             <div className="flex items-center gap-3">

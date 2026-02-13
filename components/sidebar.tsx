@@ -59,9 +59,9 @@ export function Sidebar() {
             collapsed ? "w-[72px]" : "w-64"
         )}>
             {/* Logo */}
-            <div className="px-5 py-6 flex items-center justify-between border-b border-slate-50">
+            <div className="px-5 py-6 flex items-center justify-between border-b border-slate-50 gap-4">
                 {!collapsed && (
-                    <div>
+                    <div className="pl-12 lg:pl-0">
                         <h1 className="text-lg font-black text-slate-900 tracking-tight">Inventário</h1>
                         <p className="text-[10px] font-bold text-primary uppercase tracking-widest">TI System</p>
                     </div>
@@ -117,14 +117,28 @@ export function Sidebar() {
                 <Menu className="h-5 w-5" />
             </button>
 
-            {/* Mobile overlay */}
-            {mobileOpen && (
-                <div className="lg:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)}>
-                    <div className="w-64 h-full" onClick={e => e.stopPropagation()}>
-                        {sidebarContent}
-                    </div>
+            {/* Mobile Sidebar */}
+            <div className={cn(
+                "lg:hidden fixed inset-0 z-50 transition-all duration-300",
+                mobileOpen ? "visible" : "invisible"
+            )}>
+                {/* Overlay */}
+                <div
+                    className={cn(
+                        "absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300",
+                        mobileOpen ? "opacity-100" : "opacity-0"
+                    )}
+                    onClick={() => setMobileOpen(false)}
+                />
+
+                {/* Drawer */}
+                <div className={cn(
+                    "absolute inset-y-0 left-0 w-72 bg-white shadow-2xl transition-transform duration-300 transform",
+                    mobileOpen ? "translate-x-0" : "-translate-x-full"
+                )}>
+                    {sidebarContent}
                 </div>
-            )}
+            </div>
 
             {/* Desktop sidebar */}
             <aside className="hidden lg:block shrink-0">

@@ -258,23 +258,23 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
                             {/* Actions */}
                             <div className="flex items-center border-t border-slate-50 divide-x divide-slate-50 relative z-20" onClick={(e) => e.stopPropagation()}>
                                 {!isViewer && (
-                                    <button onClick={() => setEditAsset(ativo)} className="flex-1 py-2.5 text-slate-400 hover:text-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-1.5" title="Editar">
-                                        <Edit2 className="h-3.5 w-3.5" />
-                                        <span className="text-[10px] font-bold">Editar</span>
+                                    <button onClick={() => setEditAsset(ativo)} className="flex-1 py-3 text-slate-400 hover:text-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-1.5" title="Editar">
+                                        <Edit2 className="h-4 w-4 shrink-0" />
+                                        <span className="text-[10px] font-bold hidden sm:block">Editar</span>
                                     </button>
                                 )}
-                                <button onClick={() => setQrAsset(ativo)} className="flex-1 py-2.5 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50/50 transition-colors flex items-center justify-center gap-1.5" title="QR Code">
-                                    <QrCode className="h-3.5 w-3.5" />
-                                    <span className="text-[10px] font-bold">QR</span>
+                                <button onClick={() => setQrAsset(ativo)} className="flex-1 py-3 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50/50 transition-colors flex items-center justify-center gap-1.5" title="QR Code">
+                                    <QrCode className="h-4 w-4 shrink-0" />
+                                    <span className="text-[10px] font-bold hidden sm:block">QR</span>
                                 </button>
-                                <button onClick={() => setActivityAsset({ id: ativo.id, nome: ativo.nome })} className="flex-1 py-2.5 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50/50 transition-colors flex items-center justify-center gap-1.5" title="Histórico">
-                                    <History className="h-3.5 w-3.5" />
-                                    <span className="text-[10px] font-bold">Log</span>
+                                <button onClick={() => setActivityAsset({ id: ativo.id, nome: ativo.nome })} className="flex-1 py-3 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50/50 transition-colors flex items-center justify-center gap-1.5" title="Histórico">
+                                    <History className="h-4 w-4 shrink-0" />
+                                    <span className="text-[10px] font-bold hidden sm:block">Log</span>
                                 </button>
                                 {!isViewer && (
-                                    <button onClick={() => setDeleteAsset(ativo)} className="flex-1 py-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50/50 transition-colors flex items-center justify-center gap-1.5" title="Excluir">
-                                        <Trash2 className="h-3.5 w-3.5" />
-                                        <span className="text-[10px] font-bold">Excluir</span>
+                                    <button onClick={() => setDeleteAsset(ativo)} className="flex-1 py-3 text-slate-400 hover:text-red-500 hover:bg-red-50/50 transition-colors flex items-center justify-center gap-1.5" title="Excluir">
+                                        <Trash2 className="h-4 w-4 shrink-0" />
+                                        <span className="text-[10px] font-bold hidden sm:block">Excluir</span>
                                     </button>
                                 )}
                             </div>
