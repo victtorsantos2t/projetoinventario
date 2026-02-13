@@ -33,9 +33,9 @@ export function AssetActivityModal({ ativoId, ativoNome, open, onOpenChange }: A
             if (!ativoId) return
             setLoading(true)
 
-            // Buscar histórico e contagem sincronizada
-            const [histRes, saudeRes] = await Promise.all([
-                supabase
+            try {
+                // 1. Buscar Histórico (Movimentações)
+                const { data: histData, error: histError } = await supabase
                     .from('movimentacoes')
                     .select(`
                         *,
@@ -43,28 +43,43 @@ export function AssetActivityModal({ ativoId, ativoNome, open, onOpenChange }: A
                     `)
                     .eq('ativo_id', ativoId)
                     .order('data_movimentacao', { ascending: false })
-                    .order('created_at', { ascending: false }),
+                    .order('created_at', { ascending: false })
 
-                supabase
+                if (histError) {
+                    console.error("Erro ao buscar histórico:", histError)
+                    // Fallback: tentar sem o join do usuário
+                    const { data: fallbackData } = await supabase
+                        .from('movimentacoes')
+                        .select('*')
+                        .eq('ativo_id', ativoId)
+                        .order('data_movimentacao', { ascending: false })
+
+                    if (fallbackData) setHistorico(fallbackData as any)
+                } else {
+                    setHistorico(histData || [])
+                }
+
+                // 2. Buscar Info de Saúde (Vista)
+                const { data: saudeData, error: saudeError } = await supabase
                     .from('v_ativos_saude')
                     .select('contagem_saude, count_manutencao, data_restauracao')
                     .eq('id', ativoId)
-                    .single()
-            ])
+                    .maybeSingle()
 
-            if (histRes.data) {
-                setHistorico(histRes.data as unknown as Movimentacao[])
+                if (saudeError) {
+                    console.error("Erro ao buscar info de saúde:", saudeError)
+                } else if (saudeData) {
+                    setCounts({
+                        saude: saudeData.contagem_saude,
+                        total: saudeData.count_manutencao
+                    })
+                    setDataRestauracao(saudeData.data_restauracao)
+                }
+            } catch (err) {
+                console.error("Erro catastrófico no modal:", err)
+            } finally {
+                setLoading(false)
             }
-
-            if (saudeRes.data) {
-                setCounts({
-                    saude: saudeRes.data.contagem_saude,
-                    total: saudeRes.data.count_manutencao
-                })
-                setDataRestauracao(saudeRes.data.data_restauracao)
-            }
-
-            setLoading(false)
         }
 
         if (open && ativoId) fetchData()
