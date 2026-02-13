@@ -14,7 +14,7 @@ import {
 } from "@/lib/constants"
 import {
     X, Save, Monitor, Cpu, Wrench,
-    AlertTriangle, Heart, Hash, History, Plus, Trash2, Calendar
+    AlertTriangle, Heart, Hash, History, Plus, Trash2, Calendar, ShieldCheck
 } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
@@ -409,7 +409,15 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
 
     const healthPercent = calculateHealth(maintenances)
     const maintenanceCount = maintenances.length
-    const correctiveCount = [...maintenances].filter(m => m.tipo === 'Corretiva').length // For threshold logic
+
+    // Contagem de corretivas após restauração (Sincronizado com a nova lógica da Fase 2)
+    const getHealthCorrectiveCount = (maintList: Manutencao[]) => {
+        const sorted = [...maintList].sort((a, b) => new Date(b.data_manutencao || b.created_at).getTime() - new Date(a.data_manutencao || a.created_at).getTime())
+        const lastRestoreIndex = sorted.findIndex(m => m.restaurar_saude)
+        const relevant = lastRestoreIndex === -1 ? sorted : sorted.slice(0, lastRestoreIndex)
+        return relevant.filter(m => m.tipo === 'Corretiva').length
+    }
+    const correctiveCount = getHealthCorrectiveCount(maintenances)
     const healthColor = healthPercent > 60 ? 'text-emerald-500' : healthPercent > 30 ? 'text-amber-500' : 'text-red-500'
 
     return (
@@ -443,7 +451,25 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                     <span className="text-sm font-bold text-slate-700">Saúde do Equipamento</span>
                                     <span className={`text-xs font-black ${healthColor}`}>{healthPercent}%</span>
                                 </div>
-                                <p className="text-xs text-slate-400 mt-0.5">{maintenanceCount} intervenções registradas</p>
+                                <p className="text-xs text-slate-400 mt-0.5">{maintenanceCount} intervenções no histórico total</p>
+
+                                {(() => {
+                                    const lastRestore = [...maintenances]
+                                        .sort((a, b) => new Date(b.data_manutencao || b.created_at).getTime() - new Date(a.data_manutencao || a.created_at).getTime())
+                                        .find(m => m.restaurar_saude);
+
+                                    if (!lastRestore) return null;
+
+                                    return (
+                                        <div className="mt-2 flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-100 rounded-lg w-fit animate-in fade-in zoom-in duration-300">
+                                            <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                                            <span className="text-[10px] font-black text-emerald-700 uppercase tracking-tight">
+                                                Saúde Restaurada (Upgrade) em {new Date(lastRestore.data_manutencao!).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    );
+                                })()}
+
                                 {maintenanceCount >= threshold && (
                                     <Badge className="mt-2 bg-red-100 text-red-700 border-red-200 font-bold text-[10px] flex w-fit items-center gap-1">
                                         <AlertTriangle className="h-3 w-3" /> Substituição Sugerida

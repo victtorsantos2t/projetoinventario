@@ -233,12 +233,18 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
                                                 )}
 
                                                 <div className="flex items-center justify-between mt-2 px-0.5">
-                                                    <div className="flex items-center gap-1 text-[9px] font-medium text-slate-400">
-                                                        <History className="h-2.5 w-2.5" />
-                                                        <span>{ativo.saude_info?.count_manutencao || 0} Manutenções</span>
+                                                    <div className="flex flex-col gap-0.5">
+                                                        <div className="flex items-center gap-1 text-[9px] font-bold text-slate-500">
+                                                            <Activity className="h-2.5 w-2.5 text-primary" />
+                                                            <span>{ativo.saude_info?.contagem_saude || 0} Intervenções</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-1 text-[8px] font-medium text-slate-300">
+                                                            <History className="h-2 w-2" />
+                                                            <span>{ativo.saude_info?.count_manutencao || 0} Total Histórico</span>
+                                                        </div>
                                                     </div>
                                                     {ativo.saude_info?.ultima_manutencao && (
-                                                        <span className="text-[9px] font-medium text-slate-300">
+                                                        <span className="text-[9px] font-medium text-slate-300 self-end">
                                                             Última: {new Date(ativo.saude_info.ultima_manutencao).toLocaleDateString()}
                                                         </span>
                                                     )}

@@ -46,8 +46,10 @@ export interface Ativo {
         status_saude: 'Excelente' | 'Alerta' | 'Crítico'
         garantia_vencendo: boolean
         garantia_vencida: boolean
-        count_manutencao: number
+        count_manutencao: number // Total de manutenções
+        contagem_saude: number   // Manutenções pós-restauração
         ultima_manutencao: string | null
+        data_restauracao: string | null
     }
 }
 

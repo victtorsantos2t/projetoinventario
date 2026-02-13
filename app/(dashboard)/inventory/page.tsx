@@ -20,6 +20,7 @@ function InventoryContent() {
 
     const searchParams = useSearchParams()
     const initialStatus = searchParams.get('status')
+    const initialSaude = searchParams.get('saude')
     const assetId = searchParams.get('id')
 
     const [ativos, setAtivos] = useState<Ativo[]>([])
@@ -34,7 +35,7 @@ function InventoryContent() {
     const [filterStatus, setFilterStatus] = useState<string | null>(initialStatus)
     const [filterTipo, setFilterTipo] = useState<string | null>(null)
     const [filterSetor, setFilterSetor] = useState<string | null>(null)
-    const [filterSaude, setFilterSaude] = useState<string | null>(null)
+    const [filterSaude, setFilterSaude] = useState<string | null>(initialSaude)
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
     const debouncedSearch = useDebounce(searchTerm, 300)
@@ -43,21 +44,8 @@ function InventoryContent() {
         setLoading(true)
         try {
             let query = supabase
-                .from('ativos')
-                .select(`
-                    *,
-                    saude_info:v_ativos_saude!id (
-                        status_saude,
-                        garantia_vencendo,
-                        garantia_vencida,
-                        count_manutencao,
-                        ultima_manutencao
-                    ),
-                    dono:profiles (
-                        full_name,
-                        avatar_url
-                    )
-                `, { count: 'exact' })
+                .from('v_inventario_geral')
+                .select('*', { count: 'exact' })
                 .order('created_at', { ascending: false })
 
             // Se tiver um ID específico, ignora a paginação e outros filtros para focar nele
@@ -94,7 +82,7 @@ function InventoryContent() {
                     if (filterTipo) query = query.eq('tipo', filterTipo)
 
                     if (filterSaude) {
-                        query = query.eq('v_ativos_saude.status_saude', filterSaude)
+                        query = query.eq('status_saude', filterSaude)
                     }
 
                     if (debouncedSearch) {
@@ -106,7 +94,26 @@ function InventoryContent() {
             const { data, count, error } = await query
 
             if (error) throw error
-            setAtivos((data || []) as Ativo[])
+
+            // Mapear dados da vista flat para a estrutura do tipo Ativo
+            const mappedAtivos = (data || []).map((item: any) => ({
+                ...item,
+                saude_info: {
+                    status_saude: item.status_saude,
+                    garantia_vencendo: item.garantia_vencendo,
+                    garantia_vencida: item.garantia_vencida,
+                    count_manutencao: item.saude_count_manutencao,
+                    contagem_saude: item.saude_contagem_intervencoes,
+                    ultima_manutencao: item.saude_ultima_manutencao,
+                    data_restauracao: item.saude_data_restauracao
+                },
+                dono: {
+                    full_name: item.dono_nome,
+                    avatar_url: item.dono_avatar
+                }
+            })) as Ativo[]
+
+            setAtivos(mappedAtivos)
             setTotalCount(count || 0)
         } catch (error: unknown) {
             const msg = error instanceof Error ? error.message : "Erro desconhecido"

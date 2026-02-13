@@ -11,7 +11,7 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { History, User, Calendar, ChevronRight, Settings2, AlertTriangle, Info, Loader2 } from "lucide-react"
+import { History, User, Calendar, ChevronRight, Settings2, AlertTriangle, Info, Loader2, ShieldCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MaintenanceTimeline } from "@/components/maintenance-timeline"
 
@@ -25,34 +25,49 @@ interface AssetActivityModalProps {
 export function AssetActivityModal({ ativoId, ativoNome, open, onOpenChange }: AssetActivityModalProps) {
     const [historico, setHistorico] = useState<Movimentacao[]>([])
     const [loading, setLoading] = useState(false)
-    const [manutencaoCount, setManutencaoCount] = useState(0)
+    const [counts, setCounts] = useState({ saude: 0, total: 0 })
+    const [dataRestauracao, setDataRestauracao] = useState<string | null>(null)
 
     useEffect(() => {
-        async function fetchHistory() {
+        async function fetchData() {
             if (!ativoId) return
             setLoading(true)
-            const { data, error } = await supabase
-                .from('movimentacoes')
-                .select(`
-                    *,
-                    usuario:profiles (full_name, avatar_url)
-                `)
-                .eq('ativo_id', ativoId)
-                .order('data_movimentacao', { ascending: false })
-                .order('created_at', { ascending: false })
 
-            if (!error && data) {
-                const hist = data as unknown as Movimentacao[]
-                setHistorico(hist)
+            // Buscar histórico e contagem sincronizada
+            const [histRes, saudeRes] = await Promise.all([
+                supabase
+                    .from('movimentacoes')
+                    .select(`
+                        *,
+                        usuario:profiles (full_name, avatar_url)
+                    `)
+                    .eq('ativo_id', ativoId)
+                    .order('data_movimentacao', { ascending: false })
+                    .order('created_at', { ascending: false }),
 
-                // Contar manutenções via histórico para o alerta
-                const count = hist.filter(h => h.tipo_movimentacao === 'MANUTENÇÃO').length
-                setManutencaoCount(count)
+                supabase
+                    .from('v_ativos_saude')
+                    .select('contagem_saude, count_manutencao, data_restauracao')
+                    .eq('id', ativoId)
+                    .single()
+            ])
+
+            if (histRes.data) {
+                setHistorico(histRes.data as unknown as Movimentacao[])
             }
+
+            if (saudeRes.data) {
+                setCounts({
+                    saude: saudeRes.data.contagem_saude,
+                    total: saudeRes.data.count_manutencao
+                })
+                setDataRestauracao(saudeRes.data.data_restauracao)
+            }
+
             setLoading(false)
         }
 
-        if (open && ativoId) fetchHistory()
+        if (open && ativoId) fetchData()
     }, [open, ativoId])
 
     return (
@@ -69,8 +84,24 @@ export function AssetActivityModal({ ativoId, ativoNome, open, onOpenChange }: A
                         </DialogDescription>
                     </DialogHeader>
 
-                    {/* Banner de Sugestão de Troca (Reforço da FASE 2) */}
-                    {manutencaoCount >= 5 && (
+                    {/* Banner de Restauração de Saúde (Nova Funcionalidade) */}
+                    {dataRestauracao && (
+                        <div className="mx-8 mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-3xl flex items-center gap-4 animate-in fade-in zoom-in duration-500">
+                            <div className="h-10 w-10 shrink-0 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-200">
+                                <ShieldCheck className="h-6 w-6 text-white" />
+                            </div>
+                            <div className="space-y-1">
+                                <h4 className="text-sm font-black text-emerald-900 uppercase tracking-tight">Saúde Restaurada!</h4>
+                                <p className="text-xs text-emerald-700 font-medium leading-relaxed">
+                                    Este equipamento passou por um processo de upgrade/restauração em <span className="font-bold">{new Date(dataRestauracao).toLocaleDateString()}</span>.
+                                    A contagem de risco foi reiniciada para garantir maior confiabilidade.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Banner de Sugestão de Troca (Reforço da FASE 2) - Baseado na contagem de SAÚDE */}
+                    {counts.saude >= 5 && (
                         <div className="mx-8 mt-4 p-4 bg-amber-50 border border-amber-200 rounded-3xl flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
                             <div className="h-10 w-10 shrink-0 rounded-2xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-200">
                                 <AlertTriangle className="h-6 w-6 text-white" />
@@ -78,8 +109,8 @@ export function AssetActivityModal({ ativoId, ativoNome, open, onOpenChange }: A
                             <div className="space-y-1">
                                 <h4 className="text-sm font-black text-amber-900 uppercase tracking-tight">Risco Crítico Detectado!</h4>
                                 <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                                    Este equipamento já passou por <span className="font-bold">{manutencaoCount} intervenções</span>.
-                                    Sugerimos a **AVALIAÇÃO PARA SUBSTITUIÇÃO** imediata para evitar paradas críticas.
+                                    Este equipamento já passou por <span className="font-bold">{counts.saude} intervenções</span> desde a última restauração.
+                                    Sugerimos a **AVALIAÇÃO PARA SUBSTITUIÇÃO** ou novo upgrade para evitar paradas críticas.
                                 </p>
                             </div>
                         </div>
