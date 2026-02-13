@@ -30,7 +30,7 @@ const menuItems: MenuItem[] = [
     { href: "/inventory", label: "Inventário", icon: Package },
     { href: "/history", label: "Movimentações", icon: History, technicianOnly: true },
     { href: "/reports", label: "Relatórios", icon: FileText, technicianOnly: true },
-    { href: "/users", label: "Colaboradores", icon: Users, adminOnly: true },
+    { href: "/users", label: "Colaboradores", icon: Users, technicianOnly: true },
     { href: "/settings", label: "Configurações", icon: Settings, adminOnly: true },
     { href: "/help", label: "Ajuda", icon: HelpCircle },
 ]

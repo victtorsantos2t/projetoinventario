@@ -7,7 +7,8 @@ import { EditUserModal } from "@/components/edit-user-modal"
 import { UsersToolbar } from "@/components/users-toolbar"
 import { UsersTable } from "@/components/users-table"
 import { Profile, Setor } from "@/types"
-import { Shield, User as UserIcon, Settings2, Edit2, LayoutGrid, List, Mail, ShieldCheck, UserMinus, UserCheck, Trash2, AlertTriangle, Building2, Eye } from "lucide-react"
+import { CollaboratorAssetsModal } from "@/components/collaborator-assets-modal"
+import { Shield, User as UserIcon, Settings2, Edit2, LayoutGrid, List, Mail, ShieldCheck, UserMinus, UserCheck, Trash2, AlertTriangle, Building2, Eye, Package, Search } from "lucide-react"
 import { useUserRole } from "@/hooks/use-user-role"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -30,7 +31,7 @@ export default function UsersPage() {
     const [selectedUser, setSelectedUser] = useState<Profile | null>(null)
     const [isEditOpen, setIsEditOpen] = useState(false)
     const [loadingUsers, setLoadingUsers] = useState(true)
-    const { isAdmin, loading: loadingRole } = useUserRole()
+    const { isAdmin, isTecnico, loading: loadingRole } = useUserRole()
 
     // Filter States
     const [searchTerm, setSearchTerm] = useState("")
@@ -42,23 +43,49 @@ export default function UsersPage() {
     const [userToToggle, setUserToToggle] = useState<Profile | null>(null)
     const [userToDelete, setUserToDelete] = useState<Profile | null>(null)
 
+    // Assets Modal State
+    const [assetsModalOpen, setAssetsModalOpen] = useState(false)
+    const [selectedCollaborator, setSelectedCollaborator] = useState<Profile | null>(null)
+
     async function fetchData() {
         setLoadingUsers(true)
 
-        // Parallel fetch for users and sectors
-        const [usersRes, sectorsRes] = await Promise.all([
-            supabase.from('profiles').select('*').order('full_name', { ascending: true }),
-            supabase.from('setores').select('*').order('nome')
+        // Fetch users, sectors and assets for counting
+        const [usersRes, sectorsRes, assetsRes] = await Promise.all([
+            supabase
+                .from('profiles')
+                .select('*')
+                .order('full_name', { ascending: true }),
+            supabase.from('setores').select('*').order('nome'),
+            supabase
+                .from('ativos')
+                .select('id, dono_id, colaborador, status')
+                .neq('status', 'Baixado')
         ])
 
-        if (usersRes.data) setUsers(usersRes.data as Profile[])
-        if (sectorsRes.data) setSetores(sectorsRes.data as Setor[])
+        if (usersRes.data && assetsRes.data) {
+            const assets = assetsRes.data as any[]
+            const usersWithCount = (usersRes.data as Profile[]).map(u => {
+                // Robust count: check by ID or by Name (fallback for disconnected data)
+                const count = assets.filter(a =>
+                    a.dono_id === u.id ||
+                    (a.colaborador && u.full_name && a.colaborador.trim().toLowerCase() === u.full_name.trim().toLowerCase()) ||
+                    (a.colaborador && u.email && a.colaborador.trim().toLowerCase() === u.email.trim().toLowerCase())
+                ).length
 
+                return {
+                    ...u,
+                    ativos_count: count
+                }
+            })
+            setUsers(usersWithCount)
+        }
+        if (sectorsRes.data) setSetores(sectorsRes.data as Setor[])
         setLoadingUsers(false)
     }
 
     useEffect(() => {
-        if (!isAdmin && !loadingRole) return
+        if (!isTecnico && !loadingRole) return
         fetchData()
 
         const channel = supabase.channel('realtime_users')
@@ -146,7 +173,7 @@ export default function UsersPage() {
         return sector ? sector.nome : "Sem setor"
     }
 
-    if (!loadingRole && !isAdmin) {
+    if (!loadingRole && !isTecnico) {
         return (
             <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm">
                 <Shield className="h-16 w-16 text-rose-500 mb-4 opacity-20" />
@@ -162,7 +189,7 @@ export default function UsersPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 mb-1">Colaboradores</h1>
-                    <p className="text-slate-500 font-medium">Gerencie quem tem acesso ao sistema de inventário.</p>
+                    <p className="text-slate-500 font-medium">Gestão centralizada de equipamentos por pessoa e acessos.</p>
                 </div>
                 {isAdmin && <AddUserModal onSuccess={fetchData} />}
             </div>
@@ -207,6 +234,10 @@ export default function UsersPage() {
                     onEdit={(u) => { setSelectedUser(u); setIsEditOpen(true); }}
                     onDelete={setUserToDelete}
                     onToggleStatus={setUserToToggle}
+                    onViewAssets={(u) => {
+                        setSelectedCollaborator(u)
+                        setAssetsModalOpen(true)
+                    }}
                 />
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -266,6 +297,23 @@ export default function UsersPage() {
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2 text-slate-400 font-bold text-[9px] uppercase tracking-widest">
+                                        <Package className="h-3 w-3" />
+                                        <span>Equipamentos</span>
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            setSelectedCollaborator(user)
+                                            setAssetsModalOpen(true)
+                                        }}
+                                        className="hover:scale-105 active:scale-95 transition-transform"
+                                    >
+                                        <Badge variant="secondary" className={`text-[10px] font-black py-0.5 rounded-lg border-none shadow-none cursor-pointer ${user.ativos_count ? 'bg-primary/10 text-primary hover:bg-primary/20' : 'bg-slate-50 text-slate-400'}`}>
+                                            {user.ativos_count || 0} ITENS
+                                        </Badge>
+                                    </button>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-slate-400 font-bold text-[9px] uppercase tracking-widest">
                                         <ShieldCheck className={`h-3 w-3 ${user.status === 'Inativo' ? 'text-slate-300' : 'text-emerald-500'}`} />
                                         <span>Status de Acesso</span>
                                     </div>
@@ -300,6 +348,12 @@ export default function UsersPage() {
                 open={isEditOpen}
                 onOpenChange={setIsEditOpen}
                 onSuccess={fetchData}
+            />
+
+            <CollaboratorAssetsModal
+                collaborator={selectedCollaborator}
+                open={assetsModalOpen}
+                onOpenChange={setAssetsModalOpen}
             />
 
             {/* Inactivate Confirmation */}

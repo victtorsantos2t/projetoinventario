@@ -4,7 +4,7 @@ import { Profile, Setor } from "@/types"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Edit2, Shield, Settings2, Eye, Trash2, UserMinus, UserCheck, Mail, Building2 } from "lucide-react"
+import { Edit2, Shield, Settings2, Eye, Trash2, UserMinus, UserCheck, Mail, Building2, Package } from "lucide-react"
 
 interface UsersTableProps {
     users: Profile[]
@@ -13,9 +13,10 @@ interface UsersTableProps {
     onEdit: (user: Profile) => void
     onDelete: (user: Profile) => void
     onToggleStatus: (user: Profile) => void
+    onViewAssets: (user: Profile) => void
 }
 
-export function UsersTable({ users, setores, isAdmin, onEdit, onDelete, onToggleStatus }: UsersTableProps) {
+export function UsersTable({ users, setores, isAdmin, onEdit, onDelete, onToggleStatus, onViewAssets }: UsersTableProps) {
     const getSectorName = (sectorId: string | null) => {
         if (!sectorId) return "Sem setor"
         const sector = setores.find(s => s.id === sectorId)
@@ -47,6 +48,7 @@ export function UsersTable({ users, setores, isAdmin, onEdit, onDelete, onToggle
                             <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Colaborador</th>
                             <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Nível</th>
                             <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Setor</th>
+                            <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Equipamentos</th>
                             <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Status</th>
                             <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Ações</th>
                         </tr>
@@ -84,6 +86,16 @@ export function UsersTable({ users, setores, isAdmin, onEdit, onDelete, onToggle
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 text-center">
+                                    <button
+                                        onClick={() => onViewAssets(user)}
+                                        className="hover:scale-110 active:scale-95 transition-transform"
+                                    >
+                                        <Badge variant="secondary" className={`px-2 py-0.5 rounded-lg text-[10px] font-black border-none shadow-none cursor-pointer ${user.ativos_count ? 'bg-primary/10 text-primary hover:bg-primary/20' : 'bg-slate-50 text-slate-400'}`}>
+                                            {user.ativos_count || 0}
+                                        </Badge>
+                                    </button>
+                                </td>
+                                <td className="px-6 py-4 text-center">
                                     <Badge className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${user.status === 'Inativo'
                                         ? "bg-slate-100 text-slate-400 border-slate-200"
                                         : "bg-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.3)]"
@@ -93,6 +105,9 @@ export function UsersTable({ users, setores, isAdmin, onEdit, onDelete, onToggle
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Button size="icon" variant="ghost" onClick={() => onViewAssets(user)} className="h-8 w-8 rounded-lg text-slate-400 hover:text-primary hover:bg-white border border-transparent hover:border-slate-100 shadow-none hover:shadow-sm" title="Ver Equipamentos">
+                                            <Package className="h-4 w-4" />
+                                        </Button>
                                         {isAdmin && (
                                             <>
                                                 <Button size="icon" variant="ghost" onClick={() => onEdit(user)} className="h-8 w-8 rounded-lg text-slate-400 hover:text-primary hover:bg-white border border-transparent hover:border-slate-100 shadow-none hover:shadow-sm">

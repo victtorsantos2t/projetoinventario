@@ -9,6 +9,7 @@ export interface Profile {
     status: 'Ativo' | 'Inativo'
     cpf: string | null
     cargo: string | null
+    ativos_count?: number
 }
 
 export interface Ativo {

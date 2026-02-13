@@ -237,20 +237,48 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
 
             // Build changes log
             const changes: string[] = []
-            const original = ativo as unknown as Record<string, unknown>
-            const formData = form as unknown as Record<string, unknown>
-            const trackFields = ['nome', 'tipo', 'serial', 'status', 'colaborador', 'setor', 'patrimonio', 'processador', 'memoria_ram', 'armazenamento', 'polegadas']
+            const original = ativo as unknown as Record<string, any>
+            const formData = form as unknown as Record<string, any>
+
+            // Mapeamento de nomes técnicos para amigáveis
+            const fieldLabels: Record<string, string> = {
+                nome: 'Nome',
+                tipo: 'Tipo',
+                serial: 'Nº de Série',
+                status: 'Status',
+                colaborador: 'Responsável',
+                setor: 'Setor',
+                patrimonio: 'Patrimônio',
+                processador: 'Processador',
+                memoria_ram: 'RAM',
+                armazenamento: 'Disco',
+                acesso_remoto: 'Acesso Remoto',
+                polegadas: 'Polegadas',
+                condicao: 'Condição',
+                garantia_meses: 'Garantia',
+                saidas_video: 'Saídas de Vídeo'
+            }
 
             let isTransfer = false
             if ((ativo.setor || "") !== (form.setor || "") || (ativo.colaborador || "") !== (form.colaborador || "")) {
                 isTransfer = true
             }
 
-            for (const field of trackFields) {
-                if ((original[field] || "") !== (formData[field] || "")) {
-                    changes.push(`${field}: ${original[field] || '—'} -> ${formData[field] || '—'}`)
+            Object.entries(fieldLabels).forEach(([field, label]) => {
+                let oldVal = original[field]
+                let newVal = formData[field]
+
+                // Normalização para comparação
+                if (Array.isArray(oldVal)) oldVal = oldVal.sort().join(', ')
+                if (Array.isArray(newVal)) newVal = newVal.sort().join(', ')
+
+                const sOld = String(oldVal || "").trim()
+                const sNew = String(newVal || "").trim()
+
+                if (sOld !== sNew) {
+                    changes.push(`${label}: ${sOld || '—'} -> ${sNew || '—'}`)
                 }
-            }
+            })
 
             const { error } = await supabase
                 .from('ativos')
