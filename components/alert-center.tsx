@@ -84,11 +84,11 @@ export function AlertCenter() {
 
     if (loading) {
         return (
-            <div className="bg-white rounded-[2rem] border border-slate-100 p-6 animate-pulse">
-                <div className="h-4 bg-slate-100 rounded w-1/4 mb-4" />
+            <div className="bg-white dark:bg-zinc-900/40 rounded-[2rem] border border-slate-100 dark:border-white/5 p-6 animate-pulse">
+                <div className="h-4 bg-slate-100 dark:bg-white/5 rounded w-1/4 mb-4" />
                 <div className="space-y-3">
-                    <div className="h-16 bg-slate-50 rounded-2xl" />
-                    <div className="h-16 bg-slate-50 rounded-2xl" />
+                    <div className="h-16 bg-slate-50 dark:bg-white/5 rounded-2xl" />
+                    <div className="h-16 bg-slate-50 dark:bg-white/5 rounded-2xl" />
                 </div>
             </div>
         )
@@ -97,38 +97,38 @@ export function AlertCenter() {
     if (alerts.length === 0) return null
 
     return (
-        <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden mb-8">
-            <div className="px-6 py-5 border-b border-slate-50 flex items-center justify-between bg-rose-50/10">
+        <div className="bg-white dark:bg-zinc-900/40 rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm overflow-hidden mb-8">
+            <div className="px-6 py-5 border-b border-slate-50 dark:border-white/5 flex items-center justify-between bg-rose-50/10 dark:bg-rose-500/5">
                 <div className="flex items-center gap-3">
                     <div className="h-9 w-9 rounded-xl bg-rose-500/10 flex items-center justify-center">
                         <ShieldAlert className="h-5 w-5 text-rose-500" />
                     </div>
                     <div>
-                        <h2 className="text-base font-bold text-slate-900">Prioridades de Atenção</h2>
-                        <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest mt-0.5">Alertas do Sistema</p>
+                        <h2 className="text-base font-bold text-slate-900 dark:text-white">Prioridades de Atenção</h2>
+                        <p className="text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest mt-0.5">Alertas do Sistema</p>
                     </div>
                 </div>
-                <Badge variant="outline" className="bg-white text-slate-400 border-slate-200 font-black text-[9px]">
+                <Badge variant="outline" className="bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-white/10 font-black text-[9px]">
                     {alerts.length} ALERTAS
                 </Badge>
             </div>
 
-            <div className="divide-y divide-slate-50 max-h-[400px] overflow-y-auto">
+            <div className="divide-y divide-slate-50 dark:divide-white/5 max-h-[400px] overflow-y-auto">
                 {alerts.map((alert) => (
                     <div
                         key={alert.id}
-                        className="px-6 py-4 flex items-center gap-4 hover:bg-slate-50/50 transition-colors cursor-pointer group"
+                        className="px-6 py-4 flex items-center gap-4 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors cursor-pointer group"
                         onClick={() => router.push(`/inventory?id=${alert.assetId}`)}
                     >
                         <div className={cn(
                             "h-10 w-10 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
-                            alert.severity === 'critical' ? "bg-rose-50 text-rose-500" : "bg-amber-50 text-amber-500"
+                            alert.severity === 'critical' ? "bg-rose-50 dark:bg-rose-500/10 text-rose-500" : "bg-amber-50 dark:bg-amber-500/10 text-amber-500"
                         )}>
                             {alert.type === 'saude' ? <HeartPulse className="h-5 w-5" /> : <Calendar className="h-5 w-5" />}
                         </div>
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-0.5">
-                                <span className="text-sm font-bold text-slate-800 truncate">{alert.title}</span>
+                                <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{alert.title}</span>
                                 <Badge className={cn(
                                     "text-[8px] font-black uppercase px-1.5 py-0 rounded-md",
                                     alert.severity === 'critical' ? "bg-rose-500 text-white" : "bg-amber-500 text-white"
