@@ -22,13 +22,13 @@ export function Header() {
     }
 
     return (
-        <header className="h-16 bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 pl-14 pr-4 lg:px-8 flex items-center justify-between shrink-0">
+        <header className="h-16 bg-white dark:bg-black border-b border-slate-100 dark:border-white/10 pl-14 pr-4 lg:px-8 flex items-center justify-between shrink-0">
             <div className="hidden sm:block">
                 <h2 className="text-sm font-bold text-slate-700 dark:text-slate-300">
                     Bem-vindo, <span className="text-primary">{profile?.full_name || 'Usuário'}</span>
                 </h2>
             </div>
-            <div className="sm:hidden font-black text-xs text-slate-900 dark:text-white tracking-tighter bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-100 dark:border-slate-800">
+            <div className="sm:hidden font-black text-xs text-slate-900 dark:text-white tracking-tighter bg-slate-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-slate-100 dark:border-white/10">
                 INVENTÁRIO TI
             </div>
 

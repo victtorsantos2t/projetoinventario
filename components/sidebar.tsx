@@ -54,7 +54,7 @@ export function Sidebar() {
 
     const sidebarContent = (
         <div className={cn(
-            "h-full flex flex-col bg-white dark:bg-slate-950 border-r border-slate-100 dark:border-slate-800 transition-all duration-300",
+            "h-full flex flex-col bg-white dark:bg-black border-r border-slate-100 dark:border-white/10 transition-all duration-300",
             collapsed ? "w-[72px]" : "w-64"
         )}>
             {/* Logo */}
@@ -86,7 +86,7 @@ export function Sidebar() {
                                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
                                 isActive
                                     ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-700 dark:hover:text-slate-200"
+                                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-700 dark:hover:text-white"
                             )}
                             title={collapsed ? item.label : undefined}
                         >
