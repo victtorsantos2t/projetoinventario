@@ -60,7 +60,7 @@ export default function ReportsPage() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const [assetsRes, profilesRes, companyRes, setoresRes] = await Promise.all([
+            const [assetsRes, profilesRes, companyRes, setoresRes, auditoriasRes] = await Promise.all([
                 supabase.from('ativos').select('*').order('nome'),
                 supabase.from('profiles').select('*').order('full_name'),
                 supabase.from('empresa').select('*').single(),

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { useUser } from "@/contexts/user-context"
-import { ShieldCheck, Search, QrCode, ClipboardList, CheckCircle2, XCircle, AlertCircle, Plus } from "lucide-react"
+import { ShieldCheck, Search, QrCode, ClipboardList, CheckCircle2, XCircle, AlertCircle, Plus, ShieldAlert } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
