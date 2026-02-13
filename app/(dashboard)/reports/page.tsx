@@ -22,7 +22,8 @@ import {
     X,
     Search,
     CheckSquare,
-    Square
+    Square,
+    ClipboardCheck
 } from "lucide-react"
 import { useUser } from "@/contexts/user-context"
 import { useRouter } from "next/navigation"
@@ -53,6 +54,8 @@ export default function ReportsPage() {
     const [selectedStatus, setSelectedStatus] = useState("")
     const [tecnicos, setTecnicos] = useState<Profile[]>([])
     const [setores, setSetores] = useState<Setor[]>([])
+    const [auditorias, setAuditorias] = useState<any[]>([])
+    const [selectedAudit, setSelectedAudit] = useState("")
 
 
     useEffect(() => {
@@ -62,6 +65,7 @@ export default function ReportsPage() {
                 supabase.from('profiles').select('*').order('full_name'),
                 supabase.from('empresa').select('*').single(),
                 supabase.from('setores').select('*').order('nome'),
+                supabase.from('auditorias').select('*').order('created_at', { ascending: false })
             ])
 
             if (assetsRes.data) setAssets(assetsRes.data)
@@ -71,6 +75,7 @@ export default function ReportsPage() {
             }
             if (companyRes.data) setCompany(companyRes.data)
             if (setoresRes.data) setSetores(setoresRes.data as Setor[])
+            if (auditoriasRes.data) setAuditorias(auditoriasRes.data)
         }
         fetchData()
     }, [])
@@ -596,6 +601,34 @@ export default function ReportsPage() {
                     onGenerate={generateWarrantyReport}
                     loading={generating === 'warranty'}
                 />
+
+                {/* Audit Report */}
+                <ReportCard
+                    title="Relatório de Auditoria"
+                    description="Resultados dos ciclos de conferência física com destaque para discrepâncias."
+                    icon={<ClipboardCheck className="h-6 w-6 text-indigo-600" />}
+                    bgColor="bg-indigo-50"
+                    onGenerate={generateAuditReport}
+                    loading={generating === 'audit'}
+                >
+                    <div className="mt-4">
+                        <label className="block text-[10px] uppercase font-black text-indigo-600 mb-1.5 tracking-widest px-1">
+                            Selecionar Ciclo
+                        </label>
+                        <select
+                            value={selectedAudit}
+                            onChange={(e) => setSelectedAudit(e.target.value)}
+                            className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 px-3 focus:ring-2 focus:ring-indigo-200 outline-none appearance-none cursor-pointer"
+                        >
+                            <option value="">Selecione um ciclo...</option>
+                            {auditorias.map(a => (
+                                <option key={a.id} value={a.id}>
+                                    Auditoria de {new Date(a.created_at).toLocaleDateString('pt-BR')} ({a.status})
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </ReportCard>
 
             </div>
         </div>
