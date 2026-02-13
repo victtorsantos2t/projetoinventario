@@ -174,15 +174,19 @@ export default function AuditPage() {
                     obs: observation || null
                 }, { onConflict: 'auditoria_id,ativo_id' })
 
-            if (error) throw error
+            if (error) {
+                console.error("Erro ao registrar no Supabase:", error)
+                throw error
+            }
 
             toast.success("Ativo registrado!")
-            fetchAuditStats(currentAudit.id)
-            fetchRecentItems(currentAudit.id)
+            await fetchAuditStats(currentAudit.id)
+            await fetchRecentItems(currentAudit.id)
             setPendingAsset(null)
             setObservation("")
         } catch (error: any) {
-            toast.error("Erro ao registrar: " + error.message)
+            console.error("Erro completo na confirmação:", error)
+            toast.error("Erro ao registrar: " + (error.message || "Erro desconhecido"))
         } finally {
             setIsSubmitting(false)
         }
@@ -193,7 +197,7 @@ export default function AuditPage() {
 
         const { error } = await supabase
             .from('auditorias')
-            .update({ status: 'concluido', finished_at: new Date().toISOString() })
+            .update({ status: 'concluido', finalizada_at: new Date().toISOString() })
             .eq('id', currentAudit.id)
 
         if (!error) {
