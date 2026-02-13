@@ -22,6 +22,8 @@ export default function AuditPage() {
     const [pendingAsset, setPendingAsset] = useState<any>(null)
     const [manualSearch, setManualSearch] = useState("")
     const [observation, setObservation] = useState("")
+    const [hasNC, setHasNC] = useState(false)
+    const [ncType, setNcType] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     useEffect(() => {
@@ -170,8 +172,10 @@ export default function AuditPage() {
                     auditoria_id: currentAudit.id,
                     ativo_id: pendingAsset.id,
                     verificado_por: profile?.id,
-                    status_conferido: 'OK',
-                    obs: observation || null
+                    status_conferido: hasNC ? 'DIVERGENTE' : 'OK',
+                    obs: observation || null,
+                    tem_nao_conformidade: hasNC,
+                    tipo_nao_conformidade: hasNC ? ncType : null
                 }, { onConflict: 'auditoria_id,ativo_id' })
 
             if (error) {
@@ -184,6 +188,8 @@ export default function AuditPage() {
             await fetchRecentItems(currentAudit.id)
             setPendingAsset(null)
             setObservation("")
+            setHasNC(false)
+            setNcType("")
         } catch (error: any) {
             console.error("Erro completo na confirmação:", error)
             toast.error("Erro ao registrar: " + (error.message || "Erro desconhecido"))
@@ -336,7 +342,20 @@ export default function AuditPage() {
                                                 <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
                                             </div>
                                         )}
-                                        <Badge variant="outline" className="text-[9px] font-bold">{item.status_conferido}</Badge>
+                                        {item.tem_nao_conformidade && (
+                                            <div className="h-6 w-6 rounded bg-rose-50 flex items-center justify-center" title={`NC: ${item.tipo_nao_conformidade}`}>
+                                                <ShieldAlert className="h-3.5 w-3.5 text-rose-500" />
+                                            </div>
+                                        )}
+                                        <Badge
+                                            variant="outline"
+                                            className={cn(
+                                                "text-[9px] font-bold",
+                                                item.tem_nao_conformidade ? "border-rose-200 text-rose-500 bg-rose-50" : "border-slate-100"
+                                            )}
+                                        >
+                                            {item.status_conferido}
+                                        </Badge>
                                     </div>
                                 ))
                             )}
@@ -378,6 +397,52 @@ export default function AuditPage() {
                             </div>
 
                             <div className="space-y-4">
+                                <div className="flex items-center justify-between p-4 bg-rose-50/50 rounded-3xl border border-rose-100">
+                                    <div className="flex items-center gap-3">
+                                        <div className={cn(
+                                            "h-10 w-10 rounded-xl flex items-center justify-center transition-colors",
+                                            hasNC ? "bg-rose-500 text-white shadow-lg shadow-rose-200" : "bg-white text-slate-400"
+                                        )}>
+                                            <ShieldAlert className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Auditoria</p>
+                                            <p className="text-sm font-bold text-slate-700">Não Conformidade?</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setHasNC(!hasNC)}
+                                        className={cn(
+                                            "w-12 h-6 rounded-full relative transition-colors duration-200",
+                                            hasNC ? "bg-rose-500" : "bg-slate-200"
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200",
+                                            hasNC ? "left-7" : "left-1"
+                                        )} />
+                                    </button>
+                                </div>
+
+                                {hasNC && (
+                                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1.5 block">Tipo de Divergência</label>
+                                        <select
+                                            value={ncType}
+                                            onChange={(e) => setNcType(e.target.value)}
+                                            className="w-full h-14 rounded-2xl bg-slate-50 border-slate-100 px-4 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-rose-500 outline-none appearance-none cursor-pointer"
+                                        >
+                                            <option value="">Selecione o problema...</option>
+                                            <option value="Troca de setor sem aviso">Troca de setor sem aviso</option>
+                                            <option value="Dano físico/Avaria">Dano físico/Avaria</option>
+                                            <option value="Equipamento sumido/não localizado">Equipamento sumido/não localizado</option>
+                                            <option value="Acessório faltando">Acessório faltando</option>
+                                            <option value="Responsável incorreto">Responsável incorreto</option>
+                                            <option value="Outros">Outros (Descrever em Obs)</option>
+                                        </select>
+                                    </div>
+                                )}
+
                                 <div>
                                     <label className="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1.5 block">Observações (Opcional)</label>
                                     <Input
