@@ -10,6 +10,8 @@ import { ErrorBoundary } from "@/components/error-boundary"
 import { UserProvider } from "@/contexts/user-context"
 import { Loader2 } from "lucide-react"
 
+import { CommandMenu } from "@/components/command-menu"
+
 export default function DashboardLayout({
     children,
 }: {
@@ -32,7 +34,7 @@ export default function DashboardLayout({
 
     if (loading) {
         return (
-            <div className="h-screen flex items-center justify-center bg-slate-50">
+            <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
                 <Loader2 className="h-10 w-10 text-primary animate-spin" />
             </div>
         )
@@ -42,7 +44,7 @@ export default function DashboardLayout({
 
     return (
         <UserProvider>
-            <div className="flex min-h-screen bg-slate-50/50">
+            <div className="flex min-h-screen bg-slate-50/50 dark:bg-slate-950/50">
                 <Sidebar />
                 <div className="flex-1 flex flex-col min-w-0">
                     <Header />
@@ -53,6 +55,7 @@ export default function DashboardLayout({
                     </main>
                 </div>
                 <AuthMonitor />
+                <CommandMenu />
             </div>
         </UserProvider>
     )

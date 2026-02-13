@@ -54,14 +54,14 @@ export function Sidebar() {
 
     const sidebarContent = (
         <div className={cn(
-            "h-full flex flex-col bg-white border-r border-slate-100 transition-all duration-300",
+            "h-full flex flex-col bg-white dark:bg-slate-950 border-r border-slate-100 dark:border-slate-800 transition-all duration-300",
             collapsed ? "w-[72px]" : "w-64"
         )}>
             {/* Logo */}
             <div className="px-5 py-6 flex items-center justify-between border-b border-slate-50 gap-4">
                 {!collapsed && (
                     <div className="pl-12 lg:pl-0">
-                        <h1 className="text-lg font-black text-slate-900 tracking-tight">Inventário</h1>
+                        <h1 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Inventário</h1>
                         <p className="text-[10px] font-bold text-primary uppercase tracking-widest">TI System</p>
                     </div>
                 )}
@@ -86,7 +86,7 @@ export function Sidebar() {
                                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
                                 isActive
                                     ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-700 dark:hover:text-slate-200"
                             )}
                             title={collapsed ? item.label : undefined}
                         >
