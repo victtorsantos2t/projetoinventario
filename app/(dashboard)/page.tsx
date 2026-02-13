@@ -245,15 +245,15 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Activity Feed */}
           <div className={cn(
-            "lg:col-span-2 bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden",
+            "lg:col-span-2 bg-white dark:bg-zinc-900/40 rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm overflow-hidden",
             isViewer && "hidden"
           )}>
-            <div className="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
+            <div className="px-6 py-5 border-b border-slate-50 dark:border-white/5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center">
                   <History className="h-5 w-5 text-primary" />
                 </div>
-                <h2 className="text-base font-bold text-slate-900">Atividade Recente</h2>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white">Atividade Recente</h2>
               </div>
               <button
                 onClick={() => router.push('/history')}
@@ -264,11 +264,11 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            <div className="divide-y divide-slate-50">
+            <div className="divide-y divide-slate-50 dark:divide-white/5">
               {loading ? (
                 [...Array(4)].map((_, i) => (
                   <div key={i} className="px-6 py-4 animate-pulse">
-                    <div className="h-5 bg-slate-100 rounded-lg w-3/4" />
+                    <div className="h-5 bg-slate-100 dark:bg-white/5 rounded-lg w-3/4" />
                   </div>
                 ))
               ) : historico.length === 0 ? (
@@ -277,13 +277,13 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 historico.map((item) => (
-                  <div key={item.id} className="px-6 py-4 flex items-center gap-4 hover:bg-slate-50/50 transition-colors">
-                    <div className="h-9 w-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
+                  <div key={item.id} className="px-6 py-4 flex items-center gap-4 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                    <div className="h-9 w-9 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 flex items-center justify-center shrink-0">
                       {getActionIcon(item.tipo_movimentacao)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-slate-700 truncate">
+                        <span className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">
                           {item.ativo?.nome || 'Evento de Sistema'}
                         </span>
                         <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-wider shrink-0">
@@ -305,46 +305,46 @@ export default function DashboardPage() {
             "space-y-5",
             isViewer && "hidden"
           )}>
-            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6">
-              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-5">Insights Rápidos</h3>
+            <div className="bg-white dark:bg-zinc-900/40 rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm p-6">
+              <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-5">Insights Rápidos</h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center">
+                    <div className="h-9 w-9 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
                       <Users className="h-4 w-4 text-blue-500" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-700">Colaboradores</p>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Colaboradores</p>
                       <p className="text-[10px] text-slate-400">No sistema</p>
                     </div>
                   </div>
-                  <span className="text-xl font-black text-slate-900">{extraStats.colaboradores}</span>
+                  <span className="text-xl font-black text-slate-900 dark:text-white">{extraStats.colaboradores}</span>
                 </div>
 
-                <div className="h-px bg-slate-50" />
+                <div className="h-px bg-slate-50 dark:bg-white/5" />
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center">
+                    <div className="h-9 w-9 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
                       <HardDrive className="h-4 w-4 text-emerald-500" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-700">Total de Ativos</p>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Total de Ativos</p>
                       <p className="text-[10px] text-slate-400">Cadastrados</p>
                     </div>
                   </div>
-                  <span className="text-xl font-black text-slate-900">{stats.total}</span>
+                  <span className="text-xl font-black text-slate-900 dark:text-white">{stats.total}</span>
                 </div>
 
-                <div className="h-px bg-slate-50" />
+                <div className="h-px bg-slate-50 dark:bg-white/5" />
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-amber-50 flex items-center justify-center">
+                    <div className="h-9 w-9 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">
                       <Clock className="h-4 w-4 text-amber-500" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-700">Última Atividade</p>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Última Atividade</p>
                       <p className="text-[10px] text-slate-400">
                         {historico[0] ? formatDate(historico[0].data_movimentacao) : 'Nenhuma'}
                       </p>

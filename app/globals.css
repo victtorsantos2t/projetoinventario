@@ -63,7 +63,8 @@
     --accent: 0 0% 9%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 100% 60%;
+    /* iOS System Red */
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 14.9%;

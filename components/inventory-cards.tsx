@@ -122,13 +122,13 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
                             {/* Info */}
                             <div className="px-5 pb-3 space-y-1">
                                 {ativo.setor && (
-                                    <p className="text-[11px] text-slate-400 truncate">
-                                        <span className="font-bold text-slate-500">Setor:</span> {ativo.setor}
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                                        <span className="font-bold text-slate-700 dark:text-slate-500">Setor:</span> {ativo.setor}
                                     </p>
                                 )}
                                 {ativo.colaborador && (
-                                    <p className="text-[11px] text-slate-400 truncate">
-                                        <span className="font-bold text-slate-500">Resp:</span> {ativo.colaborador}
+                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                                        <span className="font-bold text-slate-700 dark:text-slate-500">Resp:</span> {ativo.colaborador}
                                     </p>
                                 )}
 

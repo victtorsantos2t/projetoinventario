@@ -108,7 +108,7 @@ export function DashboardCards({ stats }: { stats: DashboardStats }) {
                 </div>
                 <button
                     onClick={() => router.push('/inventory?saude=Crítico')}
-                    className="bg-white text-rose-600 font-black text-xs uppercase tracking-widest px-6 py-3 rounded-xl border border-rose-100 hover:bg-rose-100 transition-all active:scale-95 shadow-sm"
+                    className="bg-white dark:bg-zinc-950 text-rose-600 dark:text-rose-400 font-black text-xs uppercase tracking-widest px-6 py-3 rounded-xl border border-rose-100 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all active:scale-95 shadow-sm"
                 >
                     Ver Ativos em Risco
                 </button>

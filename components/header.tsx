@@ -40,7 +40,7 @@ export function Header() {
 
                 <div
                     onClick={() => setShowProfile(true)}
-                    className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 pr-3 rounded-2xl transition-colors group"
+                    className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 p-1 pr-3 rounded-2xl transition-colors group"
                 >
                     <Avatar className="h-9 w-9 rounded-xl border border-primary/10 transition-transform group-hover:scale-105">
                         <AvatarImage src={profile?.avatar_url || ""} alt={profile?.full_name || "User"} className="object-cover" />
@@ -59,7 +59,11 @@ export function Header() {
 
                 <UserProfileModal open={showProfile} onClose={() => setShowProfile(false)} />
 
-                <button onClick={handleLogout} className="h-9 w-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Sair">
+                <button
+                    onClick={handleLogout}
+                    className="h-9 w-9 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/20 transition-colors"
+                    title="Sair"
+                >
                     <LogOut className="h-4 w-4" />
                 </button>
             </div>
