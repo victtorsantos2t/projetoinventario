@@ -14,6 +14,9 @@ import {
     ChevronLeft,
     Menu,
     FileText,
+    BarChart3,
+    AppWindow,
+    ShieldCheck,
 } from "lucide-react"
 import { useState } from "react"
 
@@ -28,8 +31,11 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
     { href: "/inventory", label: "Inventário", icon: Package },
+    { href: "/softwares", label: "Softwares", icon: AppWindow, technicianOnly: true },
     { href: "/history", label: "Movimentações", icon: History, technicianOnly: true },
     { href: "/reports", label: "Relatórios", icon: FileText, technicianOnly: true },
+    { href: "/analytics", label: "Analytics", icon: BarChart3, technicianOnly: true },
+    { href: "/audit", label: "Auditoria", icon: ShieldCheck, technicianOnly: true },
     { href: "/users", label: "Colaboradores", icon: Users, technicianOnly: true },
     { href: "/settings", label: "Configurações", icon: Settings, adminOnly: true },
     { href: "/help", label: "Ajuda", icon: HelpCircle },

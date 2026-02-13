@@ -297,14 +297,45 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
             )}
 
             {qrAsset && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl p-8 shadow-2xl text-center">
-                        <h3 className="font-bold text-slate-900 mb-4">{qrAsset.nome}</h3>
-                        <QRCodeGenerator value={`ASSET:${qrAsset.id}|SN:${qrAsset.serial}`} size={200} />
-                        <p className="text-xs text-slate-400 mt-3 font-mono">{qrAsset.serial}</p>
-                        <button onClick={() => setQrAsset(null)} className="mt-4 px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
-                            Fechar
-                        </button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl text-center max-w-xs w-full border border-slate-100 animate-in zoom-in-95 duration-300">
+                        <div className="mb-6">
+                            <h3 className="font-black text-xl text-slate-900 mb-1">{qrAsset.nome}</h3>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{qrAsset.tipo}</p>
+                        </div>
+
+                        <div className="flex justify-center mb-6">
+                            <div className="p-4 bg-slate-50 rounded-3xl border border-slate-100 shadow-inner">
+                                <QRCodeGenerator
+                                    value={`${window.location.origin}/p/${qrAsset.id}`}
+                                    size={200}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div className="bg-slate-50 py-3 px-4 rounded-xl border border-slate-100">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Patrimônio / Serial</p>
+                                <p className="text-xs font-mono font-bold text-slate-700">{qrAsset.patrimonio || 'S/P'} — {qrAsset.serial}</p>
+                            </div>
+
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setQrAsset(null)}
+                                    className="flex-1 px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest hover:bg-slate-100 rounded-xl transition-all active:scale-95"
+                                >
+                                    Fechar
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        window.open(`/print/label/${qrAsset.id}`, '_blank', 'width=400,height=300')
+                                    }}
+                                    className="flex-1 px-4 py-3 bg-indigo-600 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95"
+                                >
+                                    Imprimir
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
