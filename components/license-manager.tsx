@@ -202,12 +202,32 @@ export function LicenseManager({ softwareId }: LicenseManagerProps) {
                                 className="bg-white"
                             />
                         </div>
+                        <div>
+                            <label className="text-[10px] uppercase font-bold text-slate-400">Custo (R$)</label>
+                            <Input
+                                type="number"
+                                step="0.01"
+                                placeholder="0,00"
+                                value={form.custo}
+                                onChange={e => setForm({ ...form, custo: e.target.value })}
+                                className="bg-white"
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="text-[10px] uppercase font-bold text-slate-400">Fornecedor</label>
+                            <Input
+                                value={form.fornecedor}
+                                onChange={e => setForm({ ...form, fornecedor: e.target.value })}
+                                placeholder="Ex: Microsoft, Dell, Kalunga..."
+                                className="bg-white"
+                            />
+                        </div>
                         <div className="md:col-span-3">
                             <label className="text-[10px] uppercase font-bold text-slate-400">Observações</label>
                             <Input
                                 value={form.obs}
                                 onChange={e => setForm({ ...form, obs: e.target.value })}
-                                placeholder="Notas fiscais, fornecedor..."
+                                placeholder="Notas fiscais, links de download..."
                                 className="bg-white"
                             />
                         </div>
@@ -254,13 +274,25 @@ export function LicenseManager({ softwareId }: LicenseManagerProps) {
                                             <Monitor className="h-3.5 w-3.5 text-slate-500" />
                                             {lic.qtd_adquirida} Instalações
                                         </span>
+                                        {lic.custo && (
+                                            <span className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-md text-emerald-700 font-black border border-emerald-100">
+                                                <ShoppingCart className="h-3.5 w-3.5 text-emerald-500" />
+                                                R$ {Number(lic.custo).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                            </span>
+                                        )}
+                                        {lic.fornecedor && (
+                                            <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-md text-slate-600 font-bold border border-slate-200">
+                                                <ShoppingCart className="h-3.5 w-3.5 text-slate-400" />
+                                                {lic.fornecedor}
+                                            </span>
+                                        )}
                                         {lic.data_compra && (
                                             <span className="flex items-center gap-1.5 px-2 py-1">
                                                 <Calendar className="h-3.5 w-3.5" />
                                                 Compra: {new Date(lic.data_compra).toLocaleDateString()}
                                             </span>
                                         )}
-                                        {lic.obs && <span className="italic truncate max-w-[200px] px-2 py-1 border-l border-slate-200">{lic.obs}</span>}
+                                        {lic.obs && <span className="italic truncate max-w-[200px] px-2 py-1 border-l border-slate-200 text-[10px]">{lic.obs}</span>}
                                     </div>
                                 </div>
                                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

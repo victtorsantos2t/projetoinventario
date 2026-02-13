@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabaseClient"
 import { Software } from "@/types/softwares"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
-import { X, Save, Layers, Package, Plus, Trash2, Key, Monitor } from "lucide-react"
+import { X, Save, Layers, Package, Plus, Trash2, Key, Monitor, ShoppingCart } from "lucide-react"
 import { LicenseManager } from "@/components/license-manager"
 import { LicenseActivations } from "@/components/license-activations"
 
@@ -253,6 +253,18 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                                 />
                             </div>
 
+                            {!isCreate && software && (
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-slate-500 ml-1">Valor Total em Licenças</label>
+                                    <div className="h-10 px-3 bg-emerald-50 border border-emerald-100 rounded-md flex items-center gap-2">
+                                        <ShoppingCart className="h-4 w-4 text-emerald-500" />
+                                        <span className="text-sm font-black text-emerald-700">
+                                            <SoftwareTotalCost softwareId={software.id} />
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="space-y-1.5 md:col-span-2">
                                 <label className="text-xs font-bold text-slate-500 ml-1">Descrição</label>
                                 <textarea
@@ -311,4 +323,26 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
             </div>
         </div>
     )
+}
+
+function SoftwareTotalCost({ softwareId }: { softwareId: string }) {
+    const [total, setTotal] = useState<number | null>(null)
+
+    useEffect(() => {
+        const fetchTotal = async () => {
+            const { data, error } = await supabase
+                .from('licencas')
+                .select('custo')
+                .eq('software_id', softwareId)
+
+            if (!error && data) {
+                const sum = data.reduce((acc, curr) => acc + (Number(curr.custo) || 0), 0)
+                setTotal(sum)
+            }
+        }
+        fetchTotal()
+    }, [softwareId])
+
+    if (total === null) return "Calculando..."
+    return `R$ ${total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
 }
