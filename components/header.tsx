@@ -9,7 +9,6 @@ import { useState } from "react"
 import { UserProfileModal } from "./user-profile-modal"
 import { NotificationsPopover } from "./notifications-popover"
 
-import { ThemeToggle } from "./theme-toggle"
 
 export function Header() {
     const { profile } = useUser()
@@ -33,7 +32,6 @@ export function Header() {
             </div>
 
             <div className="flex items-center gap-2">
-                <ThemeToggle />
                 <NotificationsPopover />
 
                 <div className="h-6 w-px bg-slate-100" />

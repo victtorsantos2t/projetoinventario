@@ -38,39 +38,6 @@
     /* Rounded badges/cards */
   }
 
-  .dark {
-    --background: 0 0% 0%;
-    /* Pure Black */
-    --foreground: 0 0% 100%;
-
-    --card: 0 0% 3%;
-    /* Near Black for cards */
-    --card-foreground: 0 0% 100%;
-
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 100%;
-
-    --primary: 221.2 83.2% 53.3%;
-    /* Keep Indigo but vibrant */
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 0 0% 9%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 63.9%;
-
-    --accent: 0 0% 9%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 100% 60%;
-    /* iOS System Red */
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 221.2 83.2% 53.3%;
-  }
 }
 
 @layer base {
