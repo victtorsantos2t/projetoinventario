@@ -56,6 +56,7 @@ export default function LoginPage() {
                 toast.success("Bem-vindo de volta!", {
                     description: "Login realizado com sucesso."
                 })
+                router.refresh()
                 router.push("/")
             }
         } catch {
