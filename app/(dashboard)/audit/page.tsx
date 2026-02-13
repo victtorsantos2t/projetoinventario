@@ -80,29 +80,40 @@ export default function AuditPage() {
         }
     }
 
-    const handleScanResult = async (assetId: string) => {
+    const handleScanResult = async (scannedValue: string) => {
         if (!currentAudit) return
 
-        // 1. Verificar se ativo existe
-        const { data: asset, error: assetError } = await supabase
-            .from('ativos')
-            .select('*')
-            .eq('id', assetId)
-            .single()
+        let idToSearch = scannedValue
 
-        if (assetError || !asset) {
-            // Tentar por serial se não for UUID
-            const { data: assetBySerial } = await supabase
-                .from('ativos')
-                .select('*')
-                .eq('serial', assetId)
-                .single()
+        // 1. Extrair ID se for uma URL do sistema
+        if (scannedValue.includes('/p/')) {
+            idToSearch = scannedValue.split('/p/').pop() || scannedValue
+        }
 
-            if (!assetBySerial) {
-                toast.error("Ativo não encontrado")
-                return
-            }
-            assetId = assetBySerial.id
+        // 2. Buscar Ativo (Ordem: ID -> Serial -> Patrimônio)
+        let assetId: string | null = null
+
+        // Tenta por ID (UUID)
+        if (idToSearch.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+            const { data } = await supabase.from('ativos').select('id').eq('id', idToSearch).maybeSingle()
+            if (data) assetId = data.id
+        }
+
+        // Tenta por Serial
+        if (!assetId) {
+            const { data } = await supabase.from('ativos').select('id').eq('serial', scannedValue).maybeSingle()
+            if (data) assetId = data.id
+        }
+
+        // Tenta por Patrimônio
+        if (!assetId) {
+            const { data } = await supabase.from('ativos').select('id').eq('patrimonio', scannedValue).maybeSingle()
+            if (data) assetId = data.id
+        }
+
+        if (!assetId) {
+            toast.error("Ativo não encontrado")
+            return
         }
 
         // 2. Registrar item na auditoria
