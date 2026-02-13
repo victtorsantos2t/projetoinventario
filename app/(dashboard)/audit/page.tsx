@@ -1,4 +1,5 @@
 "use client"
+// HMR Force Update: 2026-02-13 14:05
 
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabaseClient"
@@ -82,7 +83,7 @@ export default function AuditPage() {
 
         if (data) {
             setCurrentAudit(data)
-            fetchAuditStats(data.id)
+            fetchAuditStats(data.id, data)
             fetchRecentItems(data.id)
         }
     }
@@ -111,14 +112,15 @@ export default function AuditPage() {
         }
     }
 
-    const fetchAuditStats = async (auditId: string) => {
+    const fetchAuditStats = async (auditId: string, auditObject?: any) => {
+        const audit = auditObject || currentAudit
         let query = supabase
             .from('ativos')
             .select('*', { count: 'exact', head: true })
             .neq('status', 'Baixado')
 
-        if (currentAudit?.setor_alvo) {
-            query = query.eq('setor', currentAudit.setor_alvo)
+        if (audit?.setor_alvo) {
+            query = query.eq('setor', audit.setor_alvo)
         }
 
         const { count: total } = await query
@@ -161,7 +163,8 @@ export default function AuditPage() {
 
         if (data) {
             setCurrentAudit(data)
-            fetchAuditStats(data.id)
+            fetchAuditStats(data.id, data)
+            fetchRecentItems(data.id)
             toast.success("Nova auditoria iniciada")
         }
     }

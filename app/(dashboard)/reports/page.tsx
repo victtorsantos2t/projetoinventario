@@ -57,6 +57,17 @@ export default function ReportsPage() {
     const [auditorias, setAuditorias] = useState<any[]>([])
     const [selectedAudit, setSelectedAudit] = useState("")
 
+    useEffect(() => {
+        // Se o ciclo selecionado não pertence mais ao filtro (setor), limpa ele
+        if (selectedAudit) {
+            const stillMatches = auditorias.find(a =>
+                a.id === selectedAudit &&
+                (!selectedSetor ? !a.setor_alvo : a.setor_alvo === selectedSetor)
+            )
+            if (!stillMatches) setSelectedAudit("")
+        }
+    }, [selectedSetor, auditorias])
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -692,11 +703,14 @@ export default function ReportsPage() {
                                 className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 px-3 focus:ring-2 focus:ring-indigo-200 outline-none appearance-none cursor-pointer"
                             >
                                 <option value="">Ciclo...</option>
-                                {auditorias.map(a => (
-                                    <option key={a.id} value={a.id}>
-                                        {new Date(a.created_at).toLocaleDateString('pt-BR')}
-                                    </option>
-                                ))}
+                                {auditorias
+                                    .filter(a => selectedSetor ? a.setor_alvo === selectedSetor : !a.setor_alvo)
+                                    .map(a => (
+                                        <option key={a.id} value={a.id}>
+                                            {a.setor_alvo ? `[${a.setor_alvo}] ` : '[Geral] '}
+                                            {new Date(a.created_at).toLocaleDateString('pt-BR')}
+                                        </option>
+                                    ))}
                             </select>
                         </div>
                         <div>
