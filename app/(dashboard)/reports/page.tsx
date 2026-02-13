@@ -463,7 +463,7 @@ export default function ReportsPage() {
         }
         setGenerating('audit')
         try {
-            const { data: items, error } = await supabase
+            let query = supabase
                 .from('auditoria_itens')
                 .select(`
                     *,
@@ -471,9 +471,20 @@ export default function ReportsPage() {
                     usuario:profiles(full_name)
                 `)
                 .eq('auditoria_id', selectedAudit)
-                .order('created_at', { ascending: true })
 
+            const { data: allItems, error } = await query
             if (error) throw error
+
+            // Filtro por setor individualizado
+            const items = selectedSetor
+                ? allItems.filter(item => (item.ativo as any)?.setor === selectedSetor)
+                : allItems
+
+            if (items.length === 0) {
+                toast.error("Nenhum item encontrado para este setor nesta auditoria")
+                setGenerating(null)
+                return
+            }
 
             const doc = new jsPDF()
             const auditDetails = auditorias.find(a => a.id === selectedAudit)
@@ -503,8 +514,9 @@ export default function ReportsPage() {
                 margin: { top: 60, bottom: 25 },
             })
 
-            addModernBranding(doc, `Relatório de Auditoria — Ciclo ${auditDate}`, items.length)
-            doc.save(`relatorio_auditoria_${auditDate.replace(/\//g, '-')}.pdf`)
+            const sectorSuffix = selectedSetor ? ` — Setor: ${selectedSetor}` : ""
+            addModernBranding(doc, `Relatório de Auditoria — Ciclo ${auditDate}${sectorSuffix}`, items.length)
+            doc.save(`relatorio_auditoria_${auditDate.replace(/\//g, '-')}${selectedSetor ? '_' + selectedSetor : ''}.pdf`)
             toast.success("Relatório de auditoria gerado!")
         } catch (error) {
             console.error(error)
@@ -669,22 +681,39 @@ export default function ReportsPage() {
                     onGenerate={generateAuditReport}
                     loading={generating === 'audit'}
                 >
-                    <div className="mt-4">
-                        <label className="block text-[10px] uppercase font-black text-indigo-600 mb-1.5 tracking-widest px-1">
-                            Selecionar Ciclo
-                        </label>
-                        <select
-                            value={selectedAudit}
-                            onChange={(e) => setSelectedAudit(e.target.value)}
-                            className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 px-3 focus:ring-2 focus:ring-indigo-200 outline-none appearance-none cursor-pointer"
-                        >
-                            <option value="">Selecione um ciclo...</option>
-                            {auditorias.map(a => (
-                                <option key={a.id} value={a.id}>
-                                    Auditoria de {new Date(a.created_at).toLocaleDateString('pt-BR')} ({a.status})
-                                </option>
-                            ))}
-                        </select>
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                        <div>
+                            <label className="block text-[10px] uppercase font-black text-indigo-600 mb-1.5 tracking-widest px-1">
+                                Ciclo
+                            </label>
+                            <select
+                                value={selectedAudit}
+                                onChange={(e) => setSelectedAudit(e.target.value)}
+                                className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 px-3 focus:ring-2 focus:ring-indigo-200 outline-none appearance-none cursor-pointer"
+                            >
+                                <option value="">Ciclo...</option>
+                                {auditorias.map(a => (
+                                    <option key={a.id} value={a.id}>
+                                        {new Date(a.created_at).toLocaleDateString('pt-BR')}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-[10px] uppercase font-black text-indigo-600 mb-1.5 tracking-widest px-1">
+                                Setor
+                            </label>
+                            <select
+                                value={selectedSetor}
+                                onChange={(e) => setSelectedSetor(e.target.value)}
+                                className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 px-3 focus:ring-2 focus:ring-indigo-200 outline-none appearance-none cursor-pointer"
+                            >
+                                <option value="">Todos</option>
+                                {setores.map(s => (
+                                    <option key={s.id} value={s.nome}>{s.nome}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </ReportCard>
 
