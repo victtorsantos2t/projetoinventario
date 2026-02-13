@@ -101,11 +101,11 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
                                     </Badge>
                                 </div>
 
-                                <h3 className="font-bold text-slate-900 truncate mb-0.5" title={ativo.nome}>{ativo.nome}</h3>
+                                <h3 className="font-bold text-slate-900 dark:text-white truncate mb-0.5" title={ativo.nome}>{ativo.nome}</h3>
                                 <div className="flex items-center justify-between">
-                                    <p className="text-xs text-slate-400 font-mono truncate">{ativo.serial}</p>
+                                    <p className="text-xs text-slate-400 dark:text-slate-400 font-mono truncate">{ativo.serial}</p>
                                     {ativo.condicao === 'Semi-novo' && (
-                                        <Badge variant="secondary" className="text-[9px] bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-100 h-4">Semi-novo</Badge>
+                                        <Badge variant="secondary" className="text-[9px] bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-500/20 hover:bg-amber-100 h-4">Semi-novo</Badge>
                                     )}
                                 </div>
 
