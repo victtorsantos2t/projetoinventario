@@ -42,6 +42,13 @@ export interface Ativo {
         full_name: string | null
         avatar_url: string | null
     }
+    saude_info?: {
+        status_saude: 'Excelente' | 'Alerta' | 'Crítico'
+        garantia_vencendo: boolean
+        garantia_vencida: boolean
+        count_manutencao: number
+        ultima_manutencao: string | null
+    }
 }
 
 export interface Movimentacao {

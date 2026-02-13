@@ -29,9 +29,9 @@ interface InventoryToolbarProps {
 }
 
 const SAUDE_OPTIONS = [
-    { label: 'Saudável (>70%)', value: 'healthy' },
-    { label: 'Alerta (30-70%)', value: 'warning' },
-    { label: 'Crítico (<30%)', value: 'critical' },
+    { label: 'Excelente (0-1 manut.)', value: 'Excelente' },
+    { label: 'Alerta (2-4 manut.)', value: 'Alerta' },
+    { label: 'Crítico (5+ manut.)', value: 'Crítico' },
 ]
 
 export function InventoryToolbar({

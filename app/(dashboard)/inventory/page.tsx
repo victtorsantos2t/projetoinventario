@@ -46,6 +46,13 @@ function InventoryContent() {
                 .from('ativos')
                 .select(`
                     *,
+                    saude_info:v_ativos_saude!id (
+                        status_saude,
+                        garantia_vencendo,
+                        garantia_vencida,
+                        count_manutencao,
+                        ultima_manutencao
+                    ),
                     dono:profiles (
                         full_name,
                         avatar_url
@@ -87,14 +94,7 @@ function InventoryContent() {
                     if (filterTipo) query = query.eq('tipo', filterTipo)
 
                     if (filterSaude) {
-                        if (filterSaude === 'healthy') {
-                            // Considera null como saudável (100%)
-                            query = query.or('saude.gt.70,saude.is.null')
-                        } else if (filterSaude === 'warning') {
-                            query = query.lte('saude', 70).gt('saude', 30)
-                        } else if (filterSaude === 'critical') {
-                            query = query.lte('saude', 30)
-                        }
+                        query = query.eq('v_ativos_saude.status_saude', filterSaude)
                     }
 
                     if (debouncedSearch) {

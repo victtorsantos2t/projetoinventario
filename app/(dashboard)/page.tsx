@@ -20,12 +20,13 @@ interface DashboardStats {
   emUso: number
   manutencao: number
   disponivel: number
+  riscoCritico: number
 }
 
 export default function DashboardPage() {
   const { profile, role } = useUser()
   const router = useRouter()
-  const [stats, setStats] = useState<DashboardStats>({ total: 0, emUso: 0, manutencao: 0, disponivel: 0 })
+  const [stats, setStats] = useState<DashboardStats>({ total: 0, emUso: 0, manutencao: 0, disponivel: 0, riscoCritico: 0 })
   const [historico, setHistorico] = useState<Movimentacao[]>([])
   const [extraStats, setExtraStats] = useState({ colaboradores: 0, tipos: 0 })
   const [loading, setLoading] = useState(true)
@@ -57,8 +58,15 @@ export default function DashboardPage() {
           else if (a.status === 'Manutenção') acc.manutencao++
           else if (a.status === 'Disponível') acc.disponivel++
           return acc
-        }, { total: 0, emUso: 0, manutencao: 0, disponivel: 0 })
+        }, { total: 0, emUso: 0, manutencao: 0, disponivel: 0, riscoCritico: 0 })
 
+        // Fetch risk count separately for visual prominence
+        const { count: riskCount } = await supabase
+          .from('v_ativos_saude')
+          .select('*', { count: 'exact', head: true })
+          .eq('status_saude', 'Crítico')
+
+        counts.riscoCritico = riskCount || 0
         setStats(counts)
 
         // Unique types from same data

@@ -1,7 +1,10 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { Activity, Laptop, Wrench, Package, Box } from "lucide-react"
+import {
+    Activity, Laptop, Wrench, Package, Box, Monitor, Smartphone, Printer, Cpu,
+    History, AlertCircle, ShieldCheck, HeartPulse
+} from "lucide-react"
 import { useRouter } from "next/navigation"
 
 interface DashboardStats {
@@ -9,6 +12,7 @@ interface DashboardStats {
     emUso: number
     manutencao: number
     disponivel: number
+    riscoCritico?: number
 }
 
 export function DashboardCards({ stats }: { stats: DashboardStats }) {
@@ -78,6 +82,24 @@ export function DashboardCards({ stats }: { stats: DashboardStats }) {
                     </div>
                 </div>
             ))}
+            {/* Alerta de Risco Crítico (NOVO FASE 2) */}
+            <div className="md:col-span-2 lg:col-span-4 bg-rose-50 border border-rose-100 rounded-[2rem] p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 animate-pulse">
+                <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-2xl bg-rose-500 shadow-lg shadow-rose-200 flex items-center justify-center shrink-0">
+                        <HeartPulse className="h-8 w-8 text-white" />
+                    </div>
+                    <div>
+                        <h3 className="text-rose-900 font-black text-xl leading-tight">Gestão de Risco</h3>
+                        <p className="text-rose-600 font-bold text-sm">Detectamos {stats.riscoCritico || 0} ativos com alto índice de falha.</p>
+                    </div>
+                </div>
+                <button
+                    onClick={() => router.push('/inventory?saude=Crítico')}
+                    className="bg-white text-rose-600 font-black text-xs uppercase tracking-widest px-6 py-3 rounded-xl border border-rose-100 hover:bg-rose-100 transition-all active:scale-95 shadow-sm"
+                >
+                    Ver Ativos em Risco
+                </button>
+            </div>
         </div>
     )
 }

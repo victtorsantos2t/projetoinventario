@@ -12,7 +12,8 @@ import {
     Edit2, Trash2, QrCode, X, History,
     Monitor, Cpu, Laptop, Printer, Smartphone,
     Radio, Server, Tablet, Phone, Wifi, HelpCircle, Hash,
-    Clock, AlertTriangle, Timer, Activity, Heart, ShieldCheck
+    Clock, AlertTriangle, Timer, Activity, Heart, ShieldCheck,
+    Stethoscope, ShieldAlert, ShieldClose
 } from "lucide-react"
 import { useUser } from "@/contexts/user-context"
 import { cn } from "@/lib/utils"
@@ -189,32 +190,58 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
                                                 </div>
                                             </div>
 
-                                            {/* Health display on card - Moved to bottom */}
+                                            {/* Server-side Health Badge (FASE 2) */}
                                             <div className="mt-3 pt-3 border-t border-slate-50">
-                                                <div className="flex items-center justify-between mb-1.5">
+                                                <div className="flex items-center justify-between mb-2">
                                                     <div className="flex items-center gap-1.5">
-                                                        <Heart className={cn(
-                                                            "h-3 w-3 fill-current",
-                                                            (ativo.saude ?? 100) > 70 ? "text-emerald-500" :
-                                                                (ativo.saude ?? 100) > 30 ? "text-amber-500" : "text-red-500"
+                                                        <Stethoscope className={cn(
+                                                            "h-3.5 w-3.5",
+                                                            ativo.saude_info?.status_saude === 'Excelente' ? "text-emerald-500" :
+                                                                ativo.saude_info?.status_saude === 'Alerta' ? "text-amber-500" : "text-rose-500"
                                                         )} />
-                                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Saúde do Equipamento</span>
+                                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estado de Saúde</span>
                                                     </div>
-                                                    <span className={cn(
-                                                        "text-[10px] font-black",
-                                                        (ativo.saude ?? 100) > 70 ? "text-emerald-600" :
-                                                            (ativo.saude ?? 100) > 30 ? "text-amber-600" : "text-red-600"
-                                                    )}>{ativo.saude ?? 100}%</span>
+                                                    <Badge className={cn(
+                                                        "text-[9px] font-black uppercase px-2 py-0 h-5",
+                                                        ativo.saude_info?.status_saude === 'Excelente' ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
+                                                            ativo.saude_info?.status_saude === 'Alerta' ? "bg-amber-50 text-amber-700 border-amber-100" : "bg-rose-50 text-rose-700 border-rose-100"
+                                                    )}>
+                                                        {ativo.saude_info?.status_saude || 'N/A'}
+                                                    </Badge>
                                                 </div>
-                                                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                                    <div
-                                                        className={cn(
-                                                            "h-full rounded-full shadow-sm transition-all duration-700 ease-out",
-                                                            (ativo.saude ?? 100) > 70 ? "bg-emerald-500" :
-                                                                (ativo.saude ?? 100) > 30 ? "bg-amber-500" : "bg-red-500"
+
+                                                {/* Warranty Alert (FASE 2) */}
+                                                {(ativo.saude_info?.garantia_vencendo || ativo.saude_info?.garantia_vencida) && (
+                                                    <div className={cn(
+                                                        "flex items-center gap-2 p-2 rounded-xl border mt-2",
+                                                        ativo.saude_info?.garantia_vencida
+                                                            ? "bg-slate-50 border-slate-200"
+                                                            : "bg-orange-50 border-orange-100 animate-pulse"
+                                                    )}>
+                                                        {ativo.saude_info?.garantia_vencida ? (
+                                                            <>
+                                                                <ShieldAlert className="h-3 w-3 text-slate-400" />
+                                                                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Garantia Vencida</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Timer className="h-3 w-3 text-orange-500" />
+                                                                <span className="text-[9px] font-bold text-orange-600 uppercase tracking-tighter">Garantia Vencendo</span>
+                                                            </>
                                                         )}
-                                                        style={{ width: `${ativo.saude ?? 100}%` }}
-                                                    />
+                                                    </div>
+                                                )}
+
+                                                <div className="flex items-center justify-between mt-2 px-0.5">
+                                                    <div className="flex items-center gap-1 text-[9px] font-medium text-slate-400">
+                                                        <History className="h-2.5 w-2.5" />
+                                                        <span>{ativo.saude_info?.count_manutencao || 0} Manutenções</span>
+                                                    </div>
+                                                    {ativo.saude_info?.ultima_manutencao && (
+                                                        <span className="text-[9px] font-medium text-slate-300">
+                                                            Última: {new Date(ativo.saude_info.ultima_manutencao).toLocaleDateString()}
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
                                         </>
