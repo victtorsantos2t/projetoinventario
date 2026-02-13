@@ -54,18 +54,21 @@ export async function middleware(request: NextRequest) {
         }
     )
 
-    const { data: { session } } = await supabase.auth.getSession()
+    // IMPORTANTE: getUser() é mais seguro que getSession() no middleware
+    const { data: { user } } = await supabase.auth.getUser()
 
-    // Se não houver sessão e o usuário estiver tentando acessar uma rota protegida
+    console.log(`[Middleware] Path: ${request.nextUrl.pathname} | User: ${user ? user.email : 'None'}`)
+
     const isAuthPage = request.nextUrl.pathname.startsWith('/login')
     const isPublicPage = isAuthPage || request.nextUrl.pathname.startsWith('/_next') || request.nextUrl.pathname.startsWith('/favicon.ico')
 
-    if (!session && !isPublicPage) {
+    // Se NÃO estiver logado e NÃO for página pública -> Redireciona para Login
+    if (!user && !isPublicPage) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // Se houver sessão e o usuário tentar acessar a página de login
-    if (session && isAuthPage) {
+    // Se ESTIVER logado e tentar acessar Login -> Redireciona para Home
+    if (user && isAuthPage) {
         return NextResponse.redirect(new URL('/', request.url))
     }
 
@@ -74,13 +77,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - api (API routes)
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         */
         '/((?!api|_next/static|_next/image|favicon.ico).*)',
     ],
 }
