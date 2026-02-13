@@ -61,14 +61,14 @@ export function CommandMenu() {
     if (!open) return null
 
     return (
-        <div className="fixed inset-0 z-[100] bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-300 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md animate-in fade-in duration-300 flex items-center justify-center p-4">
             <Command
-                className="w-full max-w-xl bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden"
+                className="w-full max-w-xl bg-white dark:bg-zinc-950 rounded-[2rem] shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden"
                 onKeyDown={(e) => {
                     if (e.key === "Escape") setOpen(false)
                 }}
             >
-                <div className="flex items-center border-b border-slate-100 dark:border-slate-800 px-4 h-14">
+                <div className="flex items-center border-b border-slate-100 dark:border-white/5 px-4 h-14">
                     <Search className="h-5 w-5 text-slate-400 mr-3" />
                     <Command.Input
                         value={search}
@@ -76,7 +76,7 @@ export function CommandMenu() {
                         placeholder="O que você está procurando?"
                         className="flex-1 bg-transparent border-0 outline-none text-slate-700 dark:text-slate-200 placeholder:text-slate-400 text-sm"
                     />
-                    <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-1.5 font-mono text-[10px] font-medium text-slate-500 opacity-100 sm:flex">
+                    <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-1.5 font-mono text-[10px] font-medium text-slate-500 opacity-100 sm:flex">
                         ESC
                     </kbd>
                 </div>
@@ -149,10 +149,10 @@ function Item({ icon: Icon, label, subLabel, onClick }: any) {
     return (
         <Command.Item
             onSelect={onClick}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 aria-selected:bg-slate-50 dark:aria-selected:bg-slate-800 transition-colors group"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 aria-selected:bg-slate-50 dark:aria-selected:bg-white/5 transition-colors group"
         >
-            <div className="h-8 w-8 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                <Icon className="h-4 w-4 text-slate-500 group-hover:text-primary transition-colors" />
+            <div className="h-8 w-8 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                <Icon className="h-4 w-4 text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors" />
             </div>
             <div className="flex flex-col">
                 <span className="text-sm font-bold text-slate-700 dark:text-slate-200 leading-tight">{label}</span>
