@@ -74,18 +74,18 @@ export function DashboardCards({ stats }: { stats: DashboardStats }) {
                     <div
                         key={card.title}
                         onClick={() => router.push(card.href)}
-                        className="bg-white rounded-[2rem] p-6 lg:p-8 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 group cursor-pointer active:scale-95"
+                        className="bg-white dark:bg-zinc-900/40 rounded-[2rem] p-6 lg:p-8 border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-white/5 transition-all duration-500 group cursor-pointer active:scale-95"
                     >
                         <div className="flex items-center justify-between mb-6">
-                            <div className={`h-14 w-14 rounded-2xl flex items-center justify-center ${card.bg} group-hover:scale-110 transition-transform`}>
-                                <card.icon className={`h-7 w-7 ${card.color}`} />
+                            <div className={`h-14 w-14 rounded-2xl flex items-center justify-center ${card.bg} dark:bg-white/5 group-hover:scale-110 transition-transform`}>
+                                <card.icon className={`h-7 w-7 ${card.color} dark:text-white`} />
                             </div>
                         </div>
                         <div>
-                            <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">{card.title}</p>
+                            <p className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">{card.title}</p>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-3xl lg:text-4xl font-black text-slate-900">{card.value}</span>
-                                <span className="text-xs font-bold text-slate-300">unids</span>
+                                <span className="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white">{card.value}</span>
+                                <span className="text-xs font-bold text-slate-300 dark:text-slate-600">unids</span>
                             </div>
                             <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-tighter">
                                 {card.description}
@@ -96,14 +96,14 @@ export function DashboardCards({ stats }: { stats: DashboardStats }) {
             </div>
 
             {/* Alerta de Risco Crítico - Largura Total */}
-            <div className="bg-rose-50 border border-rose-100 rounded-[2rem] p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
+            <div className="bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 rounded-[2rem] p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 mt-8">
                 <div className="flex items-center gap-4">
                     <div className="h-14 w-14 rounded-2xl bg-rose-500 shadow-lg shadow-rose-200 flex items-center justify-center shrink-0">
                         <HeartPulse className="h-8 w-8 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-rose-900 font-black text-xl leading-tight">Gestão de Risco</h3>
-                        <p className="text-rose-600 font-bold text-sm">Detectamos {stats.riscoCritico || 0} ativos com alto índice de falha.</p>
+                        <h3 className="text-rose-900 dark:text-rose-200 font-black text-xl leading-tight">Gestão de Risco</h3>
+                        <p className="text-rose-600 dark:text-rose-400 font-bold text-sm">Detectamos {stats.riscoCritico || 0} ativos com alto índice de falha.</p>
                     </div>
                 </div>
                 <button

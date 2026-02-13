@@ -56,7 +56,7 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
         return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {[...Array(8)].map((_, i) => (
-                    <div key={i} className="h-56 rounded-2xl bg-white border border-slate-100 shadow-sm animate-pulse" />
+                    <div key={i} className="h-56 rounded-2xl bg-white dark:bg-zinc-900/40 border border-slate-100 dark:border-white/5 shadow-sm animate-pulse" />
                 ))}
             </div>
         )
@@ -84,16 +84,16 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
                             key={ativo.id}
                             onClick={() => setViewAsset(ativo)}
                             className={cn(
-                                "group bg-white rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer",
+                                "group bg-white dark:bg-zinc-900/40 rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer",
                                 isHighlighted
                                     ? "border-primary shadow-xl shadow-primary/20 ring-2 ring-primary/20 scale-[1.02] z-10"
-                                    : "border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50"
+                                    : "border-slate-100 dark:border-white/5 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-white/5"
                             )}
                         >
                             {/* Header */}
                             <div className="p-5 pb-3">
                                 <div className="flex items-start justify-between mb-3">
-                                    <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-primary group-hover:bg-primary/5 transition-colors">
+                                    <div className="h-10 w-10 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:text-primary group-hover:bg-primary/5 transition-colors">
                                         {getTypeIcon(ativo.tipo)}
                                     </div>
                                     <Badge variant="outline" className={`text-[10px] font-bold uppercase rounded-full px-2 py-0.5 ${statusClass}`}>
@@ -179,7 +179,7 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
                                                         {isDepreciated ? 'BAIXAR ITEM' : `${monthsRemaining} MESES`}
                                                     </span>
                                                 </div>
-                                                <div className="h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-50 shadow-inner">
+                                                <div className="h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden border border-slate-50 dark:border-white/5 shadow-inner">
                                                     <div
                                                         className={`h-full transition-all duration-1000 rounded-full shadow-sm ${isDepreciated ? 'bg-rose-500' :
                                                             isCritical ? 'bg-orange-500' :
@@ -256,9 +256,9 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
                             </div>
 
                             {/* Actions */}
-                            <div className="flex items-center border-t border-slate-50 divide-x divide-slate-50 relative z-20" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center border-t border-slate-50 dark:border-white/5 divide-x divide-slate-50 dark:divide-white/5 relative z-20" onClick={(e) => e.stopPropagation()}>
                                 {!isViewer && (
-                                    <button onClick={() => setEditAsset(ativo)} className="flex-1 py-3 text-slate-400 hover:text-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-1.5" title="Editar">
+                                    <button onClick={() => setEditAsset(ativo)} className="flex-1 py-3 text-slate-400 dark:text-slate-500 hover:text-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-1.5" title="Editar">
                                         <Edit2 className="h-4 w-4 shrink-0" />
                                         <span className="text-[10px] font-bold hidden sm:block">Editar</span>
                                     </button>
@@ -298,10 +298,10 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
 
             {qrAsset && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl text-center max-w-xs w-full border border-slate-100 animate-in zoom-in-95 duration-300">
+                    <div className="bg-white dark:bg-zinc-950 rounded-[2.5rem] p-8 shadow-2xl text-center max-w-xs w-full border border-slate-100 dark:border-white/10 animate-in zoom-in-95 duration-300">
                         <div className="mb-6">
-                            <h3 className="font-black text-xl text-slate-900 mb-1">{qrAsset.nome}</h3>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{qrAsset.tipo}</p>
+                            <h3 className="font-black text-xl text-slate-900 dark:text-white mb-1">{qrAsset.nome}</h3>
+                            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{qrAsset.tipo}</p>
                         </div>
 
                         <div className="flex justify-center mb-6">
