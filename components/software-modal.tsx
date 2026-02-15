@@ -5,9 +5,17 @@ import { supabase } from "@/lib/supabaseClient"
 import { Software } from "@/types/softwares"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
-import { X, Save, Layers, Package, Plus, Trash2, Key, Monitor, ShoppingCart } from "lucide-react"
+import { X, Save, Layers, Package, Plus, Trash2, Key, Monitor, ShoppingCart, Loader2 } from "lucide-react"
 import { LicenseManager } from "@/components/license-manager"
 import { LicenseActivations } from "@/components/license-activations"
+import { PasswordConfirmModal } from "./password-confirm-modal"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog"
 
 
 
@@ -35,6 +43,11 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
     const isCreate = mode === 'create'
     const [loading, setLoading] = useState(false)
     const [activeTab, setActiveTab] = useState<'geral' | 'licencas' | 'instalacoes'>('geral')
+    const [subformActive, setSubformActive] = useState(false)
+    const [subformAction, setSubformAction] = useState<(() => void) | null>(null)
+    const [subformLoading, setSubformLoading] = useState(false)
+    const [subformLabel, setSubformLabel] = useState("")
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
     // Form State
     const [form, setForm] = useState({
@@ -128,7 +141,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
     }
 
     const handleDelete = async () => {
-        if (!software || !confirm("Tem certeza que deseja excluir este software? Todas as licenças vinculadas serão removidas.")) return
+        if (!software) return
 
         setLoading(true)
         try {
@@ -141,51 +154,58 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
             toast.error("Erro ao excluir: " + error.message)
         } finally {
             setLoading(false)
+            setShowDeleteConfirm(false)
         }
     }
 
     if (!open) return null
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto flex flex-col">
+        <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
+            <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white sticky top-0 z-10">
-                    <div>
-                        <h2 className="text-lg font-black text-slate-800">
-                            {isCreate ? "Novo Software" : isView ? "Detalhes do Software" : "Editar Software"}
-                        </h2>
-                        {!isCreate && software && <p className="text-xs text-slate-400 font-medium">{software.nome}</p>}
+                <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
+                    <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
+                            <Layers className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
+                                {isCreate ? "Novo Software" : isView ? "Detalhes do Software" : "Editar Software"}
+                            </DialogTitle>
+                            {!isCreate && software && (
+                                <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px]">
+                                    {software.nome}
+                                </DialogDescription>
+                            )}
+                        </div>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-                        <X className="h-5 w-5 text-slate-400" />
-                    </button>
-                </div>
+                </DialogHeader>
 
-                {/* Tabs (Apenas se não for Create) */}
+                {/* Tabs */}
                 {!isCreate && (
-                    <div className="px-6 pt-2 border-b border-slate-100 flex gap-6">
+                    <div className="px-8 pt-2 border-b border-slate-100 dark:border-white/5 flex gap-8 bg-white dark:bg-zinc-900">
                         <button
                             onClick={() => setActiveTab('geral')}
-                            className={`pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'geral' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                            className={`pb-3 text-sm font-black border-b-2 transition-all ${activeTab === 'geral' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
                         >
                             Dados Gerais
                         </button>
                         <button
                             onClick={() => setActiveTab('licencas')}
-                            className={`pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'licencas' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                            className={`pb-3 text-sm font-black border-b-2 transition-all ${activeTab === 'licencas' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
                         >
                             <div className="flex items-center gap-2">
-                                <Key className="h-3.5 w-3.5" />
+                                <Key className="h-4 w-4" />
                                 Licenças
                             </div>
                         </button>
                         <button
                             onClick={() => setActiveTab('instalacoes')}
-                            className={`pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'instalacoes' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                            className={`pb-3 text-sm font-black border-b-2 transition-all ${activeTab === 'instalacoes' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
                         >
                             <div className="flex items-center gap-2">
-                                <Monitor className="h-3.5 w-3.5" />
+                                <Monitor className="h-4 w-4" />
                                 Instalações
                             </div>
                         </button>
@@ -193,135 +213,168 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                 )}
 
                 {/* Content */}
-                <div className="p-6 space-y-5">
+                <div className="p-8 space-y-6 overflow-y-auto flex-1 custom-scrollbar bg-white dark:bg-zinc-900">
                     {activeTab === 'geral' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1.5 md:col-span-2">
-                                <label className="text-xs font-bold text-slate-500 ml-1">Nome do Software</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2 md:col-span-2">
+                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Nome do Software</label>
                                 <Input
                                     value={form.nome}
                                     onChange={e => handleChange('nome', e.target.value)}
                                     disabled={isView || loading}
                                     placeholder="Ex: Microsoft Office 2021"
-                                    className="bg-slate-50/50 border-slate-200"
+                                    className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm"
                                 />
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-500 ml-1">Desenvolvedor</label>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Desenvolvedor</label>
                                 <Input
                                     value={form.desenvolvedor}
                                     onChange={e => handleChange('desenvolvedor', e.target.value)}
                                     disabled={isView || loading}
                                     placeholder="Ex: Microsoft"
-                                    className="bg-slate-50/50 border-slate-200"
+                                    className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm"
                                 />
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-500 ml-1">Versão</label>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Versão</label>
                                 <Input
                                     value={form.versao}
                                     onChange={e => handleChange('versao', e.target.value)}
                                     disabled={isView || loading}
                                     placeholder="Ex: Professional Plus"
-                                    className="bg-slate-50/50 border-slate-200"
+                                    className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm"
                                 />
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-500 ml-1">Categoria</label>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Categoria</label>
                                 <select
                                     value={form.categoria}
                                     onChange={e => handleChange('categoria', e.target.value)}
                                     disabled={isView || loading}
-                                    className="w-full h-10 px-3 bg-slate-50/50 border border-slate-200 rounded-md text-sm font-medium focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none"
+                                    className="w-full h-11 px-4 bg-neutral-app dark:bg-white/5 border border-transparent rounded-xl text-sm font-bold focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-primary-600/20 transition-all outline-none shadow-sm dark:text-white"
                                 >
                                     <option value="">Selecione...</option>
                                     {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-500 ml-1">Site / URL</label>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Site / URL</label>
                                 <Input
                                     value={form.site_url}
                                     onChange={e => handleChange('site_url', e.target.value)}
                                     disabled={isView || loading}
                                     placeholder="https://..."
-                                    className="bg-slate-50/50 border-slate-200"
+                                    className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm"
                                 />
                             </div>
 
                             {!isCreate && software && (
-                                <div className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-500 ml-1">Valor Total em Licenças</label>
-                                    <div className="h-10 px-3 bg-emerald-50 border border-emerald-100 rounded-md flex items-center gap-2">
-                                        <ShoppingCart className="h-4 w-4 text-emerald-500" />
-                                        <span className="text-sm font-black text-emerald-700">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Valor Total em Licenças</label>
+                                    <div className="h-11 px-4 bg-success-50 dark:bg-success-900/20 border border-success-100 dark:border-success-900/30 rounded-xl flex items-center gap-3">
+                                        <ShoppingCart className="h-4 w-4 text-success-600 dark:text-success-400" />
+                                        <span className="text-sm font-black text-success-700 dark:text-success-300">
                                             <SoftwareTotalCost softwareId={software.id} />
                                         </span>
                                     </div>
                                 </div>
                             )}
 
-                            <div className="space-y-1.5 md:col-span-2">
-                                <label className="text-xs font-bold text-slate-500 ml-1">Descrição</label>
+                            <div className="space-y-2 md:col-span-2">
+                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Descrição</label>
                                 <textarea
                                     value={form.descricao}
                                     onChange={e => handleChange('descricao', e.target.value)}
                                     disabled={isView || loading}
-                                    className="w-full min-h-[100px] p-3 rounded-lg border border-slate-200 bg-slate-50/50 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 resize-y"
-                                    placeholder="Detalhes adicionais..."
+                                    className="w-full min-h-[120px] p-4 rounded-xl border border-transparent bg-neutral-app dark:bg-white/5 text-sm font-medium focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-primary-600/20 outline-none transition-all shadow-sm resize-none dark:text-white"
+                                    placeholder="Detalhes adicionais sobre o licenciamento ou políticas de uso..."
                                 />
                             </div>
                         </div>
                     )}
 
                     {activeTab === 'licencas' && software && (
-                        <LicenseManager softwareId={software.id} />
+                        <LicenseManager
+                            softwareId={software.id}
+                            onFormToggle={(active, action, label, isSaving) => {
+                                setSubformActive(active)
+                                setSubformAction(() => action)
+                                setSubformLabel(label)
+                                setSubformLoading(isSaving)
+                            }}
+                        />
                     )}
 
                     {activeTab === 'instalacoes' && software && (
-                        <LicenseActivations softwareId={software.id} />
+                        <LicenseActivations
+                            softwareId={software.id}
+                            onFormToggle={(active, action, label, isSaving) => {
+                                setSubformActive(active)
+                                setSubformAction(() => action)
+                                setSubformLabel(label)
+                                setSubformLoading(isSaving)
+                            }}
+                        />
                     )}
-
                 </div>
 
-                {/* Footer */}
-                <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between rounded-b-2xl">
-                    {!isCreate && !isView ? (
+                {/* Footer Padronizado e Contextual */}
+                <div className="p-8 border-t border-slate-100 dark:border-white/5 bg-neutral-subtle/20 dark:bg-transparent flex items-center justify-between rounded-b-[2.5rem]">
+                    {!isCreate && !isView && !subformActive ? (
                         <button
-                            onClick={handleDelete}
+                            onClick={() => setShowDeleteConfirm(true)}
                             disabled={loading}
-                            className="flex items-center gap-2 px-4 py-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors"
+                            className="flex items-center gap-2 px-5 py-2.5 text-critical-600 bg-critical-50 dark:bg-critical-900/10 hover:bg-critical-100 dark:hover:bg-critical-900/20 rounded-xl text-xs font-black transition-all"
                         >
-                            <Trash2 className="h-4 w-4" /> Excluir
+                            <Trash2 className="h-4 w-4" /> Excluir Software
                         </button>
                     ) : <div></div>}
 
-                    <div className="flex  gap-3">
+                    <div className="flex gap-4">
                         <button
-                            onClick={onClose}
-                            disabled={loading}
-                            className="px-4 py-2 text-slate-600 font-bold text-xs hover:bg-slate-200 rounded-lg transition-colors"
+                            onClick={subformActive ? () => setSubformActive(false) : onClose}
+                            disabled={loading || subformLoading}
+                            className="px-6 py-2.5 text-text-secondary dark:text-slate-400 font-bold text-xs hover:bg-neutral-muted dark:hover:bg-white/5 rounded-xl transition-all"
                         >
-                            Cancelar
+                            {subformActive ? "Cancelar" : "Cancelar"}
                         </button>
                         {!isView && (
                             <button
-                                onClick={handleSave}
-                                disabled={loading}
-                                className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                                onClick={subformActive ? (subformAction || undefined) : handleSave}
+                                disabled={loading || subformLoading}
+                                className="flex items-center gap-3 px-8 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-black hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {loading && <div className="h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-                                {isCreate ? "Cadastrar Software" : "Salvar Alterações"}
+                                {loading || subformLoading ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Save className="h-4 w-4" />
+                                )}
+                                {subformActive ? (subformLabel || "Salvar") : (isCreate ? "Cadastrar Software" : "Salvar Alterações")}
                             </button>
                         )}
                     </div>
                 </div>
-            </div>
-        </div>
+            </DialogContent>
+
+            <PasswordConfirmModal
+                open={showDeleteConfirm}
+                onOpenChange={setShowDeleteConfirm}
+                title="Confirmar Exclusão"
+                description={
+                    <span>
+                        Você está prestes a excluir o software <strong className="text-slate-700 dark:text-white">&quot;{software?.nome}&quot;</strong>.
+                        Todas as licenças e instalações associadas também serão removidas. Esta ação é irreversível.
+                    </span>
+                }
+                onConfirm={handleDelete}
+                confirmText="Excluir Software"
+            />
+        </Dialog>
     )
 }
 

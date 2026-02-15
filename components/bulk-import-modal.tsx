@@ -4,7 +4,18 @@ import { useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { toast } from "sonner"
 import { logger } from "@/lib/logger"
-import { Upload, FileUp, Download, X, FileText, CheckCircle2, AlertTriangle } from "lucide-react"
+import { Upload, FileUp, Download, X, FileText, CheckCircle2, AlertTriangle, Loader2 } from "lucide-react"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
 
 export function BulkImportModal() {
     const [open, setOpen] = useState(false)
@@ -110,7 +121,7 @@ export function BulkImportModal() {
                         await supabase.from('movimentacoes').insert({
                             ativo_id: assetData.id,
                             usuario_id: user?.id,
-                            acao: 'CRIAR',
+                            acao: 'Criação',
                             observacao: `Importado via CSV: "${row.nome}"`,
                         })
                     }
@@ -146,98 +157,137 @@ export function BulkImportModal() {
 
     return (
         <>
-            <button onClick={() => setOpen(true)} className="flex items-center gap-2 bg-white text-slate-600 px-4 py-2.5 rounded-xl font-bold text-sm border border-slate-200 hover:bg-slate-50 transition-all shadow-sm">
+            <Button
+                onClick={() => setOpen(true)}
+                variant="outline"
+                className="flex items-center gap-2 h-11 px-6 rounded-xl font-bold text-sm border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 transition-all shadow-sm"
+            >
                 <FileUp className="h-4 w-4" />
                 Importar CSV
-            </button>
+            </Button>
 
-            {open && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg">
-                        {/* Header */}
-                        <div className="px-8 py-5 flex items-center justify-between border-b border-slate-100">
-                            <div>
-                                <h2 className="text-xl font-black text-slate-900">Importação em Lote</h2>
-                                <p className="text-sm text-slate-400 font-medium">Importe ativos via arquivo CSV</p>
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
+                    {/* Header Padronizado */}
+                    <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
+                                <FileUp className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                             </div>
-                            <button onClick={handleClose} className="h-9 w-9 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors">
-                                <X className="h-4 w-4 text-slate-500" />
-                            </button>
+                            <div>
+                                <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
+                                    Importação em Lote
+                                </DialogTitle>
+                                <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium">
+                                    Importe ativos em massa via arquivo CSV.
+                                </DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="p-8 space-y-8 overflow-y-auto max-h-[60vh] custom-scrollbar bg-white dark:bg-zinc-900">
+                        {/* Download Template Padronizado */}
+                        <div
+                            onClick={downloadTemplate}
+                            className="group w-full flex items-center gap-5 p-5 bg-neutral-app dark:bg-white/5 rounded-2xl border border-transparent hover:border-primary-600/30 cursor-pointer transition-all active:scale-[0.99]"
+                        >
+                            <div className="h-12 w-12 rounded-xl bg-white dark:bg-zinc-800 border border-slate-100 dark:border-white/5 flex items-center justify-center text-primary-600 dark:text-primary-400 shadow-sm group-hover:shadow-md transition-all">
+                                <Download className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-black text-text-primary dark:text-white uppercase tracking-tight">Baixar Modelo CSV</p>
+                                <p className="text-xs text-text-secondary dark:text-slate-400 font-medium">Use este modelo para estruturar seus dados.</p>
+                            </div>
                         </div>
 
-                        <div className="p-8 space-y-6">
-                            {/* Template download */}
-                            <button onClick={downloadTemplate} className="w-full flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors text-left">
-                                <div className="h-10 w-10 rounded-xl bg-white border flex items-center justify-center text-primary shadow-sm">
-                                    <Download className="h-5 w-5" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-bold text-slate-700">Baixar Modelo CSV</p>
-                                    <p className="text-xs text-slate-400">Use este modelo para preencher os dados corretamente</p>
-                                </div>
-                            </button>
-
-                            {/* File upload */}
-                            <div>
-                                <label className="text-xs font-bold text-slate-500 mb-2 block">Arquivo CSV</label>
-                                <div className="relative">
-                                    <input
-                                        type="file"
-                                        accept=".csv"
-                                        onChange={(e) => {
-                                            setFile(e.target.files?.[0] || null)
-                                            setResults(null)
-                                        }}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                    />
-                                    <div className="flex items-center gap-3 p-4 border-2 border-dashed border-slate-200 rounded-2xl hover:border-primary/30 transition-colors">
-                                        <Upload className="h-5 w-5 text-slate-400" />
-                                        <span className="text-sm font-medium text-slate-500">
-                                            {file ? file.name : "Arraste ou selecione o arquivo CSV"}
-                                        </span>
+                        {/* File Upload Padronizado */}
+                        <div className="space-y-3">
+                            <Label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Arquivo CSV</Label>
+                            <div className="relative group">
+                                <input
+                                    type="file"
+                                    accept=".csv"
+                                    onChange={(e) => {
+                                        setFile(e.target.files?.[0] || null)
+                                        setResults(null)
+                                    }}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                />
+                                <div className={cn(
+                                    "flex flex-col items-center justify-center gap-3 p-10 border-2 border-dashed rounded-3xl transition-all",
+                                    file
+                                        ? "border-primary-600/50 bg-primary-50/30 dark:bg-primary-900/5"
+                                        : "border-slate-200 dark:border-white/10 bg-neutral-app dark:bg-white/2 hover:border-primary-600/30"
+                                )}>
+                                    <div className={cn(
+                                        "h-14 w-14 rounded-2xl flex items-center justify-center transition-all",
+                                        file ? "bg-primary-600 text-white" : "bg-white dark:bg-zinc-800 text-text-muted"
+                                    )}>
+                                        <Upload className="h-7 w-7" />
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-sm font-black text-text-primary dark:text-white">
+                                            {file ? file.name : "Arraste ou selecione"}
+                                        </p>
+                                        <p className="text-xs text-text-muted mt-1">Apenas arquivos .csv são suportados</p>
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Results */}
-                            {results && (
-                                <div className="space-y-3">
-                                    {results.success > 0 && (
-                                        <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl text-sm font-bold text-emerald-700">
-                                            <CheckCircle2 className="h-4 w-4" />
-                                            {results.success} ativo(s) importado(s)
-                                        </div>
-                                    )}
-                                    {results.errors.length > 0 && (
-                                        <div className="p-3 bg-red-50 rounded-xl">
-                                            <div className="flex items-center gap-2 text-sm font-bold text-red-600 mb-2">
-                                                <AlertTriangle className="h-4 w-4" />
-                                                {results.errors.length} erro(s)
-                                            </div>
-                                            <div className="max-h-32 overflow-y-auto space-y-1">
-                                                {results.errors.map((err, i) => (
-                                                    <p key={i} className="text-xs text-red-500">{err}</p>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
                         </div>
 
-                        {/* Footer */}
-                        <div className="px-8 py-4 border-t border-slate-100 flex items-center justify-end gap-3">
-                            <button onClick={handleClose} className="px-5 py-2.5 text-sm font-bold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
-                                Fechar
-                            </button>
-                            <button onClick={handleImport} disabled={!file || importing} className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold bg-primary text-white rounded-xl hover:bg-primary/90 disabled:opacity-50 transition-all shadow-lg shadow-primary/20">
-                                <FileText className="h-4 w-4" />
-                                {importing ? "Importando..." : "Importar"}
-                            </button>
-                        </div>
+                        {/* Results Padronizados */}
+                        {results && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                {results.success > 0 && (
+                                    <div className="flex items-center gap-3 p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-500/20 text-sm font-black text-emerald-700 dark:text-emerald-400 shadow-sm">
+                                        <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                                            <CheckCircle2 className="h-5 w-5" />
+                                        </div>
+                                        {results.success} ativo(s) importado(s) com sucesso.
+                                    </div>
+                                )}
+                                {results.errors.length > 0 && (
+                                    <div className="p-4 bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-100 dark:border-red-500/20">
+                                        <div className="flex items-center gap-3 text-sm font-black text-red-700 dark:text-red-400 mb-3">
+                                            <div className="h-8 w-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+                                                <AlertTriangle className="h-5 w-5" />
+                                            </div>
+                                            {results.errors.length} erro(s) encontrados
+                                        </div>
+                                        <div className="max-h-32 overflow-y-auto space-y-1.5 px-1 custom-scrollbar">
+                                            {results.errors.map((err, i) => (
+                                                <p key={i} className="text-[11px] text-red-500 dark:text-red-400 flex items-start gap-2 font-medium">
+                                                    <span className="h-1.5 w-1.5 rounded-full bg-red-400 mt-1 flex-shrink-0" />
+                                                    {err}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
-                </div>
-            )}
+
+                    {/* Footer Padronizado */}
+                    <DialogFooter className="px-8 py-6 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/2 flex items-center justify-end gap-3 flex-shrink-0">
+                        <Button
+                            variant="ghost"
+                            onClick={handleClose}
+                            className="px-6 py-2.5 text-sm font-black text-text-muted hover:text-text-primary transition-all"
+                        >
+                            Fechar
+                        </Button>
+                        <Button
+                            onClick={handleImport}
+                            disabled={!file || importing}
+                            className="flex items-center gap-2 px-8 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-black hover:bg-primary-700 shadow-xl shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50"
+                        >
+                            {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
+                            {importing ? "Importando..." : "Iniciar Importação"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }

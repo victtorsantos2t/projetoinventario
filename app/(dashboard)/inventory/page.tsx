@@ -142,8 +142,8 @@ function InventoryContent() {
         <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 mb-1">Inventário</h1>
-                    <p className="text-slate-500 font-medium">Gerencie e rastreie todos os ativos da empresa.</p>
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tight text-text-primary dark:text-white mb-1">Inventário</h1>
+                    <p className="text-text-secondary dark:text-slate-400 font-medium">Gerencie e rastreie todos os ativos da empresa com precisão.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     {!isViewer && (

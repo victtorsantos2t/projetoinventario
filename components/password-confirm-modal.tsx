@@ -4,15 +4,18 @@ import { useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
-import { AlertTriangle, Lock, Trash2, X } from "lucide-react"
+import { AlertTriangle, Lock, Trash2, X, Loader2 } from "lucide-react"
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
+    DialogFooter,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
 
 interface PasswordConfirmModalProps {
     open: boolean
@@ -80,55 +83,73 @@ export function PasswordConfirmModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-0 shadow-2xl">
-                <div className="p-8 bg-white">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${variant === 'destructive' ? 'bg-red-50 text-red-500' : 'bg-slate-50 text-slate-500'}`}>
+            <DialogContent className="max-w-md p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
+                {/* Header Padronizado */}
+                <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
+                    <div className="flex items-center gap-4">
+                        <div className={cn(
+                            "h-12 w-12 rounded-2xl flex items-center justify-center transition-colors",
+                            variant === 'destructive'
+                                ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400"
+                                : "bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400"
+                        )}>
                             {variant === 'destructive' ? <AlertTriangle className="h-6 w-6" /> : <Lock className="h-6 w-6" />}
                         </div>
-                    </div>
-
-                    <DialogHeader className="mb-6">
-                        <DialogTitle className="text-xl font-black text-slate-900">{title}</DialogTitle>
-                        <DialogDescription className="text-sm text-slate-500 font-medium">
-                            {description}
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="space-y-4 mb-8">
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-500 flex items-center gap-1.5 uppercase tracking-wider">
-                                <Lock className="h-3 w-3" />
-                                Confirme sua senha
-                            </label>
-                            <Input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                className="rounded-xl h-12 border-slate-200 bg-slate-50 focus:bg-white transition-all font-medium"
-                                onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
-                            />
+                        <div>
+                            <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
+                                {title}
+                            </DialogTitle>
+                            <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium leading-tight">
+                                {description}
+                            </DialogDescription>
                         </div>
                     </div>
+                </DialogHeader>
 
-                    <div className="flex items-center gap-3">
-                        <Button
-                            variant="ghost"
-                            onClick={() => onOpenChange(false)}
-                            className="flex-1 rounded-xl h-12 font-bold text-slate-500 hover:bg-slate-50"
-                        >
-                            Cancelar
-                        </Button>
-                        <Button
-                            onClick={handleConfirm}
-                            disabled={loading || !password}
-                            className={`flex-1 rounded-xl h-12 font-bold shadow-lg shadow-red-200 ${variant === 'destructive' ? 'bg-red-500 hover:bg-red-600' : 'bg-slate-900 hover:bg-slate-800'}`}
-                        >
-                            {loading ? "Verificando..." : confirmText}
-                        </Button>
+                <div className="p-8 space-y-6 bg-white dark:bg-zinc-900">
+                    <div className="space-y-3">
+                        <Label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1 flex items-center gap-1.5">
+                            <Lock className="h-3 w-3" />
+                            Confirme sua senha
+                        </Label>
+                        <Input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Digite sua senha de acesso"
+                            className="h-12 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm font-medium"
+                            onKeyDown={(e) => e.key === 'Enter' && handleConfirm()}
+                            autoFocus
+                        />
+                        <p className="text-[10px] text-text-muted font-medium px-1">
+                            Esta ação requer re-autenticação por segurança.
+                        </p>
                     </div>
                 </div>
+
+                {/* Footer Padronizado */}
+                <DialogFooter className="px-8 py-6 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/2 flex items-center gap-3">
+                    <Button
+                        variant="ghost"
+                        onClick={() => onOpenChange(false)}
+                        className="flex-1 h-12 rounded-xl font-black text-text-muted hover:text-text-primary transition-all"
+                    >
+                        Cancelar
+                    </Button>
+                    <Button
+                        onClick={handleConfirm}
+                        disabled={loading || !password}
+                        className={cn(
+                            "flex-1 h-12 rounded-xl font-black shadow-lg transition-all active:scale-95 disabled:opacity-50",
+                            variant === 'destructive'
+                                ? "bg-red-500 hover:bg-red-600 text-white shadow-red-500/20"
+                                : "bg-slate-900 dark:bg-white/10 hover:bg-slate-800 dark:hover:bg-white/20 text-white shadow-slate-900/20"
+                        )}
+                    >
+                        {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                        {loading ? "Verificando..." : confirmText}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     )

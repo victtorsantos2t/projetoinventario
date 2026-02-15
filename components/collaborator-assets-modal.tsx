@@ -106,77 +106,81 @@ export function CollaboratorAssetsModal({ collaborator, open, onOpenChange }: Co
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                <div className="flex flex-col max-h-[80vh]">
-                    <DialogHeader className="p-8 pb-4 bg-slate-50/50 border-b border-slate-100">
-                        <div className="flex items-start justify-between gap-4">
-                            <div className="space-y-1">
-                                <DialogTitle className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-3">
-                                    <Package className="h-6 w-6 text-primary" />
+            <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
+                {/* Header Padronizado */}
+                <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
+                                <Package className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
                                     Equipamentos em Posse
                                 </DialogTitle>
-                                <DialogDescription className="text-slate-500 font-medium">
-                                    Ativos atualmente sob responsabilidade de: <span className="text-primary font-bold">{collaborator?.full_name || collaborator?.email || 'Colaborador'}</span>
+                                <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[300px]">
+                                    Ativos de {collaborator?.full_name || collaborator?.email}
                                 </DialogDescription>
                             </div>
-                            {assets.length > 0 && (
-                                <Button
-                                    onClick={handleGenerateTerm}
-                                    disabled={generating}
-                                    variant="outline"
-                                    className="rounded-2xl h-11 px-5 border-slate-200 hover:bg-white hover:border-primary hover:text-primary font-bold gap-2 shadow-sm transition-all"
-                                >
-                                    {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
-                                    Emitir Termo
-                                </Button>
-                            )}
                         </div>
-                    </DialogHeader>
-
-                    <div className="flex-1 overflow-y-auto p-4 sm:p-8">
-                        {loading ? (
-                            <div className="flex flex-col items-center justify-center py-12 gap-3">
-                                <Loader2 className="h-8 w-8 text-primary animate-spin" />
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Consultando Inventário...</p>
-                            </div>
-                        ) : assets.length === 0 ? (
-                            <div className="py-12 text-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
-                                <Search className="h-10 w-10 text-slate-200 mx-auto mb-3" />
-                                <p className="text-slate-400 font-bold text-sm">Nenhum ativo vinculado a este perfil.</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-3">
-                                {assets.map((asset) => (
-                                    <div key={asset.id} className="group flex items-center gap-4 p-4 rounded-3xl bg-white border border-slate-100 hover:border-primary/20 hover:shadow-lg hover:shadow-slate-200/50 transition-all duration-300">
-                                        <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                                            {getIcon(asset.tipo)}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between mb-0.5">
-                                                <h4 className="font-bold text-slate-900 text-sm truncate pr-2">{asset.nome}</h4>
-                                                <Badge variant="outline" className={cn("text-[9px] font-bold uppercase tracking-tighter px-2 h-5 rounded-full", getStatusColor(asset.status))}>
-                                                    {asset.status}
-                                                </Badge>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[10px] font-bold text-slate-400 font-mono tracking-tight">{asset.serial}</span>
-                                                <span className="h-1 w-1 rounded-full bg-slate-200" />
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{asset.tipo}</span>
-                                            </div>
-                                        </div>
-                                        <ChevronRight className="h-4 w-4 text-slate-200 group-hover:text-primary transition-colors" />
-                                    </div>
-                                ))}
-                            </div>
+                        {assets.length > 0 && (
+                            <Button
+                                onClick={handleGenerateTerm}
+                                disabled={generating}
+                                variant="outline"
+                                className="h-10 px-4 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-xs font-black gap-2 transition-all active:scale-95"
+                            >
+                                {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5" />}
+                                Emitir Termo
+                            </Button>
                         )}
                     </div>
+                </DialogHeader>
 
-                    <div className="p-6 bg-slate-50/50 border-t border-slate-100 flex justify-center">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            <Info className="h-3 w-3" />
-                            Rastreabilidade Total Fase-3
-                        </p>
-                    </div>
+                <div className="flex-1 overflow-y-auto p-4 sm:p-8">
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-12 gap-3">
+                            <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Consultando Inventário...</p>
+                        </div>
+                    ) : assets.length === 0 ? (
+                        <div className="py-12 text-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
+                            <Search className="h-10 w-10 text-slate-200 mx-auto mb-3" />
+                            <p className="text-slate-400 font-bold text-sm">Nenhum ativo vinculado a este perfil.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {assets.map((asset) => (
+                                <div key={asset.id} className="group flex items-center gap-4 p-4 rounded-3xl bg-white border border-slate-100 hover:border-primary/20 hover:shadow-lg hover:shadow-slate-200/50 transition-all duration-300">
+                                    <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                        {getIcon(asset.tipo)}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between mb-0.5">
+                                            <h4 className="font-bold text-slate-900 text-sm truncate pr-2">{asset.nome}</h4>
+                                            <Badge variant="outline" className={cn("text-[9px] font-bold uppercase tracking-tighter px-2 h-5 rounded-full", getStatusColor(asset.status))}>
+                                                {asset.status}
+                                            </Badge>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] font-bold text-slate-400 font-mono tracking-tight">{asset.serial}</span>
+                                            <span className="h-1 w-1 rounded-full bg-slate-200" />
+                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{asset.tipo}</span>
+                                        </div>
+                                    </div>
+                                    <ChevronRight className="h-4 w-4 text-slate-200 group-hover:text-primary transition-colors" />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Footer de Info Padronizado */}
+                <div className="px-8 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/2 flex items-center justify-center">
+                    <p className="text-[10px] font-black text-text-muted dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                        <Info className="h-3.5 w-3.5" />
+                        Rastreabilidade Total Fase-3 (Termo de Responsabilidade)
+                    </p>
                 </div>
             </DialogContent>
         </Dialog>

@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { PasswordConfirmModal } from "@/components/password-confirm-modal"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -42,6 +43,7 @@ export default function UsersPage() {
     // Selection for actions
     const [userToToggle, setUserToToggle] = useState<Profile | null>(null)
     const [userToDelete, setUserToDelete] = useState<Profile | null>(null)
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
     // Assets Modal State
     const [assetsModalOpen, setAssetsModalOpen] = useState(false)
@@ -188,8 +190,8 @@ export default function UsersPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 mb-1">Colaboradores</h1>
-                    <p className="text-slate-500 font-medium">Gestão centralizada de equipamentos por pessoa e acessos.</p>
+                    <h1 className="text-4xl font-black tracking-tight text-text-primary dark:text-white mb-1">Colaboradores</h1>
+                    <p className="text-text-secondary dark:text-slate-400 font-medium">Gestão centralizada de equipamentos por pessoa e acessos.</p>
                 </div>
                 {isAdmin && <AddUserModal onSuccess={fetchData} />}
             </div>
@@ -262,7 +264,7 @@ export default function UsersPage() {
                                         </Button>
                                         <Button
                                             variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-rose-500"
-                                            onClick={() => setUserToDelete(user)}
+                                            onClick={() => { setUserToDelete(user); setShowDeleteConfirm(true); }}
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
@@ -278,10 +280,10 @@ export default function UsersPage() {
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0">
-                                    <h3 className="font-bold text-slate-900 truncate pr-2 leading-tight" title={user.full_name || 'Sem nome'}>
+                                    <h3 className="font-bold text-text-primary dark:text-white truncate pr-2 leading-tight" title={user.full_name || 'Sem nome'}>
                                         {user.full_name || 'Sem nome'}
                                     </h3>
-                                    <p className="text-xs font-medium text-slate-400 truncate mt-0.5">{user.email}</p>
+                                    <p className="text-[10px] font-bold text-text-muted truncate mt-0.5">{user.email}</p>
                                 </div>
                             </div>
 
@@ -307,7 +309,7 @@ export default function UsersPage() {
                                         }}
                                         className="hover:scale-105 active:scale-95 transition-transform"
                                     >
-                                        <Badge variant="secondary" className={`text-[10px] font-black py-0.5 rounded-lg border-none shadow-none cursor-pointer ${user.ativos_count ? 'bg-primary/10 text-primary hover:bg-primary/20' : 'bg-slate-50 text-slate-400'}`}>
+                                        <Badge variant="secondary" className={`text-[10px] font-black py-0.5 rounded-lg border-none shadow-none cursor-pointer ${user.ativos_count ? 'bg-primary-50 text-primary-600 hover:bg-primary-100 dark:bg-primary-900/10 dark:text-primary-400' : 'bg-neutral-app text-text-muted'}`}>
                                             {user.ativos_count || 0} ITENS
                                         </Badge>
                                     </button>
@@ -385,34 +387,24 @@ export default function UsersPage() {
             </AlertDialog>
 
             {/* Delete Confirmation */}
-            <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem]">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="text-xl font-bold flex items-center gap-2 text-rose-500">
-                            <Trash2 className="h-6 w-6" />
-                            Excluir Colaborador Permanentemente?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription className="text-slate-500 font-medium space-y-3">
-                            <p>Esta ação é <strong>irreversível</strong>. Todos os dados do perfil de <strong>{userToDelete?.full_name}</strong> serão apagados do sistema.</p>
-                            <div className="p-3 bg-rose-50 rounded-xl border border-rose-100 flex gap-3 items-start">
-                                <AlertTriangle className="h-5 w-5 text-rose-400 flex-shrink-0 mt-0.5" />
-                                <p className="text-[11px] text-rose-600 font-bold leading-relaxed">
-                                    Nota: Se este colaborador possuir ativos vinculados ao seu nome, a exclusão pode gerar inconsistências nos dados. Recomendamos apenas **Inativar** o acesso.
-                                </p>
-                            </div>
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel className="rounded-xl font-bold">Cancelar</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDeleteUser}
-                            className="rounded-xl font-bold bg-rose-500 hover:bg-rose-600"
-                        >
-                            Excluir Agora
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <PasswordConfirmModal
+                open={showDeleteConfirm}
+                onOpenChange={setShowDeleteConfirm}
+                title="Excluir Colaborador Permanentemente?"
+                description={
+                    <div className="space-y-3">
+                        <p>Esta ação é <strong>irreversível</strong>. Todos os dados do perfil de <strong>{userToDelete?.full_name}</strong> serão apagados do sistema.</p>
+                        <div className="p-3 bg-rose-50 dark:bg-red-900/10 rounded-xl border border-rose-100 dark:border-red-900/20 flex gap-3 items-start">
+                            <AlertTriangle className="h-5 w-5 text-rose-400 flex-shrink-0 mt-0.5" />
+                            <p className="text-[11px] text-rose-600 dark:text-red-400 font-bold leading-relaxed">
+                                Nota: Se este colaborador possuir ativos vinculados ao seu nome, a exclusão pode gerar inconsistências nos dados. Recomendamos apenas **Inativar** o acesso.
+                            </p>
+                        </div>
+                    </div>
+                }
+                onConfirm={handleDeleteUser}
+                confirmText="Excluir Agora"
+            />
         </div>
     )
 }

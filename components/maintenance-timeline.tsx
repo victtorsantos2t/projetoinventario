@@ -56,6 +56,7 @@ const getEventConfig = (type: string, observation: string) => {
                 label: "Manutenção"
             }
         case 'EDITAR':
+        case 'EDIÇÃO':
             return {
                 icon: <Info className="h-4 w-4" />,
                 color: "text-sky-600",
@@ -64,6 +65,7 @@ const getEventConfig = (type: string, observation: string) => {
                 label: "Edição"
             }
         case 'CRIAR':
+        case 'CRIAÇÃO':
             return {
                 icon: <CheckCircle2 className="h-4 w-4" />,
                 color: "text-indigo-600",

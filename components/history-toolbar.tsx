@@ -19,7 +19,7 @@ interface HistoryToolbarProps {
     onViewModeChange: (mode: 'grid' | 'list') => void
 }
 
-const ACTION_OPTIONS = ['CRIAR', 'EDITAR', 'DELETAR', 'ENTREGA', 'DEVOLUÇÃO', 'MANUTENÇÃO']
+const ACTION_OPTIONS = ['Criação', 'Edição', 'DELETAR', 'ENTREGA', 'DEVOLUÇÃO', 'MANUTENÇÃO']
 
 export function HistoryToolbar({
     searchTerm,

@@ -9,16 +9,21 @@ import {
     Key, Calendar, Plus, Trash2, Edit2, Check, X,
     AlertCircle, FileText, ShoppingCart, Monitor
 } from "lucide-react"
+import { PasswordConfirmModal } from "./password-confirm-modal"
 
 interface LicenseManagerProps {
     softwareId: string
+    onFormToggle?: (active: boolean, action: () => void, label: string, isSaving: boolean) => void
 }
 
-export function LicenseManager({ softwareId }: LicenseManagerProps) {
+export function LicenseManager({ softwareId, onFormToggle }: LicenseManagerProps) {
     const [licencas, setLicencas] = useState<Licenca[]>([])
     const [loading, setLoading] = useState(true)
     const [isAdding, setIsAdding] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
+    const [saving, setSaving] = useState(false)
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+    const [idToDelete, setIdToDelete] = useState<string | null>(null)
 
     // Form State
     const [form, setForm] = useState({
@@ -31,6 +36,13 @@ export function LicenseManager({ softwareId }: LicenseManagerProps) {
         fornecedor: "",
         obs: ""
     })
+
+    // Notify parent about form state
+    useEffect(() => {
+        if (onFormToggle) {
+            onFormToggle(isAdding, handleSave, editingId ? "Salvar Alterações" : "Adicionar Licença", saving)
+        }
+    }, [isAdding, editingId, saving, form, onFormToggle])
 
     const fetchLicenses = async () => {
         setLoading(true)
@@ -90,6 +102,7 @@ export function LicenseManager({ softwareId }: LicenseManagerProps) {
             return
         }
 
+        setSaving(true)
         try {
             const payload = {
                 software_id: softwareId,
@@ -116,19 +129,29 @@ export function LicenseManager({ softwareId }: LicenseManagerProps) {
             resetForm()
         } catch (error: any) {
             toast.error("Erro ao salvar: " + error.message)
+        } finally {
+            setSaving(false)
         }
     }
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Excluir esta licença permanentemente?")) return
+    const handleDelete = async () => {
+        if (!idToDelete) return
         try {
-            const { error } = await supabase.from('licencas').delete().eq('id', id)
+            const { error } = await supabase.from('licencas').delete().eq('id', idToDelete)
             if (error) throw error
             toast.success("Licença removida!")
             fetchLicenses()
         } catch (error: any) {
             toast.error("Erro ao excluir: " + error.message)
+        } finally {
+            setShowDeleteConfirm(false)
+            setIdToDelete(null)
         }
+    }
+
+    const confirmDelete = (id: string) => {
+        setIdToDelete(id)
+        setShowDeleteConfirm(true)
     }
 
     return (
@@ -232,12 +255,6 @@ export function LicenseManager({ softwareId }: LicenseManagerProps) {
                             />
                         </div>
                     </div>
-                    <div className="flex justify-end gap-2">
-                        <button onClick={resetForm} className="px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-700">Cancelar</button>
-                        <button onClick={handleSave} className="px-4 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700">
-                            {editingId ? "Salvar Alterações" : "Adicionar Licença"}
-                        </button>
-                    </div>
                 </div>
             )}
 
@@ -299,7 +316,7 @@ export function LicenseManager({ softwareId }: LicenseManagerProps) {
                                     <button onClick={() => handleEdit(lic)} className="p-1.5 hover:bg-slate-100 rounded text-slate-500">
                                         <Edit2 className="h-4 w-4" />
                                     </button>
-                                    <button onClick={() => handleDelete(lic.id)} className="p-1.5 hover:bg-red-50 rounded text-red-500">
+                                    <button onClick={() => confirmDelete(lic.id)} className="p-1.5 hover:bg-red-50 rounded text-red-500">
                                         <Trash2 className="h-4 w-4" />
                                     </button>
                                 </div>
@@ -308,6 +325,15 @@ export function LicenseManager({ softwareId }: LicenseManagerProps) {
                     ))
                 )}
             </div>
+
+            <PasswordConfirmModal
+                open={showDeleteConfirm}
+                onOpenChange={setShowDeleteConfirm}
+                title="Confirmar Exclusão de Licença"
+                description="Esta licença será removida permanentemente do sistema. Ativos vinculados a esta licença podem ficar órfãos."
+                onConfirm={handleDelete}
+                confirmText="Excluir Licença"
+            />
         </div>
     )
 }

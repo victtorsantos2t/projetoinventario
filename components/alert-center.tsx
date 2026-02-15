@@ -26,7 +26,7 @@ export function AlertCenter() {
         async function fetchAlerts() {
             setLoading(true)
             try {
-                // 1. Fetch critical health assets
+                // Ativos com saúde crítica (< 30%)
                 const { data: criticalHealth } = await supabase
                     .from('ativos')
                     .select('*')
@@ -34,16 +34,11 @@ export function AlertCenter() {
                     .neq('status', 'Baixado')
                     .limit(5)
 
-                // 2. Fetch expiring warranty assets
-                const today = new Date()
-                const next30Days = new Date()
-                next30Days.setDate(today.getDate() + 30)
-
+                // Garantias vencendo — usar view que calcula flags reais
                 const { data: expiringWarranty } = await supabase
-                    .from('ativos')
-                    .select('*')
-                    .gt('data_garantia', today.toISOString())
-                    .lte('data_garantia', next30Days.toISOString())
+                    .from('v_inventario_geral')
+                    .select('id, nome, garantia_meses, tem_garantia')
+                    .eq('garantia_vencendo', true)
                     .neq('status', 'Baixado')
                     .limit(5)
 
@@ -65,7 +60,7 @@ export function AlertCenter() {
                         id: `warranty-${a.id}`,
                         type: 'garantia',
                         title: a.nome,
-                        description: `Garantia vence em ${new Date(a.data_garantia!).toLocaleDateString('pt-BR')}`,
+                        description: `Garantia de ${a.garantia_meses || 0} meses próxima do vencimento.`,
                         severity: 'warning',
                         assetId: a.id
                     })
@@ -84,11 +79,11 @@ export function AlertCenter() {
 
     if (loading) {
         return (
-            <div className="bg-white dark:bg-zinc-900/40 rounded-[2rem] border border-slate-100 dark:border-white/5 p-6 animate-pulse">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-100 dark:border-white/5 p-6 animate-pulse shadow-sm">
                 <div className="h-4 bg-slate-100 dark:bg-white/5 rounded w-1/4 mb-4" />
                 <div className="space-y-3">
-                    <div className="h-16 bg-slate-50 dark:bg-white/5 rounded-2xl" />
-                    <div className="h-16 bg-slate-50 dark:bg-white/5 rounded-2xl" />
+                    <div className="h-16 bg-slate-50 dark:bg-white/5 rounded-xl" />
+                    <div className="h-16 bg-slate-50 dark:bg-white/5 rounded-xl" />
                 </div>
             </div>
         )
@@ -97,48 +92,61 @@ export function AlertCenter() {
     if (alerts.length === 0) return null
 
     return (
-        <div className="bg-white dark:bg-zinc-900/40 rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm overflow-hidden mb-8">
-            <div className="px-6 py-5 border-b border-slate-50 dark:border-white/5 flex items-center justify-between bg-rose-50/10 dark:bg-rose-500/5">
-                <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-rose-500/10 flex items-center justify-center">
-                        <ShieldAlert className="h-5 w-5 text-rose-500" />
+        <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-white/5 rounded-2xl shadow-sm overflow-hidden mb-8">
+            <div className="px-8 py-6 border-b border-slate-50 dark:border-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-critical-50 dark:bg-critical-900/20 flex items-center justify-center">
+                        <ShieldAlert className="h-6 w-6 text-critical-600" />
                     </div>
                     <div>
-                        <h2 className="text-base font-bold text-slate-900 dark:text-white">Prioridades de Atenção</h2>
-                        <p className="text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest mt-0.5">Alertas do Sistema</p>
+                        <h2 className="text-lg font-black text-text-primary dark:text-white tracking-tight">Prioridades de Atenção</h2>
+                        <p className="text-[10px] font-black text-critical-600 uppercase tracking-[0.2em] mt-0.5 italic">Mission Critical</p>
                     </div>
                 </div>
-                <Badge variant="outline" className="bg-white dark:bg-white/5 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-white/10 font-black text-[9px]">
-                    {alerts.length} ALERTAS
-                </Badge>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10">
+                    <span className="h-2 w-2 rounded-full bg-critical-500 animate-pulse" />
+                    <span className="text-[10px] font-black text-text-secondary dark:text-slate-400 uppercase tracking-widest leading-none">
+                        {alerts.length} Incidentes
+                    </span>
+                </div>
             </div>
 
-            <div className="divide-y divide-slate-50 dark:divide-white/5 max-h-[400px] overflow-y-auto">
+            <div className="divide-y divide-slate-50 dark:divide-white/5 max-h-[450px] overflow-y-auto scrollbar-hide">
                 {alerts.map((alert) => (
                     <div
                         key={alert.id}
-                        className="px-6 py-4 flex items-center gap-4 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors cursor-pointer group"
+                        className="px-8 py-5 flex items-center gap-5 hover:bg-neutral-subtle dark:hover:bg-white/5 transition-all duration-200 cursor-pointer group"
                         onClick={() => router.push(`/inventory?id=${alert.assetId}`)}
                     >
                         <div className={cn(
-                            "h-10 w-10 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
-                            alert.severity === 'critical' ? "bg-rose-50 dark:bg-rose-500/10 text-rose-500" : "bg-amber-50 dark:bg-amber-500/10 text-amber-500"
+                            "h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110 shadow-sm",
+                            alert.severity === 'critical'
+                                ? "bg-critical-50 dark:bg-critical-900/10 text-critical-600 border border-critical-100 dark:border-critical-900/20"
+                                : "bg-alert-50 dark:bg-alert-900/10 text-alert-600 border border-alert-100 dark:border-alert-900/20"
                         )}>
-                            {alert.type === 'saude' ? <HeartPulse className="h-5 w-5" /> : <Calendar className="h-5 w-5" />}
+                            {alert.type === 'saude' ? <HeartPulse className="h-6 w-6" /> : <Calendar className="h-6 w-6" />}
                         </div>
+
                         <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-0.5">
-                                <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{alert.title}</span>
-                                <Badge className={cn(
-                                    "text-[8px] font-black uppercase px-1.5 py-0 rounded-md",
-                                    alert.severity === 'critical' ? "bg-rose-500 text-white" : "bg-amber-500 text-white"
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="text-base font-bold text-text-primary dark:text-slate-100 truncate group-hover:text-primary-600 transition-colors">
+                                    {alert.title}
+                                </span>
+                                <div className={cn(
+                                    "text-[9px] font-black uppercase px-2 py-0.5 rounded-md tracking-widest",
+                                    alert.severity === 'critical' ? "bg-critical-500 text-white" : "bg-alert-500 text-white"
                                 )}>
                                     {alert.severity === 'critical' ? 'Crítico' : 'Atenção'}
-                                </Badge>
+                                </div>
                             </div>
-                            <p className="text-xs text-slate-500 font-medium">{alert.description}</p>
+                            <p className="text-sm text-text-secondary dark:text-slate-400 font-medium leading-relaxed">
+                                {alert.description}
+                            </p>
                         </div>
-                        <ChevronRight className="h-4 w-4 text-slate-200 group-hover:text-primary transition-colors" />
+
+                        <div className="h-10 w-10 rounded-full flex items-center justify-center bg-slate-50 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-2 group-hover:translate-x-0">
+                            <ChevronRight className="h-5 w-5 text-primary-500" />
+                        </div>
                     </div>
                 ))}
             </div>

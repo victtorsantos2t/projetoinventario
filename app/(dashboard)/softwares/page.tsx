@@ -81,34 +81,33 @@ export default function SoftwaresPage() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
-                        <AppWindow className="h-7 w-7 text-indigo-500" />
+                    <h1 className="text-3xl font-black text-text-primary dark:text-white flex items-center gap-2">
+                        <AppWindow className="h-8 w-8 text-primary-600 dark:text-primary-400" />
                         Gestão de Softwares
                     </h1>
-                    <p className="text-sm text-slate-400 mt-1">
-                        Controle de licenciamento e inventário de aplicações
+                    <p className="text-sm text-text-secondary dark:text-slate-400 mt-1 font-medium">
+                        Controle de licenciamento e inventário de aplicações com visibilidade total.
                     </p>
                 </div>
 
                 {!isViewer && (
                     <button
                         onClick={handleCreate}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 shadow-sm shadow-indigo-200 transition-all"
+                        className="flex items-center gap-2 px-5 py-3 bg-primary-600 text-white rounded-[1.25rem] text-sm font-bold hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all active:scale-95"
                     >
                         <Plus className="h-4 w-4" /> Novo Software
                     </button>
                 )}
             </div>
 
-            {/* Filters */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-2 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
                     <Input
                         placeholder="Buscar por nome, desenvolvedor ou versão..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="pl-10 bg-white border-slate-200 h-11 rounded-xl"
+                        className="pl-10 bg-white dark:bg-zinc-900 border-slate-200 h-11 rounded-xl shadow-sm focus:ring-2 focus:ring-primary-600/20 outline-none transition-all placeholder:text-text-muted"
                     />
                 </div>
                 {/* Future: Categoria filter */}
@@ -174,7 +173,7 @@ export default function SoftwaresPage() {
                                                 {software.desenvolvedor || "—"}
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <div className="inline-flex items-center px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-100">
+                                                <div className="inline-flex items-center px-2.5 py-1 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-black border border-primary-100 dark:border-primary-900/30">
                                                     {software.total_instancias_permitidas || 0}
                                                 </div>
                                             </td>

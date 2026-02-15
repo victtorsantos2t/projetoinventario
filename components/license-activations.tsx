@@ -9,9 +9,10 @@ import { Monitor, Calendar, Plus, Trash2, Search, Laptop, Key, X } from "lucide-
 
 interface LicenseActivationsProps {
     softwareId: string
+    onFormToggle?: (active: boolean, action: () => void, label: string, isSaving: boolean) => void
 }
 
-export function LicenseActivations({ softwareId }: LicenseActivationsProps) {
+export function LicenseActivations({ softwareId, onFormToggle }: LicenseActivationsProps) {
     const [instalacoes, setInstalacoes] = useState<LicencaInstalacao[]>([])
     const [loading, setLoading] = useState(true)
     const [isAdding, setIsAdding] = useState(false)
@@ -25,6 +26,13 @@ export function LicenseActivations({ softwareId }: LicenseActivationsProps) {
     const [selectedLicenca, setSelectedLicenca] = useState("")
     const [selectedAtivo, setSelectedAtivo] = useState("")
     const [searchTerm, setSearchTerm] = useState("")
+
+    // Notify parent about form state
+    useEffect(() => {
+        if (onFormToggle) {
+            onFormToggle(isAdding, handleAdd, "Confirmar Instalação", saving)
+        }
+    }, [isAdding, saving, onFormToggle, selectedLicenca, selectedAtivo])
 
     const fetchData = async () => {
         setLoading(true)
@@ -58,7 +66,6 @@ export function LicenseActivations({ softwareId }: LicenseActivationsProps) {
         }
     }
 
-    // Search assets on open add form
     const fetchAtivos = async () => {
         const { data } = await supabase
             .from('ativos')
@@ -113,11 +120,6 @@ export function LicenseActivations({ softwareId }: LicenseActivationsProps) {
             setSaving(false)
         }
     }
-
-    // ... (rest of the code)
-
-
-
 
     const handleRemove = async (id: string) => {
         if (!confirm("Remover esta instalação? O ativo deixará de estar licenciado.")) return
@@ -252,19 +254,6 @@ export function LicenseActivations({ softwareId }: LicenseActivationsProps) {
                             )}
                         </div>
                     </div>
-                    <div className="flex justify-end gap-2">
-                        <button onClick={() => setIsAdding(false)} className="px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-700">Cancelar</button>
-                        <button
-                            onClick={handleAdd}
-                            disabled={saving}
-                            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${!selectedLicenca || !selectedAtivo
-                                ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                                : "bg-indigo-600 text-white hover:bg-indigo-700"
-                                }`}
-                        >
-                            {saving ? "Vinculando..." : "Confirmar Instalação"}
-                        </button>
-                    </div>
                 </div>
             )}
 
@@ -308,6 +297,6 @@ export function LicenseActivations({ softwareId }: LicenseActivationsProps) {
                     ))
                 )}
             </div>
-        </div>
+        </div >
     )
 }

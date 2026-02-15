@@ -70,6 +70,13 @@ export function UsersTable({ users, setores, isAdmin, onEdit, onDelete, onToggle
                                                 <Mail className="h-3 w-3" />
                                                 {user.email}
                                             </div>
+                                            {user.cargo && (
+                                                <div className="flex items-center gap-1.5 text-xs text-slate-500 font-bold mt-1 truncate">
+                                                    <Badge variant="secondary" className="px-1.5 py-0 h-5 text-[10px] bg-slate-100 text-slate-500 border-none rounded-md">
+                                                        {user.cargo}
+                                                    </Badge>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </td>

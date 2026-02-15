@@ -10,6 +10,7 @@ export interface Profile {
     cpf: string | null
     cargo: string | null
     ativos_count?: number
+    is_setor_responsavel?: boolean | null
 }
 
 export interface Ativo {

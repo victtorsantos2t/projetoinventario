@@ -26,6 +26,8 @@ export default function DashboardLayout({
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
                 setAuthenticated(true)
+                // Dispara a engine de notificações (fallback para triggers)
+                await supabase.rpc('fn_gerar_notificacoes_automaticas')
             }
             setLoading(false)
         }
@@ -44,11 +46,17 @@ export default function DashboardLayout({
 
     return (
         <UserProvider>
-            <div className="flex min-h-screen bg-slate-50/50 dark:bg-black">
-                <Sidebar />
-                <div className="flex-1 flex flex-col min-w-0">
+            <div className="flex h-screen bg-neutral-app dark:bg-zinc-950 overflow-hidden">
+                <div className="hidden lg:block h-full sticky top-0 shrink-0">
+                    <Sidebar />
+                </div>
+                {/* Mobile version still uses absolute/fixed inside component */}
+                <div className="lg:hidden">
+                    <Sidebar />
+                </div>
+                <div className="flex-1 flex flex-col min-w-0 h-full">
                     <Header />
-                    <main className="flex-1 p-4 md:p-8 overflow-y-auto bg-slate-50/50 dark:bg-black">
+                    <main className="flex-1 p-4 lg:p-6 xl:p-8 overflow-y-auto bg-neutral-app dark:bg-zinc-950 custom-scrollbar">
                         <ErrorBoundary>
                             {children}
                         </ErrorBoundary>

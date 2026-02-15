@@ -87,60 +87,65 @@ export function AssetActivityModal({ ativoId, ativoNome, open, onOpenChange }: A
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[650px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                <div className="flex flex-col max-h-[90vh]">
-                    <DialogHeader className="p-8 pb-4 bg-slate-50/50 border-b border-slate-100">
-                        <DialogTitle className="text-3xl font-black tracking-tight text-slate-900 flex items-center gap-3">
-                            <History className="h-8 w-8 text-primary" />
-                            Histórico do Ativo
-                        </DialogTitle>
-                        <DialogDescription className="text-slate-500 font-medium text-base">
-                            Rastreabilidade completa para: <span className="text-primary font-bold">{ativoNome}</span>
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    {/* Banner de Restauração de Saúde (Nova Funcionalidade) */}
-                    {dataRestauracao && (
-                        <div className="mx-8 mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-3xl flex items-center gap-4 animate-in fade-in zoom-in duration-500">
-                            <div className="h-10 w-10 shrink-0 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-200">
-                                <ShieldCheck className="h-6 w-6 text-white" />
-                            </div>
-                            <div className="space-y-1">
-                                <h4 className="text-sm font-black text-emerald-900 uppercase tracking-tight">Saúde Restaurada!</h4>
-                                <p className="text-xs text-emerald-700 font-medium leading-relaxed">
-                                    Este equipamento passou por um processo de upgrade/restauração em <span className="font-bold">{new Date(dataRestauracao).toLocaleDateString()}</span>.
-                                    A contagem de risco foi reiniciada para garantir maior confiabilidade.
-                                </p>
-                            </div>
+            <DialogContent className="max-w-3xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
+                {/* Header Padronizado */}
+                <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
+                    <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
+                            <History className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                         </div>
-                    )}
-
-                    {/* Banner de Sugestão de Troca (Reforço da FASE 2) - Baseado na contagem de SAÚDE */}
-                    {counts.saude >= 5 && (
-                        <div className="mx-8 mt-4 p-4 bg-amber-50 border border-amber-200 rounded-3xl flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                            <div className="h-10 w-10 shrink-0 rounded-2xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-200">
-                                <AlertTriangle className="h-6 w-6 text-white" />
-                            </div>
-                            <div className="space-y-1">
-                                <h4 className="text-sm font-black text-amber-900 uppercase tracking-tight">Risco Crítico Detectado!</h4>
-                                <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                                    Este equipamento já passou por <span className="font-bold">{counts.saude} intervenções</span> desde a última restauração.
-                                    Sugerimos a **AVALIAÇÃO PARA SUBSTITUIÇÃO** ou novo upgrade para evitar paradas críticas.
-                                </p>
-                            </div>
+                        <div>
+                            <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
+                                Histórico do Ativo
+                            </DialogTitle>
+                            <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px]">
+                                Rastreabilidade completa: <span className="text-primary-600 dark:text-primary-400 font-bold">{ativoNome}</span>
+                            </DialogDescription>
                         </div>
-                    )}
-
-                    <div className="flex-1 overflow-y-auto p-8 pt-6">
-                        {loading ? (
-                            <div className="flex flex-col items-center justify-center py-20 gap-4">
-                                <Loader2 className="h-8 w-8 text-primary animate-spin" />
-                                <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Compilando linha do tempo...</p>
-                            </div>
-                        ) : (
-                            <MaintenanceTimeline movements={historico} />
-                        )}
                     </div>
+                </DialogHeader>
+
+                {/* Banner de Restauração de Saúde Padronizado */}
+                {dataRestauracao && (
+                    <div className="mx-8 mt-6 p-5 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-500/20 rounded-3xl flex items-center gap-5 animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/5">
+                        <div className="h-11 w-11 shrink-0 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                            <ShieldCheck className="h-6 w-6 text-white" />
+                        </div>
+                        <div className="space-y-1">
+                            <h4 className="text-sm font-black text-emerald-900 dark:text-emerald-400 uppercase tracking-tight">Saúde Restaurada!</h4>
+                            <p className="text-xs text-emerald-700 dark:text-emerald-400/80 font-medium leading-relaxed">
+                                Equipamento restaurado em <span className="font-black underline decoration-emerald-300 dark:decoration-emerald-500/50 underline-offset-2">{new Date(dataRestauracao).toLocaleDateString()}</span>.
+                                A contagem de risco foi reiniciada para garantir confiabilidade máxima.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Banner de Sugestão de Troca Padronizado */}
+                {counts.saude >= 5 && (
+                    <div className="mx-8 mt-6 p-5 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-500/20 rounded-3xl flex items-start gap-5 animate-in fade-in slide-in-from-top-4 duration-500 shadow-sm shadow-amber-500/5">
+                        <div className="h-11 w-11 shrink-0 rounded-2xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                            <AlertTriangle className="h-6 w-6 text-white" />
+                        </div>
+                        <div className="space-y-1">
+                            <h4 className="text-sm font-black text-amber-900 dark:text-amber-400 uppercase tracking-tight">Risco Crítico Detectado!</h4>
+                            <p className="text-xs text-amber-700 dark:text-amber-400/80 font-medium leading-relaxed">
+                                Equipamento com <span className="font-black text-amber-600 dark:text-amber-500">{counts.saude} intervenções</span> acumuladas.
+                                Sugerimos **AVALIAÇÃO PARA SUBSTITUIÇÃO** imediata para evitar paradas críticas.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                <div className="flex-1 overflow-y-auto p-8 pt-4 custom-scrollbar">
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-24 gap-4">
+                            <Loader2 className="h-10 w-10 text-primary-600 dark:text-primary-400 animate-spin" />
+                            <p className="text-text-muted font-black uppercase text-[10px] tracking-widest">Compilando linha do tempo...</p>
+                        </div>
+                    ) : (
+                        <MaintenanceTimeline movements={historico} />
+                    )}
                 </div>
             </DialogContent>
         </Dialog>

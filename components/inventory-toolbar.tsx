@@ -95,12 +95,12 @@ export function InventoryToolbar({
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 {!isViewer && (
                     <div className="relative flex-1">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
                         <Input
                             placeholder="Buscar por nome, serial, colaborador..."
                             value={searchTerm}
                             onChange={(e) => onSearchChange(e.target.value)}
-                            className="pl-10 rounded-xl border-slate-200 h-11 bg-white shadow-sm ring-offset-background placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                            className="pl-10 rounded-xl border-slate-200 h-11 bg-white dark:bg-zinc-900 shadow-sm ring-offset-background placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-600/20 transition-all font-medium"
                         />
                     </div>
                 )}
@@ -112,8 +112,8 @@ export function InventoryToolbar({
                             className={`
                                 flex items-center gap-2 h-11 px-4 rounded-xl border text-sm font-bold transition-all
                                 ${showFilters || activeFiltersCount > 0
-                                    ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
-                                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 shadow-sm'}
+                                    ? 'bg-primary-600 text-white border-primary-600 shadow-lg shadow-primary-600/20'
+                                    : 'bg-white dark:bg-zinc-900 text-text-secondary border-slate-200 hover:bg-neutral-subtle dark:hover:bg-white/5 shadow-sm'}
                             `}
                         >
                             <Filter className="h-4 w-4" />
@@ -126,16 +126,16 @@ export function InventoryToolbar({
                         </button>
                     )}
 
-                    <div className="flex items-center bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <div className="flex items-center bg-white dark:bg-zinc-900 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                         <button
                             onClick={() => onViewModeChange('grid')}
-                            className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-primary text-white' : 'text-slate-400 hover:text-slate-600'}`}
+                            className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-primary-600 text-white' : 'text-text-muted hover:text-text-primary'}`}
                         >
                             <LayoutGrid className="h-4 w-4" />
                         </button>
                         <button
                             onClick={() => onViewModeChange('list')}
-                            className={`p-2.5 transition-colors ${viewMode === 'list' ? 'bg-primary text-white' : 'text-slate-400 hover:text-slate-600'}`}
+                            className={`p-2.5 transition-colors ${viewMode === 'list' ? 'bg-primary-600 text-white' : 'text-text-muted hover:text-text-primary'}`}
                         >
                             <List className="h-4 w-4" />
                         </button>
@@ -168,7 +168,7 @@ export function InventoryToolbar({
                             <select
                                 value={selectedStatus || ""}
                                 onChange={(e) => onStatusChange(e.target.value || null)}
-                                className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                                className="w-full h-10 px-3 bg-neutral-subtle dark:bg-white/5 border border-slate-200 rounded-xl text-sm font-bold text-text-primary focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600/30 transition-all outline-none"
                             >
                                 <option value="">Todos os status</option>
                                 {STATUS_OPTIONS.map(s => (
@@ -185,7 +185,7 @@ export function InventoryToolbar({
                             <select
                                 value={selectedTipo || ""}
                                 onChange={(e) => onTipoChange(e.target.value || null)}
-                                className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                                className="w-full h-10 px-3 bg-neutral-subtle dark:bg-white/5 border border-slate-200 rounded-xl text-sm font-bold text-text-primary focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600/30 transition-all outline-none"
                             >
                                 <option value="">Todos os tipos</option>
                                 {tipos.map(t => (
@@ -202,7 +202,7 @@ export function InventoryToolbar({
                             <select
                                 value={selectedSetor || ""}
                                 onChange={(e) => onSetorChange(e.target.value || null)}
-                                className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                                className="w-full h-10 px-3 bg-neutral-subtle dark:bg-white/5 border border-slate-200 rounded-xl text-sm font-bold text-text-primary focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600/30 transition-all outline-none"
                             >
                                 <option value="">Todos os setores</option>
                                 {setores.map(s => (
@@ -219,7 +219,7 @@ export function InventoryToolbar({
                             <select
                                 value={selectedSaude || ""}
                                 onChange={(e) => onSaudeChange(e.target.value || null)}
-                                className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                                className="w-full h-10 px-3 bg-neutral-subtle dark:bg-white/5 border border-slate-200 rounded-xl text-sm font-bold text-text-primary focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600/30 transition-all outline-none"
                             >
                                 <option value="">Todas</option>
                                 {SAUDE_OPTIONS.map(s => (
@@ -287,7 +287,7 @@ export function InventoryToolbar({
                         <button
                             onClick={() => onPageChange(Math.max(0, currentPage - 1))}
                             disabled={currentPage === 0}
-                            className="h-9 w-9 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="h-9 w-9 rounded-lg border border-slate-200 dark:border-white/10 flex items-center justify-center text-text-muted hover:bg-neutral-subtle dark:hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         >
                             <ChevronLeft className="h-4 w-4" />
                         </button>
@@ -299,8 +299,8 @@ export function InventoryToolbar({
                                     key={page}
                                     onClick={() => onPageChange(page)}
                                     className={`h-9 w-9 rounded-lg text-sm font-bold transition-all ${page === currentPage
-                                        ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                                        : 'text-slate-400 hover:bg-slate-50 border border-slate-200'
+                                        ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20'
+                                        : 'text-text-muted hover:bg-neutral-subtle dark:hover:bg-white/5 border border-slate-200 dark:border-white/10'
                                         }`}
                                 >
                                     {page + 1}
@@ -310,7 +310,7 @@ export function InventoryToolbar({
                         <button
                             onClick={() => onPageChange(Math.min(totalPages - 1, currentPage + 1))}
                             disabled={currentPage >= totalPages - 1}
-                            className="h-9 w-9 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="h-9 w-9 rounded-lg border border-slate-200 dark:border-white/10 flex items-center justify-center text-text-muted hover:bg-neutral-subtle dark:hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         >
                             <ChevronRight className="h-4 w-4" />
                         </button>

@@ -32,12 +32,18 @@ export function NotificationsPopover() {
             .from('notificacoes')
             .select('*')
             .order('created_at', { ascending: false })
-            .limit(20)
+            .limit(50)
 
         if (error) {
             console.error("Erro ao buscar notificações:", error)
             return
         }
+
+        // Filtrar notificações do próprio usuário e notificações inválidas (sem título/mensagem)
+        const filteredData = data.filter((n: any) =>
+            (!n.actor_id || n.actor_id !== profile?.id) &&
+            n.titulo && n.mensagem
+        ).slice(0, 20)
 
         // Buscar status de leitura se o usuário estiver logado
         let readStatuses: any[] = []
@@ -50,7 +56,7 @@ export function NotificationsPopover() {
             readStatuses = statusData || []
         }
 
-        const formatted = data.map((n: any) => ({
+        const formatted = filteredData.map((n: any) => ({
             ...n,
             lido: readStatuses.some(s => s.notificacao_id === n.id && !!s.lido_at)
         }))
@@ -65,7 +71,9 @@ export function NotificationsPopover() {
         // Realtime subscription
         const channel = supabase
             .channel('notificacoes_changes')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notificacoes' }, () => {
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notificacoes' }, (payload: any) => {
+                // Ignorar notificações geradas pelo próprio usuário ou inválidas
+                if ((payload.new && payload.new.actor_id === profile?.id) || (!payload.new.titulo || !payload.new.mensagem)) return
                 fetchNotifications()
             })
             .subscribe()
@@ -134,7 +142,7 @@ export function NotificationsPopover() {
                     )}
                 </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80 p-0 rounded-2xl border-slate-100 shadow-xl overflow-hidden">
+            <DropdownMenuContent align="end" className="w-80 p-0 rounded-2xl border-slate-100 shadow-xl overflow-hidden bg-white dark:bg-zinc-900">
                 <div className="p-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
                     <DropdownMenuLabel className="p-0 font-bold text-slate-700">Notificações</DropdownMenuLabel>
                     {unreadCount > 0 && (
@@ -202,7 +210,11 @@ export function NotificationsPopover() {
                 </div>
                 {notifications.length > 0 && (
                     <div className="p-2 border-t border-slate-50 bg-slate-50/30">
-                        <Button variant="ghost" className="w-full h-8 text-xs font-bold text-slate-500 hover:text-slate-700">
+                        <Button
+                            variant="ghost"
+                            onClick={() => router.push('/notifications')}
+                            className="w-full h-8 text-xs font-bold text-slate-500 hover:text-slate-700"
+                        >
                             Ver tudo
                         </Button>
                     </div>

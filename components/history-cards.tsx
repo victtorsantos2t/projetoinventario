@@ -16,20 +16,22 @@ interface HistoryCardsProps {
 }
 
 const getActionIcon = (tipo: string) => {
-    switch (tipo) {
-        case 'CRIAR': return <ArrowUpRight className="h-5 w-5 text-emerald-500" />
-        case 'EDITAR': return <Edit3 className="h-5 w-5 text-indigo-500" />
-        case 'DELETAR': return <ArrowDownLeft className="h-5 w-5 text-rose-500" />
+    const normalized = tipo?.toUpperCase()
+    switch (normalized) {
+        case 'CRIAR': case 'CRIAÇÃO': return <ArrowUpRight className="h-5 w-5 text-emerald-500" />
+        case 'EDITAR': case 'EDIÇÃO': return <Edit3 className="h-5 w-5 text-indigo-500" />
+        case 'DELETAR': case 'EXCLUSÃO': return <ArrowDownLeft className="h-5 w-5 text-rose-500" />
         case 'MANUTENÇÃO': return <History className="h-5 w-5 text-amber-500" />
         default: return <History className="h-5 w-5 text-slate-400" />
     }
 }
 
 const getActionColor = (tipo: string) => {
-    switch (tipo) {
-        case 'CRIAR': return "bg-emerald-50 text-emerald-700 border-emerald-200"
-        case 'EDITAR': return "bg-indigo-50 text-indigo-700 border-indigo-200"
-        case 'DELETAR': return "bg-rose-50 text-rose-700 border-rose-200"
+    const normalized = tipo?.toUpperCase()
+    switch (normalized) {
+        case 'CRIAR': case 'CRIAÇÃO': return "bg-emerald-50 text-emerald-700 border-emerald-200"
+        case 'EDITAR': case 'EDIÇÃO': return "bg-indigo-50 text-indigo-700 border-indigo-200"
+        case 'DELETAR': case 'EXCLUSÃO': return "bg-rose-50 text-rose-700 border-rose-200"
         case 'MANUTENÇÃO': return "bg-amber-50 text-amber-700 border-amber-200"
         default: return "bg-slate-50 text-slate-600 border-slate-200"
     }
