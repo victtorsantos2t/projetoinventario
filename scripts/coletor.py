@@ -296,6 +296,11 @@ def collect_system_info() -> dict:
     }
 
     logger.info(f"Informações coletadas: {hostname} (Serial: {serial})")
+    # Log detalhado para depuração
+    logger.info(f"  SO: {info['sistema_operacional']}")
+    logger.info(f"  Usuário: {info['ultimo_usuario']}")
+    logger.info(f"  Tempo Ligado: {info['tempo_ligado']}")
+    
     return info
 
 
