@@ -907,49 +907,70 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center justify-between">
                                                 Processador
-                                                {monitoringData?.processador && <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1"><Cpu className="h-2.5 w-2.5" /> Auto</span>}
+                                                {monitoringData?.processador && monitoringData.processador !== 'Desconhecido' && (
+                                                    <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1">
+                                                        <Cpu className="h-2.5 w-2.5" /> Auto
+                                                    </span>
+                                                )}
                                             </label>
-                                            {monitoringData?.processador ? (
+                                            {monitoringData?.processador && monitoringData.processador !== 'Desconhecido' ? (
                                                 <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-black flex items-center text-slate-700 dark:text-indigo-300">
                                                     {monitoringData.processador}
                                                 </div>
                                             ) : (
-                                                <select value={form.processador} onChange={(e) => handleChange('processador', e.target.value)} disabled={isViewMode} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
-                                                    <option value="">Selecione</option>
-                                                    {CPU_GENERATIONS.map(c => <option key={c} value={c}>{c}</option>)}
-                                                </select>
+                                                <Input
+                                                    value={form.processador}
+                                                    onChange={(e) => handleChange('processador', e.target.value)}
+                                                    disabled={isViewMode}
+                                                    placeholder="Ex: Intel Core i5"
+                                                    className="h-10 rounded-xl bg-white dark:bg-zinc-800 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm font-black text-sm"
+                                                />
                                             )}
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center justify-between">
                                                 Memória RAM
-                                                {monitoringData?.memoria_ram && <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1"><Activity className="h-2.5 w-2.5" /> Auto</span>}
+                                                {monitoringData?.memoria_ram && monitoringData.memoria_ram !== 'Desconhecido' && (
+                                                    <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1">
+                                                        <Activity className="h-2.5 w-2.5" /> Auto
+                                                    </span>
+                                                )}
                                             </label>
-                                            {monitoringData?.memoria_ram ? (
+                                            {monitoringData?.memoria_ram && monitoringData.memoria_ram !== 'Desconhecido' ? (
                                                 <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-black flex items-center text-slate-700 dark:text-indigo-300">
                                                     {monitoringData.memoria_ram}
                                                 </div>
                                             ) : (
-                                                <select value={form.memoria_ram} onChange={(e) => handleChange('memoria_ram', e.target.value)} disabled={isViewMode} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
-                                                    <option value="">Selecione</option>
-                                                    {RAM_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
-                                                </select>
+                                                <Input
+                                                    value={form.memoria_ram}
+                                                    onChange={(e) => handleChange('memoria_ram', e.target.value)}
+                                                    disabled={isViewMode}
+                                                    placeholder="Ex: 16 GB"
+                                                    className="h-10 rounded-xl bg-white dark:bg-zinc-800 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm font-black text-sm"
+                                                />
                                             )}
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center justify-between">
                                                 Armazenamento
-                                                {monitoringData?.armazenamento && <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1"><History className="h-2.5 w-2.5" /> Auto</span>}
+                                                {monitoringData?.armazenamento && monitoringData.armazenamento !== 'Desconhecido' && (
+                                                    <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1">
+                                                        <History className="h-2.5 w-2.5" /> Auto
+                                                    </span>
+                                                )}
                                             </label>
-                                            {monitoringData?.armazenamento ? (
+                                            {monitoringData?.armazenamento && monitoringData.armazenamento !== 'Desconhecido' ? (
                                                 <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-black flex items-center text-slate-700 dark:text-indigo-300">
                                                     {monitoringData.armazenamento}
                                                 </div>
                                             ) : (
-                                                <select value={form.armazenamento} onChange={(e) => handleChange('armazenamento', e.target.value)} disabled={isViewMode} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
-                                                    <option value="">Selecione</option>
-                                                    {STORAGE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                                                </select>
+                                                <Input
+                                                    value={form.armazenamento}
+                                                    onChange={(e) => handleChange('armazenamento', e.target.value)}
+                                                    disabled={isViewMode}
+                                                    placeholder="Ex: 512 GB SSD"
+                                                    className="h-10 rounded-xl bg-white dark:bg-zinc-800 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm font-black text-sm"
+                                                />
                                             )}
                                         </div>
 

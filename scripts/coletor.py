@@ -88,59 +88,56 @@ def get_cpu_info() -> str:
 
 
 def get_ram_gb() -> str:
-    """Obtém a quantidade total de RAM em GB."""
+    """Obtém a quantidade total de RAM em MB (estilo systeminfo)."""
     try:
         if platform.system() == "Windows":
-            # Using PowerShell as fallback or first choice for more reliable output
             try:
+                # Pegando valor exato em bytes e convertendo para o formato do systeminfo (pontuação de milhar e MB)
                 result = subprocess.run(
                     ["powershell", "-Command", "(Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory"],
                     capture_output=True, text=True, timeout=10
                 )
                 total_bytes = int(result.stdout.strip())
-                gb = round(total_bytes / (1024 ** 3))
-                return f"{gb} GB"
+                mb = int(total_bytes / (1024 ** 2))
+                return f"{mb:,} MB".replace(",", ".")
             except:
-                # Fallback to wmic
                 result = subprocess.run(
                     ["wmic", "computersystem", "get", "totalphysicalmemory"],
                     capture_output=True, text=True, timeout=10
                 )
                 lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
                 if len(lines) >= 2:
-                    try:
-                        total_bytes = int(lines[1])
-                        gb = round(total_bytes / (1024 ** 3))
-                        return f"{gb} GB"
-                    except ValueError:
-                        pass
+                    total_bytes = int(lines[1])
+                    mb = int(total_bytes / (1024 ** 2))
+                    return f"{mb:,} MB".replace(",", ".")
         elif platform.system() == "Linux":
             with open("/proc/meminfo", "r") as f:
                 for line in f:
                     if "MemTotal" in line:
                         kb = int(line.split()[1])
-                        gb = round(kb / (1024 ** 2))
-                        return f"{gb} GB"
+                        mb = int(kb / 1024)
+                        return f"{mb} MB"
     except Exception as e:
         logger.warning(f"Erro ao obter RAM: {e}")
 
-    return "Desconhecido"
+    return ""
 
 
 def get_storage_info() -> str:
-    """Obtém informações de armazenamento principal."""
+    """Obtém informações de armazenamento."""
     try:
         if platform.system() == "Windows":
-            # Using PowerShell for cleaner disk info
             try:
                 result = subprocess.run(
-                    ["powershell", "-Command", "Get-PhysicalDisk | Select-Object -First 1 -ExpandProperty Size"],
+                    ["powershell", "-Command", "Get-PhysicalDisk | Select-Object -ExpandProperty Size"],
                     capture_output=True, text=True, timeout=10
                 )
-                size_bytes = int(result.stdout.strip())
-                gb = round(size_bytes / (1024 ** 3))
-                if gb >= 900: return f"{round(gb / 1024)} TB"
-                return f"{gb} GB"
+                output = result.stdout.strip().splitlines()
+                if output:
+                    size_bytes = int(output[0].strip())
+                    gb = round(size_bytes / (1024 ** 3))
+                    if gb >= 900: return f"{round(gb / 1024)} TB"
+                    return f"{gb} GB"
             except:
                 result = subprocess.run(
                     ["wmic", "diskdrive", "get", "size"],
@@ -155,7 +152,7 @@ def get_storage_info() -> str:
     except Exception as e:
         logger.warning(f"Erro ao obter armazenamento: {e}")
 
-    return "Desconhecido"
+    return ""
 
 
 def get_os_info() -> str:
