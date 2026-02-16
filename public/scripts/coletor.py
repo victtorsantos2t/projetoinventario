@@ -69,13 +69,25 @@ def get_cpu_info() -> str:
     """Obtém informações do processador."""
     try:
         if platform.system() == "Windows":
+            # Tentar PowerShell primeiro (mais limpo)
+            try:
+                result = subprocess.run(
+                    ["powershell", "-Command", "Get-CimInstance Win32_Processor | Select-Object -ExpandProperty Name"],
+                    capture_output=True, text=True, timeout=10
+                )
+                if result.stdout.strip():
+                    return result.stdout.strip()
+            except:
+                pass
+            
+            # Fallback para wmic
             result = subprocess.run(
                 ["wmic", "cpu", "get", "name"],
                 capture_output=True, text=True, timeout=10
             )
-            lines = result.stdout.strip().split('\n')
+            lines = [l.strip() for l in result.stdout.splitlines() if l.strip()]
             if len(lines) >= 2:
-                return lines[1].strip()
+                return lines[1]
         elif platform.system() == "Linux":
             with open("/proc/cpuinfo", "r") as f:
                 for line in f:
@@ -84,62 +96,184 @@ def get_cpu_info() -> str:
     except Exception as e:
         logger.warning(f"Erro ao obter CPU: {e}")
 
-    return platform.processor() or "Desconhecido"
+    return platform.processor() or ""
 
 
 def get_ram_gb() -> str:
-    """Obtém a quantidade total de RAM em GB."""
+    """Obtém a quantidade total de RAM em MB (estilo systeminfo)."""
     try:
         if platform.system() == "Windows":
-            result = subprocess.run(
-                ["wmic", "computersystem", "get", "totalphysicalmemory"],
-                capture_output=True, text=True, timeout=10
-            )
-            lines = result.stdout.strip().split('\n')
-            if len(lines) >= 2 and lines[1].strip():
-                try:
-                    total_bytes = int(lines[1].strip())
-                    gb = round(total_bytes / (1024 ** 3))
-                    return f"{gb} GB"
-                except ValueError:
-                    pass
+            # Tentar PowerShell formatado
+            try:
+                result = subprocess.run(
+                    ["powershell", "-Command", "[math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1MB)"],
+                    capture_output=True, text=True, timeout=10
+                )
+                if result.stdout.strip():
+                    mb = int(result.stdout.strip())
+                    return f"{mb:,} MB".replace(",", ".")
+            except:
+                pass
+
+            # Fallback para wmic
+            try:
+                result = subprocess.run(
+                    ["wmic", "computersystem", "get", "totalphysicalmemory"],
+                    capture_output=True, text=True, timeout=10
+                )
+                lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+                if len(lines) >= 2:
+                    total_bytes = int(lines[1])
+                    mb = int(total_bytes / (1024 ** 2))
+                    return f"{mb:,} MB".replace(",", ".")
+            except:
+                pass
+
+            # Fallback final: systeminfo (Lento, mas muito confiável)
+            try:
+                result = subprocess.run(
+                    ["systeminfo"],
+                    capture_output=True, text=True, timeout=20
+                )
+                for line in result.stdout.splitlines():
+                    if "física total" in line.lower() or "total physical memory" in line.lower():
+                        # Ex: Memória física total: 10.116 MB
+                        parts = line.split(":")
+                        if len(parts) >= 2:
+                            return parts[1].strip()
+            except:
+                pass
         elif platform.system() == "Linux":
             with open("/proc/meminfo", "r") as f:
                 for line in f:
                     if "MemTotal" in line:
                         kb = int(line.split()[1])
-                        gb = round(kb / (1024 ** 2))
-                        return f"{gb} GB"
+                        mb = int(kb / 1024)
+                        return f"{mb} MB"
     except Exception as e:
         logger.warning(f"Erro ao obter RAM: {e}")
 
-    return "Desconhecido"
+    return ""
 
 
 def get_storage_info() -> str:
-    """Obtém informações de armazenamento principal."""
+    """Obtém informações de armazenamento."""
     try:
         if platform.system() == "Windows":
-            result = subprocess.run(
-                ["wmic", "diskdrive", "get", "size,model"],
-                capture_output=True, text=True, timeout=10
-            )
-            lines = result.stdout.strip().split('\n')
-            if len(lines) >= 2:
-                parts = lines[1].strip().split()
-                if parts:
-                    # Last element is usually the size in bytes
-                    size_bytes = int(parts[-1])
+            try:
+                result = subprocess.run(
+                    ["powershell", "-Command", "Get-PhysicalDisk | Select-Object -ExpandProperty Size"],
+                    capture_output=True, text=True, timeout=10
+                )
+                output = result.stdout.strip().splitlines()
+                if output:
+                    size_bytes = int(output[0].strip())
                     gb = round(size_bytes / (1024 ** 3))
-                    if gb >= 900:
-                        return f"{round(gb / 1024)} TB"
-                    elif gb >= 100:
-                        return f"{gb} GB SSD"
-                    else:
-                        return f"{gb} GB"
+                    if gb >= 900: return f"{round(gb / 1024)} TB"
+                    return f"{gb} GB"
+            except:
+                result = subprocess.run(
+                    ["wmic", "diskdrive", "get", "size"],
+                    capture_output=True, text=True, timeout=10
+                )
+                lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+                if len(lines) >= 2:
+                    size_bytes = int(lines[1])
+                    gb = round(size_bytes / (1024 ** 3))
+                    if gb >= 900: return f"{round(gb / 1024)} TB"
+                    return f"{gb} GB"
     except Exception as e:
         logger.warning(f"Erro ao obter armazenamento: {e}")
 
+    return ""
+
+
+def get_os_info() -> str:
+    """Obtém nome e versão do Sistema Operacional."""
+    try:
+        if platform.system() == "Windows":
+            # Tentar via PowerShell para nome completo e versão
+            try:
+                result = subprocess.run(
+                    ["powershell", "-Command", "((Get-CimInstance Win32_OperatingSystem).Caption + ' ' + (Get-CimInstance Win32_OperatingSystem).Version).Trim()"],
+                    capture_output=True, text=True, timeout=10
+                )
+                if result.stdout.strip():
+                    return result.stdout.strip()
+            except Exception as e:
+                logger.debug(f"PowerShell SO failed: {e}")
+        
+        system = platform.system()
+        release = platform.release()
+        return f"{system} {release}"
+    except:
+        return "Desconhecido"
+
+
+def get_logged_user() -> str:
+    """Obtém o usuário logado atualmente."""
+    try:
+        # PowerShell é mais confiável no Windows para saber quem está na sessão
+        if platform.system() == "Windows":
+            try:
+                result = subprocess.run(
+                    ["powershell", "-Command", "(Get-CimInstance Win32_ComputerSystem).UserName.Trim()"],
+                    capture_output=True, text=True, timeout=10
+                )
+                user = result.stdout.strip()
+                if user:
+                    return user.split('\\')[-1]
+            except Exception as e:
+                logger.debug(f"PowerShell User failed: {e}")
+
+        # Fallbacks
+        try:
+            return os.getlogin()
+        except:
+            pass
+        return os.environ.get("USERNAME") or os.environ.get("USER") or "Desconhecido"
+    except:
+        return "Desconhecido"
+
+
+def get_uptime() -> str:
+    """Obtém o tempo de atividade do sistema."""
+    try:
+        if platform.system() == "Windows":
+            # PowerShell é muito mais simples para uptime
+            try:
+                cmd = "(Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime"
+                result = subprocess.run(
+                    ["powershell", "-Command", f"$u = {cmd}; \"$($u.Days)d $($u.Hours)h $($u.Minutes)m\".Trim()"],
+                    capture_output=True, text=True, timeout=10
+                )
+                if result.stdout.strip():
+                    return result.stdout.strip()
+            except Exception as e:
+                logger.debug(f"PowerShell Uptime failed: {e}")
+
+            # Fallback para wmic
+            result = subprocess.run(
+                ["wmic", "os", "get", "lastbootuptime"],
+                capture_output=True, text=True, timeout=10
+            )
+            lines = [line.strip() for line in result.stdout.strip().split('\n') if line.strip()]
+            if len(lines) >= 2:
+                boot_time_str = lines[1].split('.')[0]
+                import datetime
+                boot_time = datetime.datetime.strptime(boot_time_str, "%Y%m%d%H%M%S")
+                uptime = datetime.datetime.now() - boot_time
+                return f"{uptime.days}d {uptime.seconds // 3600}h {(uptime.seconds % 3600) // 60}m"
+        elif platform.system() == "Linux":
+            with open("/proc/uptime", "r") as f:
+                uptime_seconds = float(f.readline().split()[0])
+                days = int(uptime_seconds // 86400)
+                hours = int((uptime_seconds % 86400) // 3600)
+                minutes = int((uptime_seconds % 3600) // 60)
+                return f"{days}d {hours}h {minutes}m"
+    except Exception as e:
+        logger.warning(f"Erro ao obter uptime: {e}")
+    
     return "Desconhecido"
 
 
@@ -157,9 +291,17 @@ def collect_system_info() -> dict:
         "memoria_ram": get_ram_gb(),
         "armazenamento": get_storage_info(),
         "acesso_remoto": None,
+        "sistema_operacional": get_os_info(),
+        "ultimo_usuario": get_logged_user(),
+        "tempo_ligado": get_uptime(),
     }
 
     logger.info(f"Informações coletadas: {hostname} (Serial: {serial})")
+    # Log detalhado para depuração
+    logger.info(f"  SO: {info['sistema_operacional']}")
+    logger.info(f"  Usuário: {info['ultimo_usuario']}")
+    logger.info(f"  Tempo Ligado: {info['tempo_ligado']}")
+    
     return info
 
 
@@ -189,13 +331,17 @@ def send_to_api(data: dict) -> bool:
         print("CONFIGURAÇÃO INICIAL (Apenas na primeira vez)")
         print("="*50)
         
-        if not url:
+        while not url:
             print("\nEntre com a URL do Sistema de Inventário (ex: https://seu-app.vercel.app):")
             url = input("> ").strip().rstrip('/')
+            if not url:
+                print("❌ A URL é obrigatória.")
         
-        if not key:
+        while not key:
             print("\nEntre com a CHAVE de API (gerada no painel):")
             key = input("> ").strip()
+            if not key:
+                print("❌ A Chave de API é obrigatória.")
         
         # Salva para próximas execuções
         if url and key:
