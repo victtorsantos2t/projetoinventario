@@ -390,34 +390,50 @@ def send_to_api(data: dict) -> bool:
 
 if __name__ == "__main__":
     import time
+    import random
     
     logger.info("=" * 50)
-    logger.info("Coletor de Inventário TI - v2.0 (MODO REALTIME)")
+    logger.info("Coletor de Inventário TI - v2.1 (MODO ESCALA)")
     logger.info("=" * 50)
-    logger.info("O script agora rodará continuamente enviando batimentos cardíacos.")
-    logger.info("Pressione Ctrl+C para encerrar.")
+    logger.info("Otimizado para grandes redes com Jitter e Intervalo Configurável.")
+    
+    # Carrega intervalo do config.json ou usa padrão
+    heartbeat_interval = 300 # 5 min default
+    config_file = "config.json"
+    if os.path.exists(config_file):
+        try:
+            with open(config_file, "r") as f:
+                config = json.load(f)
+                heartbeat_interval = int(config.get("HEARTBEAT_INTERVAL", 300))
+        except: pass
+
+    logger.info(f"Intervalo base: {heartbeat_interval}s | Pressione Ctrl+C para encerrar.")
     logger.info("-" * 50)
 
     try:
         while True:
             system_info = collect_system_info()
             
-            logger.info("Dados coletados, enviando para o servidor...")
+            logger.info("Enviando atualização...")
             success = send_to_api(system_info)
             
             if success:
-                logger.info("✅ Batimento cardíaco enviado com sucesso!")
+                logger.info("✅ Batimento cardíaco enviado.")
             else:
-                logger.error("❌ Falha ao enviar batimento cardíaco.")
+                logger.error("❌ Falha no envio.")
             
-            intervalo = 300 # 5 minutos
-            logger.info(f"Próxima atualização em {intervalo/60} minutos...")
-            time.sleep(intervalo)
+            # Adiciona Jitter (+/- 10% do intervalo, max 30s) para evitar picos simultâneos
+            jitter_range = min(30, int(heartbeat_interval * 0.1))
+            jitter = random.randint(-jitter_range, jitter_range)
+            wait_time = max(30, heartbeat_interval + jitter)
+            
+            logger.info(f"Aguardando {wait_time}s para próxima rodada (Jitter: {jitter}s)...")
+            time.sleep(wait_time)
             
     except KeyboardInterrupt:
-        logger.info("\nEncerrando coletor por solicitação do usuário.")
+        logger.info("\nEncerrando coletor.")
     except Exception as e:
-        logger.error(f"Erro fatal no loop: {e}")
+        logger.error(f"Erro fatal: {e}")
     
     print("\nExecução finalizada.")
-    input("Pressione Enter para fechar a janela...")
+    input("Pressione Enter para fechar...")
