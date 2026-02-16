@@ -46,14 +46,27 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Serial number is required' }, { status: 400 })
         }
 
-        // 3. Inserir ou Atualizar (Upsert) na tabela ativos
-        // Adicionando metadados de quem coletou baseada na chave
+        // 3. Buscar ativo existente para evitar sobrescrever dados válidos com lixo
+        const { data: existingAtivo } = await supabaseAdmin
+            .from('ativos')
+            .select('*')
+            .eq('serial', body.serial)
+            .maybeSingle()
+
+        const isInvalid = (val: any) => !val || val === 'Desconhecido' || val === ''
+
+        // 4. Inserir ou Atualizar (Upsert) na tabela ativos
+        // Mesclagem inteligente: se o novo dado for inválido mas o antigo for válido, mantém o antigo
         const assetData = {
             ...body,
+            processador: isInvalid(body.processador) ? (existingAtivo?.processador || body.processador) : body.processador,
+            memoria_ram: isInvalid(body.memoria_ram) ? (existingAtivo?.memoria_ram || body.memoria_ram) : body.memoria_ram,
+            armazenamento: isInvalid(body.armazenamento) ? (existingAtivo?.armazenamento || body.armazenamento) : body.armazenamento,
+            sistema_operacional: isInvalid(body.sistema_operacional) ? (existingAtivo?.sistema_operacional || body.sistema_operacional) : body.sistema_operacional,
+            ultimo_usuario: isInvalid(body.ultimo_usuario) ? (existingAtivo?.ultimo_usuario || body.ultimo_usuario) : body.ultimo_usuario,
+            tempo_ligado: isInvalid(body.tempo_ligado) ? (existingAtivo?.tempo_ligado || body.tempo_ligado) : body.tempo_ligado,
             updated_at: new Date().toISOString(),
             ultima_conexao: new Date().toISOString(),
-            // Se quiser vincular o ativo ao usuário dono da chave, verifique se a coluna existe na sua tabela
-            // user_id: keyData.user_id 
         }
 
         const { error: upsertError } = await supabaseAdmin

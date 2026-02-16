@@ -191,45 +191,78 @@ def get_storage_info() -> str:
 def get_os_info() -> str:
     """Obtém nome e versão do Sistema Operacional."""
     try:
+        if platform.system() == "Windows":
+            # Tentar via PowerShell para nome completo e versão
+            try:
+                result = subprocess.run(
+                    ["powershell", "-Command", "(Get-CimInstance Win32_OperatingSystem).Caption + ' ' + (Get-CimInstance Win32_OperatingSystem).Version"],
+                    capture_output=True, text=True, timeout=10
+                )
+                if result.stdout.strip():
+                    return result.stdout.strip()
+            except:
+                pass
+        
         system = platform.system()
         release = platform.release()
         return f"{system} {release}"
     except:
-        return "Desconhecido"
+        return ""
 
 
 def get_logged_user() -> str:
     """Obtém o usuário logado atualmente."""
     try:
+        # PowerShell é mais confiável no Windows para saber quem está na sessão
+        if platform.system() == "Windows":
+            try:
+                result = subprocess.run(
+                    ["powershell", "-Command", "(Get-CimInstance Win32_ComputerSystem).UserName"],
+                    capture_output=True, text=True, timeout=10
+                )
+                user = result.stdout.strip()
+                if user:
+                    return user.split('\\')[-1] # Retorna apenas o nome, sem o domínio/máquina
+            except:
+                pass
+
+        # Fallbacks
         return os.getlogin()
     except:
         try:
-            return os.environ.get("USERNAME") or os.environ.get("USER") or "Desconhecido"
+            return os.environ.get("USERNAME") or os.environ.get("USER") or ""
         except:
-            return "Desconhecido"
+            return ""
 
 
 def get_uptime() -> str:
     """Obtém o tempo de atividade do sistema."""
     try:
         if platform.system() == "Windows":
+            # PowerShell é muito mais simples para uptime
+            try:
+                cmd = "(Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime"
+                result = subprocess.run(
+                    ["powershell", "-Command", f"$u = {cmd}; \"$($u.Days)d $($u.Hours)h $($u.Minutes)m\""],
+                    capture_output=True, text=True, timeout=10
+                )
+                if result.stdout.strip():
+                    return result.stdout.strip()
+            except:
+                pass
+
+            # Fallback para wmic
             result = subprocess.run(
                 ["wmic", "os", "get", "lastbootuptime"],
                 capture_output=True, text=True, timeout=10
             )
-            # Ex: 20230520101500.123456-180
             lines = [line.strip() for line in result.stdout.strip().split('\n') if line.strip()]
             if len(lines) >= 2:
-                # O valor está na segunda linha (pós cabeçalho)
                 boot_time_str = lines[1].split('.')[0]
                 import datetime
                 boot_time = datetime.datetime.strptime(boot_time_str, "%Y%m%d%H%M%S")
-                # Calcular uptime
                 uptime = datetime.datetime.now() - boot_time
-                days = uptime.days
-                hours, remainder = divmod(uptime.seconds, 3600)
-                minutes, _ = divmod(remainder, 60)
-                return f"{days}d {hours}h {minutes}m"
+                return f"{uptime.days}d {uptime.seconds // 3600}h {(uptime.seconds % 3600) // 60}m"
         elif platform.system() == "Linux":
             with open("/proc/uptime", "r") as f:
                 uptime_seconds = float(f.readline().split()[0])
@@ -240,7 +273,7 @@ def get_uptime() -> str:
     except Exception as e:
         logger.warning(f"Erro ao obter uptime: {e}")
     
-    return "Desconhecido"
+    return ""
 
 
 def collect_system_info() -> dict:
