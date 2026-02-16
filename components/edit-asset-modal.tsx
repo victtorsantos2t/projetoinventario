@@ -656,12 +656,31 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
     }
 
     useEffect(() => {
-        if (open && ativo) {
-            fetchMaintenances()
-            fetchMonitoringData()
-            // Set up a simple poll every 30 seconds while modal is open
-            const interval = setInterval(fetchMonitoringData, 30000)
-            return () => clearInterval(interval)
+        if (!open || !ativo) return
+
+        fetchMaintenances()
+        fetchMonitoringData()
+
+        // Configura o Realtime do Supabase para o ativo atual
+        const channel = supabase
+            .channel(`ativo-${ativo.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'ativos',
+                    filter: `id=eq.${ativo.id}`
+                },
+                (payload) => {
+                    console.log('Realtime update received:', payload.new)
+                    setMonitoringData(payload.new as Partial<Ativo>)
+                }
+            )
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(channel)
         }
     }, [ativo, open])
 

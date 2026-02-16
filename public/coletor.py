@@ -389,23 +389,35 @@ def send_to_api(data: dict) -> bool:
 
 
 if __name__ == "__main__":
+    import time
+    
     logger.info("=" * 50)
-    logger.info("Coletor de Inventário TI - v2.0")
+    logger.info("Coletor de Inventário TI - v2.0 (MODO REALTIME)")
     logger.info("=" * 50)
-
-    system_info = collect_system_info()
-
-    logger.info("Dados coletados:")
-    for key, value in system_info.items():
-        logger.info(f"  {key}: {value}")
-
+    logger.info("O script agora rodará continuamente enviando batimentos cardíacos.")
+    logger.info("Pressione Ctrl+C para encerrar.")
     logger.info("-" * 50)
-    success = send_to_api(system_info)
 
-    if success:
-        logger.info("Processo concluído com sucesso!")
-    else:
-        logger.error("Processo finalizado com erros. Verifique as mensagens acima.")
+    try:
+        while True:
+            system_info = collect_system_info()
+            
+            logger.info("Dados coletados, enviando para o servidor...")
+            success = send_to_api(system_info)
+            
+            if success:
+                logger.info("✅ Batimento cardíaco enviado com sucesso!")
+            else:
+                logger.error("❌ Falha ao enviar batimento cardíaco.")
+            
+            intervalo = 300 # 5 minutos
+            logger.info(f"Próxima atualização em {intervalo/60} minutos...")
+            time.sleep(intervalo)
+            
+    except KeyboardInterrupt:
+        logger.info("\nEncerrando coletor por solicitação do usuário.")
+    except Exception as e:
+        logger.error(f"Erro fatal no loop: {e}")
     
     print("\nExecução finalizada.")
     input("Pressione Enter para fechar a janela...")
