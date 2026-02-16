@@ -171,6 +171,17 @@ export default function LoginPage() {
                                 </span>
                             )}
                         </Button>
+
+                        {/* Status Badge - Relocado */}
+                        <div className="bg-white dark:bg-zinc-800/50 rounded-2xl p-3 shadow-none border border-slate-100 dark:border-white/5 flex items-center justify-center gap-3 mt-4">
+                            <div className="h-9 w-9 rounded-full bg-emerald-100/50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500">
+                                <CheckCircle2 className="h-5 w-5" />
+                            </div>
+                            <div className="text-left">
+                                <p className="text-xs font-bold text-slate-800 dark:text-white leading-tight">Sistema Operacional</p>
+                                <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 leading-tight">Status: 100% Online</p>
+                            </div>
+                        </div>
                     </form>
 
                     {/* Rodapé Visual Mobile */}
@@ -226,16 +237,7 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    {/* Review Badge Flutuante */}
-                    <div className="absolute -top-[68px] -right-8 bg-white rounded-2xl p-4 shadow-xl shadow-black/20 animate-in slide-in-from-top-4 duration-1000 delay-500 hidden xl:flex items-center gap-3 max-w-[200px]">
-                        <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                            <CheckCircle2 className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <p className="text-xs font-bold text-slate-800">Sistema Operacional</p>
-                            <p className="text-[10px] font-medium text-slate-500">Status: 100% Online</p>
-                        </div>
-                    </div>
+
                 </div>
 
                 {/* Rodapé Visual Direito */}

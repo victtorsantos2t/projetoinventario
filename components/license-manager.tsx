@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { Licenca } from "@/types/softwares"
 import { Input } from "@/components/ui/input"
@@ -37,14 +37,16 @@ export function LicenseManager({ softwareId, onFormToggle }: LicenseManagerProps
         obs: ""
     })
 
-    // Notify parent about form state
+    // Use a ref to store the latest form data for the stable handleSave action
+    const formRef = useRef(form)
     useEffect(() => {
-        if (onFormToggle) {
-            onFormToggle(isAdding, handleSave, editingId ? "Salvar Alterações" : "Adicionar Licença", saving)
-        }
-    }, [isAdding, editingId, saving, form, onFormToggle])
+        formRef.current = form
+    }, [form])
 
-    const fetchLicenses = async () => {
+    // Notify parent about form state
+
+
+    const fetchLicenses = useCallback(async () => {
         setLoading(true)
         try {
             const { data, error } = await supabase
@@ -60,7 +62,7 @@ export function LicenseManager({ softwareId, onFormToggle }: LicenseManagerProps
         } finally {
             setLoading(false)
         }
-    }
+    }, [softwareId])
 
     useEffect(() => {
         if (softwareId) fetchLicenses()
@@ -96,8 +98,9 @@ export function LicenseManager({ softwareId, onFormToggle }: LicenseManagerProps
         setIsAdding(true)
     }
 
-    const handleSave = async () => {
-        if (!form.tipo) {
+    const handleSave = useCallback(async () => {
+        const currentForm = formRef.current
+        if (!currentForm.tipo) {
             toast.error("Tipo de licença é obrigatório")
             return
         }
@@ -106,14 +109,14 @@ export function LicenseManager({ softwareId, onFormToggle }: LicenseManagerProps
         try {
             const payload = {
                 software_id: softwareId,
-                chave_licenca: form.chave_licenca || null,
-                tipo: form.tipo,
-                qtd_adquirida: Number(form.qtd_adquirida) || 1,
-                data_compra: form.data_compra || null,
-                data_expiracao: form.data_expiracao || null,
-                custo: form.custo ? parseFloat(form.custo) : null,
-                fornecedor: form.fornecedor || null,
-                obs: form.obs || null
+                chave_licenca: currentForm.chave_licenca || null,
+                tipo: currentForm.tipo,
+                qtd_adquirida: Number(currentForm.qtd_adquirida) || 1,
+                data_compra: currentForm.data_compra || null,
+                data_expiracao: currentForm.data_expiracao || null,
+                custo: currentForm.custo ? parseFloat(currentForm.custo) : null,
+                fornecedor: currentForm.fornecedor || null,
+                obs: currentForm.obs || null
             }
 
             if (editingId) {
@@ -132,7 +135,14 @@ export function LicenseManager({ softwareId, onFormToggle }: LicenseManagerProps
         } finally {
             setSaving(false)
         }
-    }
+    }, [softwareId, editingId, fetchLicenses])
+
+    // Notify parent about form state - Moved here to fix ReferenceError (handleSave must be defined)
+    useEffect(() => {
+        if (onFormToggle) {
+            onFormToggle(isAdding, handleSave, editingId ? "Salvar Alterações" : "Adicionar Licença", saving)
+        }
+    }, [isAdding, editingId, saving, onFormToggle, handleSave])
 
     const handleDelete = async () => {
         if (!idToDelete) return
@@ -270,8 +280,8 @@ export function LicenseManager({ softwareId, onFormToggle }: LicenseManagerProps
                             <div className="flex justify-between items-start">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${lic.tipo.includes('Perpétua') ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                            lic.tipo.includes('Assinatura') ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${lic.tipo?.includes('Perpétua') ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                            lic.tipo?.includes('Assinatura') ? 'bg-amber-50 text-amber-600 border-amber-100' :
                                                 'bg-slate-100 text-slate-600 border-slate-200'
                                             }`}>
                                             {lic.tipo}

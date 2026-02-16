@@ -123,15 +123,73 @@ export function ApiIntegration() {
                             {copied ? "Copiado" : "Copiar"}
                         </Button>
                     </div>
+                    <div className="mt-4 p-4 bg-indigo-800/50 rounded-xl border border-indigo-500/30">
+                        <p className="text-xs font-bold text-indigo-200 uppercase mb-2">Próximos passos:</p>
+                        <ol className="text-sm text-indigo-100 list-decimal list-inside space-y-1">
+                            <li>Baixe o script do coletor abaixo.</li>
+                            <li>Execute o script na máquina que deseja inventariar.</li>
+                            <li>Quando solicitado, informe a URL do projeto e esta Chave de API.</li>
+                        </ol>
+                    </div>
                     <Button
                         variant="ghost"
                         className="w-full mt-4 text-white hover:bg-white/10 rounded-xl font-bold"
                         onClick={() => setShowKey(null)}
                     >
-                        Entendi, já salvei
+                        Entendi, já salvei e copiei
                     </Button>
                 </div>
             )}
+
+            {/* Download e Instruções */}
+            <div className="bg-slate-50 border border-slate-200 rounded-[2rem] p-8">
+                <div className="flex flex-col md:flex-row gap-8 items-start">
+                    <div className="flex-1">
+                        <h4 className="text-lg font-black text-slate-900 mb-2">Agente Coletor</h4>
+                        <p className="text-sm text-slate-500 mb-4">
+                            Baixe o script Python para coletar dados automaticamente dos computadores da sua rede.
+                            O script solicitará a URL do projeto e a Chave de API na primeira execução.
+                        </p>
+                        <div className="flex flex-wrap gap-2 text-xs font-mono text-slate-400 bg-white p-3 rounded-xl border border-slate-100 mb-4">
+                            <span className="select-all">pip install requests</span>
+                        </div>
+                        <div className="flex gap-3">
+                            <Button asChild className="rounded-xl font-bold bg-slate-900 text-white hover:bg-slate-800">
+                                <a href="/scripts/coletor.py" download="coletor.py">
+                                    <Terminal className="h-4 w-4 mr-2" />
+                                    Baixar Script (.py)
+                                </a>
+                            </Button>
+                            <Button asChild variant="outline" className="rounded-xl font-bold border-slate-200">
+                                <a href="/scripts/requirements.txt" download="requirements.txt">
+                                    Baixar requirements.txt
+                                </a>
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="p-4 bg-white rounded-2xl border border-slate-100 w-full md:w-auto min-w-[300px]">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Dados para Configuração</p>
+                        <div className="space-y-3">
+                            <div>
+                                <label className="text-xs font-bold text-slate-500">URL do Projeto</label>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <code className="text-xs bg-slate-50 p-2 rounded-lg border border-slate-100 flex-1 truncate">
+                                        {process.env.NEXT_PUBLIC_SUPABASE_URL || "https://seu-projeto.supabase.co"}
+                                    </code>
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="h-8 w-8 text-slate-400"
+                                        onClick={() => copyToClipboard(process.env.NEXT_PUBLIC_SUPABASE_URL || "")}
+                                    >
+                                        <Copy className="h-3 w-3" />
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Lista de Chaves */}
             <div className="space-y-4">

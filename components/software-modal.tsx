@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { Software } from "@/types/softwares"
 import { Input } from "@/components/ui/input"
@@ -112,6 +112,13 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
         setForm(prev => ({ ...prev, [field]: value }))
     }
 
+    const handleSubformToggle = useCallback((active: boolean, action: () => void, label: string, isSaving: boolean) => {
+        setSubformActive(active)
+        setSubformAction(() => action)
+        setSubformLabel(label)
+        setSubformLoading(isSaving)
+    }, [])
+
 
     const handleSave = async () => {
         if (!form.nome) {
@@ -125,7 +132,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                 const { error } = await supabase.from('softwares').insert(form)
                 if (error) throw error
                 toast.success("Software cadastrado com sucesso!")
-            } else if (software) {
+            } else if (software?.id) {
                 const { error } = await supabase.from('softwares').update(form).eq('id', software.id)
                 if (error) throw error
                 toast.success("Software atualizado com sucesso!")
@@ -173,7 +180,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                             <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
                                 {isCreate ? "Novo Software" : isView ? "Detalhes do Software" : "Editar Software"}
                             </DialogTitle>
-                            {!isCreate && software && (
+                            {!isCreate && software?.nome && (
                                 <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px]">
                                     {software.nome}
                                 </DialogDescription>
@@ -279,7 +286,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                                     <div className="h-11 px-4 bg-success-50 dark:bg-success-900/20 border border-success-100 dark:border-success-900/30 rounded-xl flex items-center gap-3">
                                         <ShoppingCart className="h-4 w-4 text-success-600 dark:text-success-400" />
                                         <span className="text-sm font-black text-success-700 dark:text-success-300">
-                                            <SoftwareTotalCost softwareId={software.id} />
+                                            {software?.id ? <SoftwareTotalCost softwareId={software.id} /> : "R$ 0,00"}
                                         </span>
                                     </div>
                                 </div>
@@ -301,24 +308,14 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                     {activeTab === 'licencas' && software && (
                         <LicenseManager
                             softwareId={software.id}
-                            onFormToggle={(active, action, label, isSaving) => {
-                                setSubformActive(active)
-                                setSubformAction(() => action)
-                                setSubformLabel(label)
-                                setSubformLoading(isSaving)
-                            }}
+                            onFormToggle={handleSubformToggle}
                         />
                     )}
 
                     {activeTab === 'instalacoes' && software && (
                         <LicenseActivations
                             softwareId={software.id}
-                            onFormToggle={(active, action, label, isSaving) => {
-                                setSubformActive(active)
-                                setSubformAction(() => action)
-                                setSubformLabel(label)
-                                setSubformLoading(isSaving)
-                            }}
+                            onFormToggle={handleSubformToggle}
                         />
                     )}
                 </div>

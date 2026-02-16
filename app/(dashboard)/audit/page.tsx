@@ -18,9 +18,11 @@ import {
     ArrowRight,
     Loader2
 } from "lucide-react"
+import { PasswordConfirmModal } from "@/components/password-confirm-modal"
 
 export default function AuditPage() {
-    const { profile } = useUser()
+    const { profile, isAdmin, isTecnico } = useUser()
+    const isSectorManager = profile?.is_setor_responsavel && !isAdmin && !isTecnico
     const [isScanning, setIsScanning] = useState(false)
     const [currentAudit, setCurrentAudit] = useState<any>(null)
     const [stats, setStats] = useState({ total: 0, checked: 0 })
@@ -36,6 +38,7 @@ export default function AuditPage() {
     const [selectedStartSetor, setSelectedStartSetor] = useState<string>("")
     const [preCount, setPreCount] = useState<number | null>(null)
     const [loadingPreCount, setLoadingPreCount] = useState(false)
+    const [showFinalizeConfirm, setShowFinalizeConfirm] = useState(false)
 
     useEffect(() => {
         fetchActiveAudit()
@@ -43,8 +46,20 @@ export default function AuditPage() {
     }, [])
 
     const fetchSetores = async () => {
-        const { data } = await supabase.from('setores').select('*').order('nome')
-        if (data) setSetores(data)
+        let query = supabase.from('setores').select('*').order('nome')
+
+        if (isSectorManager && profile?.setor_id) {
+            query = query.eq('id', profile.setor_id)
+        }
+
+        const { data } = await query
+        if (data) {
+            setSetores(data)
+            // Se for gestor de setor, já seleciona automaticamente o setor dele
+            if (isSectorManager && data.length > 0) {
+                setSelectedStartSetor(data[0].nome)
+            }
+        }
     }
 
     useEffect(() => {
@@ -248,7 +263,12 @@ export default function AuditPage() {
     }
 
     const finalizeAudit = async () => {
-        if (!currentAudit || !confirm("Deseja realmente finalizar este ciclo de auditoria?")) return
+        if (!currentAudit) return
+        setShowFinalizeConfirm(true)
+    }
+
+    const executeFinalize = async () => {
+        if (!currentAudit) return
 
         const { error } = await supabase
             .from('auditorias')
@@ -261,6 +281,7 @@ export default function AuditPage() {
         } else {
             toast.error("Erro ao finalizar")
         }
+        setShowFinalizeConfirm(false)
     }
 
     return (
@@ -288,7 +309,11 @@ export default function AuditPage() {
                                     <select
                                         value={selectedStartSetor}
                                         onChange={(e) => setSelectedStartSetor(e.target.value)}
-                                        className="w-full h-14 rounded-2xl bg-white border-2 border-slate-100 px-11 text-sm font-bold text-slate-700 focus:border-indigo-500 focus:ring-0 outline-none appearance-none cursor-pointer transition-all"
+                                        disabled={!!isSectorManager}
+                                        className={cn(
+                                            "w-full h-14 rounded-2xl bg-white border-2 border-slate-100 px-11 text-sm font-bold text-slate-700 focus:border-indigo-500 focus:ring-0 outline-none appearance-none cursor-pointer transition-all",
+                                            isSectorManager && "bg-slate-100 cursor-not-allowed opacity-80"
+                                        )}
                                     >
                                         <option value="">Todos os setores</option>
                                         {setores.map(s => (
@@ -583,6 +608,16 @@ export default function AuditPage() {
                     onClose={() => setIsScanning(false)}
                 />
             )}
+
+            <PasswordConfirmModal
+                open={showFinalizeConfirm}
+                onOpenChange={setShowFinalizeConfirm}
+                title="Finalizar Auditoria"
+                description="Tem certeza que deseja finalizar este ciclo de auditoria? Esta ação irá gerar o relatório final e não poderá ser desfeita."
+                onConfirm={executeFinalize}
+                confirmText="Finalizar Auditoria"
+                variant="default"
+            />
         </div>
     )
 }

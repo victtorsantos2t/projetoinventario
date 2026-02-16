@@ -163,18 +163,49 @@ def send_to_supabase(data: dict) -> bool:
     Envia dados para o Supabase usando upsert (insert + update on conflict).
     Se o serial já existir, atualiza os dados. Se não, insere um novo registro.
     """
+    # Tenta carregar de arquivo de configuração local
+    config_file = "config.json"
+    if os.path.exists(config_file):
+        try:
+            with open(config_file, "r") as f:
+                config = json.load(f)
+                if not os.environ.get("SUPABASE_URL"):
+                    os.environ["SUPABASE_URL"] = config.get("SUPABASE_URL", "")
+                if not os.environ.get("SUPABASE_KEY"):
+                    os.environ["SUPABASE_KEY"] = config.get("SUPABASE_KEY", "")
+        except:
+            pass
+
     url = os.environ.get("SUPABASE_URL")
     key = os.environ.get("SUPABASE_KEY")
 
+    # Se não tiver nas variáveis, solicita ao usuário
     if not url or not key:
-        logger.error("Variáveis de ambiente SUPABASE_URL e SUPABASE_KEY são obrigatórias!")
-        logger.error("Defina-as antes de executar:")
-        logger.error("  Windows: set SUPABASE_URL=https://xxx.supabase.co")
-        logger.error("           set SUPABASE_KEY=eyJ...")
-        logger.error("  Linux:   export SUPABASE_URL=https://xxx.supabase.co")
-        logger.error("           export SUPABASE_KEY=eyJ...")
-        return False
+        print("\n" + "="*50)
+        print("CONFIGURAÇÃO INICIAL (Apenas na primeira vez)")
+        print("="*50)
+        
+        if not url:
+            print("\nEntre com a URL do Supabase (ex: https://seu-projeto.supabase.co):")
+            url = input("> ").strip()
+        
+        if not key:
+            print("\nEntre com a CHAVE de API (gerada no painel):")
+            key = input("> ").strip()
+        
+        # Salva para próximas execuções
+        if url and key:
+            try:
+                with open(config_file, "w") as f:
+                    json.dump({"SUPABASE_URL": url, "SUPABASE_KEY": key}, f)
+                print(f"\n✅ Configuração salva em {config_file} para próximas execuções.")
+            except Exception as e:
+                logger.warning(f"Não foi possível salvar configuração: {e}")
 
+    if not url or not key:
+        logger.error("URL e Chave são obrigatórios para continuar.")
+        return False
+        
     endpoint = f"{url}/rest/v1/ativos"
     headers = {
         "apikey": key,

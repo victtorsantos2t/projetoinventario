@@ -6,6 +6,7 @@ import { LicencaInstalacao, Licenca } from "@/types/softwares"
 import { Ativo } from "@/types"
 import { toast } from "sonner"
 import { Monitor, Calendar, Plus, Trash2, Search, Laptop, Key, X } from "lucide-react"
+import { PasswordConfirmModal } from "./password-confirm-modal"
 
 interface LicenseActivationsProps {
     softwareId: string
@@ -17,6 +18,8 @@ export function LicenseActivations({ softwareId, onFormToggle }: LicenseActivati
     const [loading, setLoading] = useState(true)
     const [isAdding, setIsAdding] = useState(false)
     const [saving, setSaving] = useState(false)
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+    const [idToDelete, setIdToDelete] = useState<string | null>(null)
 
     // Data for selection
     const [licencasDisponiveis, setLicencasDisponiveis] = useState<Licenca[]>([])
@@ -121,15 +124,23 @@ export function LicenseActivations({ softwareId, onFormToggle }: LicenseActivati
         }
     }
 
-    const handleRemove = async (id: string) => {
-        if (!confirm("Remover esta instalação? O ativo deixará de estar licenciado.")) return
+    const confirmRemove = (id: string) => {
+        setIdToDelete(id)
+        setShowDeleteConfirm(true)
+    }
+
+    const executeRemove = async () => {
+        if (!idToDelete) return
         try {
-            const { error } = await supabase.from('licencas_ativos').delete().eq('id', id)
+            const { error } = await supabase.from('licencas_ativos').delete().eq('id', idToDelete)
             if (error) throw error
             toast.success("Vínculo removido!")
             fetchData()
         } catch (error: any) {
             toast.error("Erro ao remover: " + error.message)
+        } finally {
+            setShowDeleteConfirm(false)
+            setIdToDelete(null)
         }
     }
 
@@ -172,10 +183,10 @@ export function LicenseActivations({ softwareId, onFormToggle }: LicenseActivati
                                     const disponivel = (lic.qtd_adquirida || 0) - instaladas > 0
 
                                     return (
-                                        <option key={lic.id} value={lic.id} disabled={!disponivel && lic.qtd_adquirida > 0}>
+                                        <option key={lic.id} value={lic.id} disabled={!disponivel && (lic.qtd_adquirida || 0) > 0}>
                                             {lic.tipo} - {lic.chave_licenca ? `...${lic.chave_licenca.slice(-5)}` : "(S/ Chave)"}
-                                            ({instaladas}/{lic.qtd_adquirida} usados)
-                                            {!disponivel && lic.qtd_adquirida > 0 ? " - Esgotada" : ""}
+                                            ({instaladas}/{lic.qtd_adquirida || 0} usados)
+                                            {!disponivel && (lic.qtd_adquirida || 0) > 0 ? " - Esgotada" : ""}
                                         </option>
                                     )
                                 })}
@@ -276,7 +287,7 @@ export function LicenseActivations({ softwareId, onFormToggle }: LicenseActivati
                                         <span>•</span>
                                         <span className="flex items-center gap-1">
                                             <Key className="h-3 w-3" />
-                                            {inst.licenca?.tipo}
+                                            {inst.licenca?.tipo || 'Tipo Indefinido'}
                                         </span>
                                     </div>
                                 </div>
@@ -287,7 +298,7 @@ export function LicenseActivations({ softwareId, onFormToggle }: LicenseActivati
                                     <p className="font-bold text-slate-600">{new Date(inst.data_instalacao).toLocaleDateString()}</p>
                                 </div>
                                 <button
-                                    onClick={() => handleRemove(inst.id)}
+                                    onClick={() => confirmRemove(inst.id)}
                                     className="p-2 hover:bg-red-50 text-slate-300 hover:text-red-500 rounded-lg transition-colors"
                                 >
                                     <Trash2 className="h-4 w-4" />
@@ -297,6 +308,15 @@ export function LicenseActivations({ softwareId, onFormToggle }: LicenseActivati
                     ))
                 )}
             </div>
+
+            <PasswordConfirmModal
+                open={showDeleteConfirm}
+                onOpenChange={setShowDeleteConfirm}
+                title="Confirmar Remoção de Instalação"
+                description="Remover esta instalação fará com que o ativo deixe de estar licenciado para este software."
+                onConfirm={executeRemove}
+                confirmText="Remover Instalação"
+            />
         </div >
     )
 }
