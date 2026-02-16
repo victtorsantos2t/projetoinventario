@@ -22,12 +22,18 @@ import subprocess
 import logging
 import sys
 
+# Check if running in a non-interactive environment
+def is_interactive():
+    return sys.stdin and sys.stdin.isatty()
+
 try:
     import requests
 except ImportError:
-    print("ERRO: Módulo 'requests' não encontrado.")
-    print("Para corrigir, abra o terminal e digite: pip install requests")
-    input("\nPressione Enter para sair...")
+    msg = "ERRO: Módulo 'requests' não encontrado. Para corrigir, abra o terminal e digite: pip install requests"
+    logger.error(msg)
+    if is_interactive():
+        print(msg)
+        input("\nPressione Enter para sair...")
     sys.exit(1)
 
 # Configuração do Logger
@@ -309,24 +315,42 @@ def send_to_api(data: dict) -> bool:
     """
     Envia dados para a API do Inventário (Next.js).
     """
-    # Tenta carregar de arquivo de configuração local
+    # Tenta carregar de arquivo de configuração local ou em pastas superiores
     config_file = "config.json"
-    if os.path.exists(config_file):
-        try:
-            with open(config_file, "r") as f:
-                config = json.load(f)
-                if not os.environ.get("APP_URL"):
-                    os.environ["APP_URL"] = config.get("APP_URL", "")
-                if not os.environ.get("API_KEY"):
-                    os.environ["API_KEY"] = config.get("API_KEY", "")
-        except:
-            pass
+    config_found = False
+    
+    # Lista de locais para procurar: diretório atual, diretório do script, raiz do projeto
+    search_paths = [
+        os.getcwd(),
+        os.path.dirname(os.path.abspath(__file__)),
+        os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+    ]
+    
+    for path in search_paths:
+        full_path = os.path.join(path, config_file)
+        if os.path.exists(full_path):
+            try:
+                with open(full_path, "r") as f:
+                    config = json.load(f)
+                    if not os.environ.get("APP_URL"):
+                        os.environ["APP_URL"] = config.get("APP_URL", "")
+                    if not os.environ.get("API_KEY"):
+                        os.environ["API_KEY"] = config.get("API_KEY", "")
+                    config_found = True
+                    logger.info(f"Configuração carregada de: {full_path}")
+                    break
+            except:
+                continue
 
     url = os.environ.get("APP_URL")
     key = os.environ.get("API_KEY")
 
-    # Se não tiver nas variáveis, solicita ao usuário
+    # Se não tiver nas variáveis, solicita ao usuário apenas se for interativo
     if not url or not key:
+        if not is_interactive():
+            logger.error("URL e Chave são obrigatórios mas não foram encontrados e o script não está em modo interativo.")
+            return False
+
         print("\n" + "="*50)
         print("CONFIGURAÇÃO INICIAL (Apenas na primeira vez)")
         print("="*50)
@@ -346,9 +370,10 @@ def send_to_api(data: dict) -> bool:
         # Salva para próximas execuções
         if url and key:
             try:
-                with open(config_file, "w") as f:
+                save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), config_file)
+                with open(save_path, "w") as f:
                     json.dump({"APP_URL": url, "API_KEY": key}, f)
-                print(f"\n✅ Configuração salva em {config_file} para próximas execuções.")
+                print(f"\n✅ Configuração salva em {save_path} para próximas execuções.")
             except Exception as e:
                 logger.warning(f"Não foi possível salvar configuração: {e}")
 
@@ -436,4 +461,5 @@ if __name__ == "__main__":
         logger.error(f"Erro fatal: {e}")
     
     print("\nExecução finalizada.")
-    input("Pressione Enter para fechar...")
+    if is_interactive():
+        input("Pressione Enter para fechar...")
