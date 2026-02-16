@@ -55,16 +55,22 @@ export async function POST(req: NextRequest) {
 
         const isInvalid = (val: any) => !val || val === 'Desconhecido' || val === ''
 
+        const merge = (newVal: any, oldVal: any) => {
+            if (!isInvalid(newVal)) return newVal
+            if (!isInvalid(oldVal)) return oldVal
+            return newVal || null
+        }
+
         // 4. Inserir ou Atualizar (Upsert) na tabela ativos
         // Mesclagem inteligente: se o novo dado for inválido mas o antigo for válido, mantém o antigo
         const assetData = {
             ...body,
-            processador: isInvalid(body.processador) ? (existingAtivo?.processador || body.processador) : body.processador,
-            memoria_ram: isInvalid(body.memoria_ram) ? (existingAtivo?.memoria_ram || body.memoria_ram) : body.memoria_ram,
-            armazenamento: isInvalid(body.armazenamento) ? (existingAtivo?.armazenamento || body.armazenamento) : body.armazenamento,
-            sistema_operacional: isInvalid(body.sistema_operacional) ? (existingAtivo?.sistema_operacional || body.sistema_operacional) : body.sistema_operacional,
-            ultimo_usuario: isInvalid(body.ultimo_usuario) ? (existingAtivo?.ultimo_usuario || body.ultimo_usuario) : body.ultimo_usuario,
-            tempo_ligado: isInvalid(body.tempo_ligado) ? (existingAtivo?.tempo_ligado || body.tempo_ligado) : body.tempo_ligado,
+            processador: merge(body.processador, existingAtivo?.processador),
+            memoria_ram: merge(body.memoria_ram, existingAtivo?.memoria_ram),
+            armazenamento: merge(body.armazenamento, existingAtivo?.armazenamento),
+            sistema_operacional: merge(body.sistema_operacional, existingAtivo?.sistema_operacional),
+            ultimo_usuario: merge(body.ultimo_usuario, existingAtivo?.ultimo_usuario),
+            tempo_ligado: merge(body.tempo_ligado, existingAtivo?.tempo_ligado),
             updated_at: new Date().toISOString(),
             ultima_conexao: new Date().toISOString(),
         }

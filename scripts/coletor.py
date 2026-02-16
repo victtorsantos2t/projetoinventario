@@ -195,19 +195,19 @@ def get_os_info() -> str:
             # Tentar via PowerShell para nome completo e versão
             try:
                 result = subprocess.run(
-                    ["powershell", "-Command", "(Get-CimInstance Win32_OperatingSystem).Caption + ' ' + (Get-CimInstance Win32_OperatingSystem).Version"],
+                    ["powershell", "-Command", "((Get-CimInstance Win32_OperatingSystem).Caption + ' ' + (Get-CimInstance Win32_OperatingSystem).Version).Trim()"],
                     capture_output=True, text=True, timeout=10
                 )
                 if result.stdout.strip():
                     return result.stdout.strip()
-            except:
-                pass
+            except Exception as e:
+                logger.debug(f"PowerShell SO failed: {e}")
         
         system = platform.system()
         release = platform.release()
         return f"{system} {release}"
     except:
-        return ""
+        return "Desconhecido"
 
 
 def get_logged_user() -> str:
@@ -217,22 +217,23 @@ def get_logged_user() -> str:
         if platform.system() == "Windows":
             try:
                 result = subprocess.run(
-                    ["powershell", "-Command", "(Get-CimInstance Win32_ComputerSystem).UserName"],
+                    ["powershell", "-Command", "(Get-CimInstance Win32_ComputerSystem).UserName.Trim()"],
                     capture_output=True, text=True, timeout=10
                 )
                 user = result.stdout.strip()
                 if user:
-                    return user.split('\\')[-1] # Retorna apenas o nome, sem o domínio/máquina
-            except:
-                pass
+                    return user.split('\\')[-1]
+            except Exception as e:
+                logger.debug(f"PowerShell User failed: {e}")
 
         # Fallbacks
-        return os.getlogin()
-    except:
         try:
-            return os.environ.get("USERNAME") or os.environ.get("USER") or ""
+            return os.getlogin()
         except:
-            return ""
+            pass
+        return os.environ.get("USERNAME") or os.environ.get("USER") or "Desconhecido"
+    except:
+        return "Desconhecido"
 
 
 def get_uptime() -> str:
@@ -243,13 +244,13 @@ def get_uptime() -> str:
             try:
                 cmd = "(Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime"
                 result = subprocess.run(
-                    ["powershell", "-Command", f"$u = {cmd}; \"$($u.Days)d $($u.Hours)h $($u.Minutes)m\""],
+                    ["powershell", "-Command", f"$u = {cmd}; \"$($u.Days)d $($u.Hours)h $($u.Minutes)m\".Trim()"],
                     capture_output=True, text=True, timeout=10
                 )
                 if result.stdout.strip():
                     return result.stdout.strip()
-            except:
-                pass
+            except Exception as e:
+                logger.debug(f"PowerShell Uptime failed: {e}")
 
             # Fallback para wmic
             result = subprocess.run(
@@ -273,7 +274,7 @@ def get_uptime() -> str:
     except Exception as e:
         logger.warning(f"Erro ao obter uptime: {e}")
     
-    return ""
+    return "Desconhecido"
 
 
 def collect_system_info() -> dict:
