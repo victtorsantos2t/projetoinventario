@@ -29,18 +29,7 @@ export async function POST(req: NextRequest) {
     // 2. Processar os dados recebidos
     try {
         const body = await req.json()
-
-        // Estrutura esperada:
-        // {
-        //   nome: string,
-        //   tipo: "Computador",
-        //   serial: string,
-        //   status: string,
-        //   processador: string,
-        //   memoria_ram: string,
-        //   armazenamento: string,
-        //   acesso_remoto: string | null
-        // }
+        console.log("Payload recebido do coletor:", JSON.stringify(body, null, 2))
 
         if (!body.serial) {
             return NextResponse.json({ error: 'Serial number is required' }, { status: 400 })
@@ -61,16 +50,20 @@ export async function POST(req: NextRequest) {
             return newVal || null
         }
 
+        // Mapeamento para suportar versões antigas do coletor
+        const so = body.sistema_operacional || body.so || body.os_info
+        const usuario = body.ultimo_usuario || body.usuario || body.user
+        const uptime = body.tempo_ligado || body.uptime
+
         // 4. Inserir ou Atualizar (Upsert) na tabela ativos
-        // Mesclagem inteligente: se o novo dado for inválido mas o antigo for válido, mantém o antigo
         const assetData = {
             ...body,
+            sistema_operacional: merge(so, existingAtivo?.sistema_operacional),
+            ultimo_usuario: merge(usuario, existingAtivo?.ultimo_usuario),
+            tempo_ligado: merge(uptime, existingAtivo?.tempo_ligado),
             processador: merge(body.processador, existingAtivo?.processador),
             memoria_ram: merge(body.memoria_ram, existingAtivo?.memoria_ram),
             armazenamento: merge(body.armazenamento, existingAtivo?.armazenamento),
-            sistema_operacional: merge(body.sistema_operacional, existingAtivo?.sistema_operacional),
-            ultimo_usuario: merge(body.ultimo_usuario, existingAtivo?.ultimo_usuario),
-            tempo_ligado: merge(body.tempo_ligado, existingAtivo?.tempo_ligado),
             updated_at: new Date().toISOString(),
             ultima_conexao: new Date().toISOString(),
         }
