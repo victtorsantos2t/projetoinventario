@@ -52,28 +52,28 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
     const [qrAsset, setQrAsset] = useState<Ativo | null>(null)
     const [activityAsset, setActivityAsset] = useState<{ id: string; nome: string } | null>(null)
 
-    if (loading) {
-        return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                {[...Array(8)].map((_, i) => (
-                    <div key={i} className="h-56 rounded-2xl bg-white dark:bg-zinc-900/40 border border-slate-100 dark:border-white/5 shadow-sm animate-pulse" />
-                ))}
-            </div>
-        )
-    }
+    const renderContent = () => {
+        if (loading) {
+            return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    {[...Array(8)].map((_, i) => (
+                        <div key={i} className="h-56 rounded-2xl bg-white dark:bg-zinc-900/40 border border-slate-100 dark:border-white/5 shadow-sm animate-pulse" />
+                    ))}
+                </div>
+            )
+        }
 
-    if (data.length === 0) {
-        return (
-            <div className="py-20 text-center bg-white rounded-[2.5rem] border-2 border-dashed border-slate-200">
-                <Cpu className="h-12 w-12 text-slate-200 mx-auto mb-4" />
-                <p className="text-slate-400 font-medium text-lg">Nenhum ativo encontrado</p>
-                <p className="text-sm text-slate-300 mt-1">Tente ajustar os filtros ou cadastre um novo ativo.</p>
-            </div>
-        )
-    }
+        if (data.length === 0) {
+            return (
+                <div className="py-20 text-center bg-white rounded-[2.5rem] border-2 border-dashed border-slate-200">
+                    <Cpu className="h-12 w-12 text-slate-200 mx-auto mb-4" />
+                    <p className="text-slate-400 font-medium text-lg">Nenhum ativo encontrado</p>
+                    <p className="text-sm text-slate-300 mt-1">Tente ajustar os filtros ou cadastre um novo ativo.</p>
+                </div>
+            )
+        }
 
-    return (
-        <>
+        return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {data.map((ativo) => {
                     const statusClass = STATUS_COLORS[ativo.status] || "bg-slate-50 text-slate-500 border-slate-200"
@@ -282,8 +282,12 @@ export function InventoryCards({ data, loading, onRefresh, categories = [], high
                     )
                 })}
             </div>
+        )
+    }
 
-            {/* Modals */}
+    return (
+        <>
+            {renderContent()}      {/* Modals */}
             <EditAssetModal ativo={editAsset} open={!!editAsset} onClose={() => setEditAsset(null)} onSuccess={onRefresh} mode="edit" />
             <EditAssetModal ativo={viewAsset} open={!!viewAsset} onClose={() => setViewAsset(null)} mode="view" />
 

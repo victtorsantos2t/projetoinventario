@@ -39,6 +39,12 @@ export interface Ativo {
     garantia_meses: number
     saude: number
 
+    // Monitoring
+    sistema_operacional?: string | null
+    ultimo_usuario?: string | null
+    tempo_ligado?: string | null
+    ultima_conexao?: string | null
+
     // Relation
     dono?: {
         full_name: string | null

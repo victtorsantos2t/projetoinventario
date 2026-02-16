@@ -167,20 +167,20 @@ export function ApiIntegration() {
                             </Button>
                         </div>
                     </div>
-                    <div className="p-4 bg-white rounded-2xl border border-slate-100 w-full md:w-auto min-w-[300px]">
+                    <div className="p-4 bg-white rounded-2xl border border-slate-100 w-full md:w-auto md:max-w-[400px]">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Dados para Configuração</p>
                         <div className="space-y-3">
                             <div>
                                 <label className="text-xs font-bold text-slate-500">URL do Projeto</label>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <code className="text-xs bg-slate-50 p-2 rounded-lg border border-slate-100 flex-1 truncate">
-                                        {process.env.NEXT_PUBLIC_SUPABASE_URL || "https://seu-projeto.supabase.co"}
+                                    <code className="text-[10px] leading-tight bg-slate-50 p-2 rounded-lg border border-slate-100 flex-1 break-all">
+                                        {typeof window !== 'undefined' ? window.location.origin : "https://seu-sistema.vercel.app"}
                                     </code>
                                     <Button
                                         size="icon"
                                         variant="ghost"
-                                        className="h-8 w-8 text-slate-400"
-                                        onClick={() => copyToClipboard(process.env.NEXT_PUBLIC_SUPABASE_URL || "")}
+                                        className="h-8 w-8 text-slate-400 shrink-0"
+                                        onClick={() => copyToClipboard(typeof window !== 'undefined' ? window.location.origin : "")}
                                     >
                                         <Copy className="h-3 w-3" />
                                     </Button>

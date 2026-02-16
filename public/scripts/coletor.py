@@ -25,7 +25,9 @@ import sys
 try:
     import requests
 except ImportError:
-    print("ERRO: Módulo 'requests' não encontrado. Instale com: pip install requests")
+    print("ERRO: Módulo 'requests' não encontrado.")
+    print("Para corrigir, abra o terminal e digite: pip install requests")
+    input("\nPressione Enter para sair...")
     sys.exit(1)
 
 # Configuração do Logger
@@ -94,10 +96,13 @@ def get_ram_gb() -> str:
                 capture_output=True, text=True, timeout=10
             )
             lines = result.stdout.strip().split('\n')
-            if len(lines) >= 2:
-                total_bytes = int(lines[1].strip())
-                gb = round(total_bytes / (1024 ** 3))
-                return f"{gb} GB"
+            if len(lines) >= 2 and lines[1].strip():
+                try:
+                    total_bytes = int(lines[1].strip())
+                    gb = round(total_bytes / (1024 ** 3))
+                    return f"{gb} GB"
+                except ValueError:
+                    pass
         elif platform.system() == "Linux":
             with open("/proc/meminfo", "r") as f:
                 for line in f:
@@ -158,10 +163,9 @@ def collect_system_info() -> dict:
     return info
 
 
-def send_to_supabase(data: dict) -> bool:
+def send_to_api(data: dict) -> bool:
     """
-    Envia dados para o Supabase usando upsert (insert + update on conflict).
-    Se o serial já existir, atualiza os dados. Se não, insere um novo registro.
+    Envia dados para a API do Inventário (Next.js).
     """
     # Tenta carregar de arquivo de configuração local
     config_file = "config.json"
@@ -169,15 +173,15 @@ def send_to_supabase(data: dict) -> bool:
         try:
             with open(config_file, "r") as f:
                 config = json.load(f)
-                if not os.environ.get("SUPABASE_URL"):
-                    os.environ["SUPABASE_URL"] = config.get("SUPABASE_URL", "")
-                if not os.environ.get("SUPABASE_KEY"):
-                    os.environ["SUPABASE_KEY"] = config.get("SUPABASE_KEY", "")
+                if not os.environ.get("APP_URL"):
+                    os.environ["APP_URL"] = config.get("APP_URL", "")
+                if not os.environ.get("API_KEY"):
+                    os.environ["API_KEY"] = config.get("API_KEY", "")
         except:
             pass
 
-    url = os.environ.get("SUPABASE_URL")
-    key = os.environ.get("SUPABASE_KEY")
+    url = os.environ.get("APP_URL")
+    key = os.environ.get("API_KEY")
 
     # Se não tiver nas variáveis, solicita ao usuário
     if not url or not key:
@@ -186,8 +190,8 @@ def send_to_supabase(data: dict) -> bool:
         print("="*50)
         
         if not url:
-            print("\nEntre com a URL do Supabase (ex: https://seu-projeto.supabase.co):")
-            url = input("> ").strip()
+            print("\nEntre com a URL do Sistema de Inventário (ex: https://seu-app.vercel.app):")
+            url = input("> ").strip().rstrip('/')
         
         if not key:
             print("\nEntre com a CHAVE de API (gerada no painel):")
@@ -197,7 +201,7 @@ def send_to_supabase(data: dict) -> bool:
         if url and key:
             try:
                 with open(config_file, "w") as f:
-                    json.dump({"SUPABASE_URL": url, "SUPABASE_KEY": key}, f)
+                    json.dump({"APP_URL": url, "API_KEY": key}, f)
                 print(f"\n✅ Configuração salva em {config_file} para próximas execuções.")
             except Exception as e:
                 logger.warning(f"Não foi possível salvar configuração: {e}")
@@ -206,12 +210,10 @@ def send_to_supabase(data: dict) -> bool:
         logger.error("URL e Chave são obrigatórios para continuar.")
         return False
         
-    endpoint = f"{url}/rest/v1/ativos"
+    endpoint = f"{url}/api/collect"
     headers = {
-        "apikey": key,
-        "Authorization": f"Bearer {key}",
-        "Content-Type": "application/json",
-        "Prefer": "resolution=merge-duplicates",  # upsert: merge on conflict
+        "x-api-key": key,
+        "Content-Type": "application/json"
     }
 
     try:
@@ -223,33 +225,14 @@ def send_to_supabase(data: dict) -> bool:
         )
 
         if response.status_code in (200, 201):
-            logger.info("✅ Dados enviados com sucesso (inserido)")
+            logger.info("✅ Dados enviados com sucesso!")
             return True
-        elif response.status_code == 409:
-            # Conflito = serial já existe, tentar PATCH
-            logger.info("Serial já existe, atualizando...")
-            patch_headers = {**headers}
-            patch_headers.pop("Prefer", None)
-
-            patch_response = requests.patch(
-                f"{endpoint}?serial=eq.{data['serial']}",
-                headers=patch_headers,
-                data=json.dumps(data),
-                timeout=15
-            )
-
-            if patch_response.status_code in (200, 204):
-                logger.info("✅ Dados atualizados com sucesso")
-                return True
-            else:
-                logger.error(f"❌ Erro ao atualizar: {patch_response.status_code} - {patch_response.text}")
-                return False
         else:
             logger.error(f"❌ Erro ao enviar: {response.status_code} - {response.text}")
             return False
 
     except requests.exceptions.ConnectionError:
-        logger.error("❌ Erro de conexão. Verifique sua internet e a URL do Supabase.")
+        logger.error("❌ Erro de conexão. Verifique se a URL está correta e se você tem internet.")
         return False
     except requests.exceptions.Timeout:
         logger.error("❌ Timeout na requisição. Tente novamente mais tarde.")
@@ -271,10 +254,12 @@ if __name__ == "__main__":
         logger.info(f"  {key}: {value}")
 
     logger.info("-" * 50)
-    success = send_to_supabase(system_info)
+    success = send_to_api(system_info)
 
     if success:
         logger.info("Processo concluído com sucesso!")
     else:
         logger.error("Processo finalizado com erros. Verifique as mensagens acima.")
-        sys.exit(1)
+    
+    print("\nExecução finalizada.")
+    input("Pressione Enter para fechar a janela...")

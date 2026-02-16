@@ -21,7 +21,14 @@ import {
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
-    X, Save, Monitor, Cpu, Wrench,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {
+    X, Save, Monitor, Cpu, Wrench, Activity, User, Wifi, WifiOff, FileText,
     AlertTriangle, AlertCircle, Heart, Hash, History, Plus, Trash2, Calendar, ShieldCheck, Layers, Loader2
 } from "lucide-react"
 import { format } from "date-fns"
@@ -139,47 +146,44 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
     const fetchMaintenances = async () => {
         if (!ativo) return
         try {
-            const { data, error } = await supabase
-                .from('manutencoes')
-                .select(`
-                    *,
-                    tecnico:profiles!tecnico_id (
-                        full_name
-                    )
-                `)
-                .eq('ativo_id', ativo.id)
-                .order('data_manutencao', { ascending: false })
-                .order('created_at', { ascending: false })
-
-            if (error) {
-                console.error("Erro no fetch de manutenções (Query Principal):", {
-                    message: error.message,
-                    details: error.details,
-                    hint: error.hint,
-                    code: error.code
-                })
-                // Fallback sem o join, mas mantendo o tecnico_id para referência
-                const { data: fallbackData, error: fallbackError } = await supabase
+            // Fetch maintenances AND current asset health in parallel
+            const [maintsRes, assetRes] = await Promise.all([
+                supabase
                     .from('manutencoes')
-                    .select('*')
+                    .select(`
+                        *,
+                        tecnico:profiles!tecnico_id (
+                            full_name
+                        )
+                    `)
                     .eq('ativo_id', ativo.id)
                     .order('data_manutencao', { ascending: false })
-                    .order('created_at', { ascending: false })
+                    .order('created_at', { ascending: false }),
+                supabase
+                    .from('ativos')
+                    .select('saude')
+                    .eq('id', ativo.id)
+                    .single()
+            ])
 
-                if (fallbackError) {
-                    console.error("Erro no fetch de manutenções (Fallback):", fallbackError)
-                }
-
-                if (fallbackData) setMaintenances(fallbackData as any)
+            if (maintsRes.error) {
+                console.error("Erro no fetch de manutenções:", maintsRes.error)
                 return
             }
 
-            if (data) {
-                setMaintenances(data)
-                // Sincronizar saúde se necessário
-                const calculated = calculateHealth(data as any)
-                if (ativo.saude !== calculated) {
-                    await updateAssetHealth(data as any)
+            if (maintsRes.data) {
+                setMaintenances(maintsRes.data)
+
+                // Calculate expected health based on maintenances
+                const calculated = calculateHealth(maintsRes.data as any)
+
+                // Use fresh DB value for comparison, fallback to prop if DB fetch failed (unlikely)
+                const currentDbHealth = assetRes.data?.saude ?? ativo.saude
+
+                // Only update if the DB value is different from calculated
+                if (currentDbHealth !== calculated) {
+                    console.log(`[Health Correction] Updating health from ${currentDbHealth} to ${calculated}`)
+                    await updateAssetHealth(maintsRes.data as any)
                     onSuccess?.()
                 }
             }
@@ -404,9 +408,9 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                     colaborador: form.colaborador || null,
                     setor: form.setor || null,
                     patrimonio: form.patrimonio || null,
-                    processador: form.processador || null,
-                    memoria_ram: form.memoria_ram || null,
-                    armazenamento: form.armazenamento || null,
+                    processador: monitoringData?.processador || form.processador || null,
+                    memoria_ram: monitoringData?.memoria_ram || form.memoria_ram || null,
+                    armazenamento: monitoringData?.armazenamento || form.armazenamento || null,
                     acesso_remoto: form.acesso_remoto || null,
                     polegadas: form.polegadas || null,
                     saidas_video: form.saidas_video.length > 0 ? form.saidas_video : null,
@@ -631,94 +635,182 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
     const isMonitor = MONITOR_TYPES.includes(form.tipo as any)
 
     const healthColor = healthPercent > 60 ? 'text-emerald-500' : healthPercent > 30 ? 'text-amber-500' : 'text-red-500'
+    // State for real-time monitoring data
+    const [monitoringData, setMonitoringData] = useState<Partial<Ativo> | null>(null)
+
+    const fetchMonitoringData = async () => {
+        if (!ativo) return
+        try {
+            const { data, error } = await supabase
+                .from('ativos')
+                .select('sistema_operacional, ultimo_usuario, tempo_ligado, ultima_conexao, processador, memoria_ram, armazenamento')
+                .eq('id', ativo.id)
+                .single()
+
+            if (data) {
+                setMonitoringData(data)
+            }
+        } catch (error) {
+            console.error("Erro ao buscar dados de monitoramento:", error)
+        }
+    }
+
+    useEffect(() => {
+        if (open && ativo) {
+            fetchMaintenances()
+            fetchMonitoringData()
+            // Set up a simple poll every 30 seconds while modal is open
+            const interval = setInterval(fetchMonitoringData, 30000)
+            return () => clearInterval(interval)
+        }
+    }, [ativo, open])
+
+    // Use monitoring data if available, otherwise fallback to prop
+    const displayAtivo = monitoringData ? { ...ativo, ...monitoringData } : ativo
 
     return (
-        <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-            <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
-                {/* Header Padronizado */}
-                <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
-                    <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
-                            {isMonitor ? <Monitor className="h-6 w-6 text-primary-600 dark:text-primary-400" /> : <Layers className="h-6 w-6 text-primary-600 dark:text-primary-400" />}
-                        </div>
-                        <div>
-                            <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
-                                {isViewMode ? "Detalhes do Ativo" : "Editar Ativo"}
-                            </DialogTitle>
-                            {ativo && (
-                                <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px]">
-                                    {ativo.nome}
-                                </DialogDescription>
-                            )}
-                        </div>
-                    </div>
-                </DialogHeader>
-
-                <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="flex-1 flex flex-col min-h-0">
-                    <TabsList className="px-8 justify-start h-auto gap-8 bg-white dark:bg-zinc-900 border-b border-slate-100 dark:border-white/5 rounded-none">
-                        <TabsTrigger
-                            value="geral"
-                            className="pb-3 pt-4 text-sm font-black border-b-2 border-transparent data-[state=active]:border-primary-600 data-[state=active]:text-primary-600 data-[state=active]:bg-transparent rounded-none shadow-none transition-all px-0"
-                        >
-                            Dados Gerais
-                        </TabsTrigger>
-                        {!isViewMode && (
-                            <TabsTrigger
-                                value="manutencao"
-                                className="pb-3 pt-4 text-sm font-black border-b-2 border-transparent data-[state=active]:border-primary-600 data-[state=active]:text-primary-600 data-[state=active]:bg-transparent rounded-none shadow-none transition-all px-0"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <Wrench className="h-4 w-4" />
-                                    Manutenções
+        <Dialog open={open} onOpenChange={(val) => {
+            if (!val) onClose()
+        }}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-50 dark:bg-zinc-950 p-0 gap-0 rounded-[2.5rem] border border-slate-100 dark:border-white/10 shadow-2xl">
+                <div className="sticky top-0 z-10 flex items-center justify-between px-8 py-6 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-slate-100 dark:border-white/5">
+                    <div>
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                                <div className="p-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl border border-indigo-100 dark:border-indigo-500/20">
+                                    <Layers className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                                 </div>
+                                {mode === 'edit' ? 'Editar Ativo' : 'Detalhes do Ativo'}
+                            </DialogTitle>
+                            <DialogDescription className="text-slate-500 dark:text-slate-400 font-medium">
+                                {displayAtivo?.nome || 'Novo Ativo'}
+                            </DialogDescription>
+                        </DialogHeader>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full transition-colors"
+                    >
+                        <X className="h-5 w-5 text-slate-400" />
+                    </button>
+                </div>
+
+                <div className="px-8 py-8 space-y-8">
+                    <Tabs defaultValue="geral" className="w-full">
+                        <TabsList className="bg-slate-100/50 dark:bg-white/5 p-1 rounded-2xl mb-8 border border-slate-200/50 dark:border-white/5 w-full justify-start h-auto">
+                            <TabsTrigger value="geral" className="rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-widest data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm transition-all gap-2">
+                                <FileText className="h-4 w-4" />
+                                Dados Gerais
                             </TabsTrigger>
-                        )}
-                        <TabsTrigger
-                            value="historico"
-                            className="pb-3 pt-4 text-sm font-black border-b-2 border-transparent data-[state=active]:border-primary-600 data-[state=active]:text-primary-600 data-[state=active]:bg-transparent rounded-none shadow-none transition-all px-0"
-                        >
-                            <div className="flex items-center gap-2">
+                            <TabsTrigger value="manutencao" className="rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-widest data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm transition-all gap-2">
+                                <Wrench className="h-4 w-4" />
+                                Manutenções
+                            </TabsTrigger>
+                            <TabsTrigger value="historico" className="rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-widest data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm transition-all gap-2">
                                 <History className="h-4 w-4" />
                                 Histórico
-                            </div>
-                        </TabsTrigger>
-                    </TabsList>
+                            </TabsTrigger>
+                        </TabsList>
 
-                    <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar bg-white dark:bg-zinc-900">
-                        <TabsContent value="geral" className="p-8 space-y-8 m-0">
-                            {/* Health & Status Dashboard */}
+                        <TabsContent value="geral" className="space-y-8 focus-visible:ring-0 mt-0">
+                            {/* Health Status Card */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {/* Health Status */}
-                                <div className="col-span-1 md:col-span-2 flex items-center gap-4 p-5 bg-neutral-app dark:bg-white/5 rounded-2xl border border-transparent">
-                                    <div className="relative h-14 w-14 flex-shrink-0">
-                                        <svg className="h-14 w-14 -rotate-90" viewBox="0 0 36 36">
-                                            <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831 15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#e2e8f0" className="dark:stroke-white/10" strokeWidth="3" />
-                                            <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831 15.9155 15.9155 0 0 1 0-31.831" fill="none" className={healthColor.replace('text-', 'stroke-')} strokeWidth="3" strokeDasharray={`${healthPercent}, 100`} strokeLinecap="round" />
-                                        </svg>
-                                        <Heart className={`h-5 w-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${healthColor}`} />
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs font-black text-text-muted uppercase tracking-widest">Saúde Operacional</span>
-                                            <span className={`text-sm font-black ${healthColor}`}>{healthPercent}%</span>
+                                <div className="md:col-span-2 p-6 bg-white dark:bg-zinc-900 rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm">
+                                    <div className="flex items-center gap-4">
+                                        <div className={cn(
+                                            "h-16 w-16 rounded-full flex items-center justify-center border-4",
+                                            displayAtivo?.saude_info?.status_saude === 'Excelente' ? "bg-emerald-50 border-emerald-100 text-emerald-500" :
+                                                displayAtivo?.saude_info?.status_saude === 'Alerta' ? "bg-amber-50 border-amber-100 text-amber-500" :
+                                                    "bg-rose-50 border-rose-100 text-rose-500"
+                                        )}>
+                                            <Heart className="h-8 w-8 fill-current" />
                                         </div>
-                                        <p className="text-xs text-text-secondary dark:text-slate-400 mt-1 font-medium">{maintenanceCount} intervenções registradas</p>
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">Saúde Operacional</h3>
+                                                <Badge className={cn(
+                                                    "text-[10px] px-2 py-0.5 h-5",
+                                                    displayAtivo?.saude_info?.status_saude === 'Excelente' ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100" :
+                                                        displayAtivo?.saude_info?.status_saude === 'Alerta' ? "bg-amber-100 text-amber-700 hover:bg-amber-100" :
+                                                            "bg-rose-100 text-rose-700 hover:bg-rose-100"
+                                                )}>
+                                                    {displayAtivo?.saude ? `${displayAtivo.saude}%` : 'N/A'}
+                                                </Badge>
+                                            </div>
+                                            <p className="text-slate-500 text-sm font-medium">
+                                                {displayAtivo?.saude_info?.contagem_saude || 0} intervenções registradas
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Status Select */}
-                                <div className="col-span-1 p-5 bg-neutral-app dark:bg-white/5 rounded-2xl border border-transparent flex flex-col justify-center">
-                                    <label className="text-[10px] font-black text-text-muted mb-2 block uppercase tracking-widest ml-1">Status Atual</label>
-                                    <select
+                                <div className="p-6 bg-white dark:bg-zinc-900 rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm">
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Status Atual</label>
+                                    <Select
+                                        disabled={saving || isViewMode}
+                                        onValueChange={(val) => handleChange('status', val)}
                                         value={form.status}
-                                        onChange={(e) => handleChange('status', e.target.value)}
-                                        disabled={isViewMode}
-                                        className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black focus:ring-2 focus:ring-primary-600/20 transition-all outline-none shadow-sm dark:text-white"
                                     >
-                                        {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                                    </select>
+                                        <SelectTrigger className="w-full h-12 rounded-xl bg-slate-50 dark:bg-zinc-800 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-bold focus:ring-2 focus:ring-primary/20 transition-all">
+                                            <SelectValue placeholder="Selecione o status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Em uso" className="font-medium">Em uso</SelectItem>
+                                            <SelectItem value="Disponível" className="font-medium">Disponível</SelectItem>
+                                            <SelectItem value="Em manutenção" className="font-medium">Em manutenção</SelectItem>
+                                            <SelectItem value="Baixado" className="font-medium">Baixado</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </div>
+
+                            {/* Monitoring Card */}
+                            {displayAtivo && (displayAtivo.sistema_operacional || displayAtivo.ultimo_usuario || displayAtivo.ultima_conexao) && (
+                                <div className="p-5 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/20">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Activity className="h-4 w-4 text-blue-500" />
+                                        <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">Monitoramento em Tempo Real</span>
+                                        {(() => {
+                                            const lastConnection = displayAtivo.ultima_conexao ? new Date(displayAtivo.ultima_conexao) : null
+                                            const timeDiff = lastConnection ? (new Date().getTime() - lastConnection.getTime()) / 1000 / 60 : 999
+                                            const isOnline = timeDiff < 10 // 10 minutes tolerance
+
+                                            return isOnline ? (
+                                                <Badge variant="outline" className="ml-auto bg-emerald-50 text-emerald-600 border-emerald-200 gap-1">
+                                                    <Wifi className="h-3 w-3" /> Online
+                                                </Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="ml-auto bg-slate-100 text-slate-500 border-slate-200 gap-1">
+                                                    <WifiOff className="h-3 w-3" /> Offline
+                                                </Badge>
+                                            )
+                                        })()}
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="space-y-1">
+                                            <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold block">Sistema</span>
+                                            <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-medium text-sm">
+                                                <Monitor className="h-3.5 w-3.5 text-slate-400" />
+                                                {displayAtivo.sistema_operacional || "—"}
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold block">Usuário Logado</span>
+                                            <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-medium text-sm">
+                                                <User className="h-3.5 w-3.5 text-slate-400" />
+                                                {displayAtivo.ultimo_usuario || "—"}
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold block">Tempo Ligado</span>
+                                            <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-medium text-sm">
+                                                <History className="h-3.5 w-3.5 text-slate-400" />
+                                                {displayAtivo.tempo_ligado || "—"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Main Form Padronizado */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -813,25 +905,52 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Processador</label>
-                                            <select value={form.processador} onChange={(e) => handleChange('processador', e.target.value)} disabled={isViewMode} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
-                                                <option value="">Selecione</option>
-                                                {CPU_GENERATIONS.map(c => <option key={c} value={c}>{c}</option>)}
-                                            </select>
+                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center justify-between">
+                                                Processador
+                                                {monitoringData?.processador && <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1"><Cpu className="h-2.5 w-2.5" /> Auto</span>}
+                                            </label>
+                                            {monitoringData?.processador ? (
+                                                <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-black flex items-center text-slate-700 dark:text-indigo-300">
+                                                    {monitoringData.processador}
+                                                </div>
+                                            ) : (
+                                                <select value={form.processador} onChange={(e) => handleChange('processador', e.target.value)} disabled={isViewMode} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
+                                                    <option value="">Selecione</option>
+                                                    {CPU_GENERATIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                                                </select>
+                                            )}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Memória RAM</label>
-                                            <select value={form.memoria_ram} onChange={(e) => handleChange('memoria_ram', e.target.value)} disabled={isViewMode} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
-                                                <option value="">Selecione</option>
-                                                {RAM_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
-                                            </select>
+                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center justify-between">
+                                                Memória RAM
+                                                {monitoringData?.memoria_ram && <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1"><Activity className="h-2.5 w-2.5" /> Auto</span>}
+                                            </label>
+                                            {monitoringData?.memoria_ram ? (
+                                                <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-black flex items-center text-slate-700 dark:text-indigo-300">
+                                                    {monitoringData.memoria_ram}
+                                                </div>
+                                            ) : (
+                                                <select value={form.memoria_ram} onChange={(e) => handleChange('memoria_ram', e.target.value)} disabled={isViewMode} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
+                                                    <option value="">Selecione</option>
+                                                    {RAM_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                                                </select>
+                                            )}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Armazenamento</label>
-                                            <select value={form.armazenamento} onChange={(e) => handleChange('armazenamento', e.target.value)} disabled={isViewMode} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
-                                                <option value="">Selecione</option>
-                                                {STORAGE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                                            </select>
+                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center justify-between">
+                                                Armazenamento
+                                                {monitoringData?.armazenamento && <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1"><History className="h-2.5 w-2.5" /> Auto</span>}
+                                            </label>
+                                            {monitoringData?.armazenamento ? (
+                                                <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-black flex items-center text-slate-700 dark:text-indigo-300">
+                                                    {monitoringData.armazenamento}
+                                                </div>
+                                            ) : (
+                                                <select value={form.armazenamento} onChange={(e) => handleChange('armazenamento', e.target.value)} disabled={isViewMode} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
+                                                    <option value="">Selecione</option>
+                                                    {STORAGE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                                                </select>
+                                            )}
                                         </div>
 
                                         {form.colaborador && isHardware && (
@@ -1083,8 +1202,8 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                 )}
                             </div>
                         </TabsContent>
-                    </div>
-                </Tabs>
+                    </Tabs>
+                </div>
 
                 {/* Footer Padronizado e Contextual */}
                 <div className="px-8 py-6 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/2 flex items-center justify-between">
