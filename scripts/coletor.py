@@ -69,13 +69,25 @@ def get_cpu_info() -> str:
     """Obtém informações do processador."""
     try:
         if platform.system() == "Windows":
+            # Tentar PowerShell primeiro (mais limpo)
+            try:
+                result = subprocess.run(
+                    ["powershell", "-Command", "Get-CimInstance Win32_Processor | Select-Object -ExpandProperty Name"],
+                    capture_output=True, text=True, timeout=10
+                )
+                if result.stdout.strip():
+                    return result.stdout.strip()
+            except:
+                pass
+            
+            # Fallback para wmic
             result = subprocess.run(
                 ["wmic", "cpu", "get", "name"],
                 capture_output=True, text=True, timeout=10
             )
-            lines = result.stdout.strip().split('\n')
+            lines = [l.strip() for l in result.stdout.splitlines() if l.strip()]
             if len(lines) >= 2:
-                return lines[1].strip()
+                return lines[1]
         elif platform.system() == "Linux":
             with open("/proc/cpuinfo", "r") as f:
                 for line in f:
@@ -84,23 +96,27 @@ def get_cpu_info() -> str:
     except Exception as e:
         logger.warning(f"Erro ao obter CPU: {e}")
 
-    return platform.processor() or "Desconhecido"
+    return platform.processor() or ""
 
 
 def get_ram_gb() -> str:
     """Obtém a quantidade total de RAM em MB (estilo systeminfo)."""
     try:
         if platform.system() == "Windows":
+            # Tentar PowerShell formatado
             try:
-                # Pegando valor exato em bytes e convertendo para o formato do systeminfo (pontuação de milhar e MB)
                 result = subprocess.run(
-                    ["powershell", "-Command", "(Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory"],
+                    ["powershell", "-Command", "[math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1MB)"],
                     capture_output=True, text=True, timeout=10
                 )
-                total_bytes = int(result.stdout.strip())
-                mb = int(total_bytes / (1024 ** 2))
-                return f"{mb:,} MB".replace(",", ".")
+                if result.stdout.strip():
+                    mb = int(result.stdout.strip())
+                    return f"{mb:,} MB".replace(",", ".")
             except:
+                pass
+
+            # Fallback para wmic
+            try:
                 result = subprocess.run(
                     ["wmic", "computersystem", "get", "totalphysicalmemory"],
                     capture_output=True, text=True, timeout=10
@@ -110,6 +126,23 @@ def get_ram_gb() -> str:
                     total_bytes = int(lines[1])
                     mb = int(total_bytes / (1024 ** 2))
                     return f"{mb:,} MB".replace(",", ".")
+            except:
+                pass
+
+            # Fallback final: systeminfo (Lento, mas muito confiável)
+            try:
+                result = subprocess.run(
+                    ["systeminfo"],
+                    capture_output=True, text=True, timeout=20
+                )
+                for line in result.stdout.splitlines():
+                    if "física total" in line.lower() or "total physical memory" in line.lower():
+                        # Ex: Memória física total: 10.116 MB
+                        parts = line.split(":")
+                        if len(parts) >= 2:
+                            return parts[1].strip()
+            except:
+                pass
         elif platform.system() == "Linux":
             with open("/proc/meminfo", "r") as f:
                 for line in f:
