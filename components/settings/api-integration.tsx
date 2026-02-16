@@ -153,7 +153,7 @@ export function ApiIntegration() {
                         <div className="flex flex-wrap gap-2 text-xs font-mono text-slate-400 bg-white p-3 rounded-xl border border-slate-100 mb-4">
                             <span className="select-all">pip install requests</span>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex flex-wrap gap-3">
                             <Button asChild className="rounded-xl font-bold bg-slate-900 text-white hover:bg-slate-800">
                                 <a href="/scripts/coletor.py" download="coletor.py">
                                     <Terminal className="h-4 w-4 mr-2" />
@@ -161,8 +161,14 @@ export function ApiIntegration() {
                                 </a>
                             </Button>
                             <Button asChild variant="outline" className="rounded-xl font-bold border-slate-200">
+                                <a href="/scripts/invisivel.vbs" download="invisivel.vbs">
+                                    <EyeOff className="h-4 w-4 mr-2" />
+                                    Lançador Invisível (.vbs)
+                                </a>
+                            </Button>
+                            <Button asChild variant="outline" className="rounded-xl font-bold border-slate-200">
                                 <a href="/scripts/requirements.txt" download="requirements.txt">
-                                    Baixar requirements.txt
+                                    requirements.txt
                                 </a>
                             </Button>
                         </div>
