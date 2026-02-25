@@ -81,7 +81,7 @@ export default function SoftwaresPage() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-text-primary dark:text-white flex items-center gap-2">
+                    <h1 className="text-3xl font-bold text-text-primary dark:text-white flex items-center gap-2">
                         <AppWindow className="h-8 w-8 text-primary-600 dark:text-primary-400" />
                         Gestão de Softwares
                     </h1>
@@ -93,7 +93,7 @@ export default function SoftwaresPage() {
                 {!isViewer && (
                     <button
                         onClick={handleCreate}
-                        className="flex items-center gap-2 px-5 py-3 bg-primary-600 text-white rounded-[1.25rem] text-sm font-bold hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all active:scale-95"
+                        className="flex items-center gap-2 px-5 py-3 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all active:scale-95"
                     >
                         <Plus className="h-4 w-4" /> Novo Software
                     </button>
@@ -173,7 +173,7 @@ export default function SoftwaresPage() {
                                                 {software.desenvolvedor || "—"}
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <div className="inline-flex items-center px-2.5 py-1 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-black border border-primary-100 dark:border-primary-900/30">
+                                                <div className="inline-flex items-center px-2.5 py-1 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-bold border border-primary-100 dark:border-primary-900/30">
                                                     {software.total_instancias_permitidas || 0}
                                                 </div>
                                             </td>
@@ -233,3 +233,5 @@ export default function SoftwaresPage() {
         </div>
     )
 }
+
+

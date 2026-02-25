@@ -98,7 +98,7 @@ export default function SettingsPage() {
                     <ShieldAlert className="h-10 w-10" />
                 </div>
                 <div className="max-w-md">
-                    <h2 className="text-3xl font-black text-slate-900 mb-2">Acesso Restrito</h2>
+                    <h2 className="text-3xl font-bold text-slate-900 mb-2">Acesso Restrito</h2>
                     <p className="text-slate-500 font-medium">Apenas administradores podem acessar as configurações globais do sistema.</p>
                 </div>
                 <button
@@ -158,12 +158,12 @@ export default function SettingsPage() {
                 </aside>
 
                 {/* Área de Conteúdo */}
-                <main className="flex-1 w-full bg-white rounded-[2.5rem] border border-slate-100 shadow-sm min-h-[600px] overflow-hidden">
+                <main className="flex-1 w-full bg-white rounded-xl border border-slate-100 shadow-sm min-h-[600px] overflow-hidden">
                     <div className="p-8 md:p-12">
                         {activeTab === "geral" && (
                             <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-300">
                                 <div>
-                                    <h2 className="text-2xl font-black text-slate-900 mb-2">Preferências Gerais</h2>
+                                    <h2 className="text-2xl font-bold text-slate-900 mb-2">Preferências Gerais</h2>
                                     <p className="text-slate-400 font-medium">Configure as regras fundamentais de notificação e alertas.</p>
                                 </div>
 
@@ -243,7 +243,7 @@ export default function SettingsPage() {
                                                 <p className="text-xs text-slate-400 font-medium">Serial e Tipo são padrões do sistema.</p>
                                             </div>
                                         </div>
-                                        <span className="text-xs font-black text-primary bg-primary/5 px-4 py-2 rounded-full uppercase tracking-widest">Ativo</span>
+                                        <span className="text-xs font-bold text-primary bg-primary/5 px-4 py-2 rounded-full uppercase tracking-widest">Ativo</span>
                                     </div>
                                 </div>
                             </div>
@@ -274,3 +274,4 @@ export default function SettingsPage() {
         </div>
     )
 }
+

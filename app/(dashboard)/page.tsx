@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { Movimentacao } from "@/types"
 import { DashboardCards } from "@/components/dashboard-cards"
@@ -42,23 +42,23 @@ export default function DashboardPage() {
   const router = useRouter()
   const [stats, setStats] = useState<DashboardStats>({ total: 0, emUso: 0, manutencao: 0, disponivel: 0, riscoCritico: 0, garantiaVencendo: 0, emRisco: 0, operacionais: 0 })
   const [extraStats, setExtraStats] = useState({ colaboradores: 0, tipos: 0 })
-  const [categoryStats, setCategoryStats] = useState<any[]>([])
-  const [sectorStats, setSectorStats] = useState<any[]>([])
+  const [categoryStats, setCategoryStats] = useState<{ label: string; value: number; color: string; icon: React.ElementType }[]>([])
+  const [sectorStats, setSectorStats] = useState<{ name: string; count: number }[]>([])
   const [historico, setHistorico] = useState<Movimentacao[]>([])
   const [analytics, setAnalytics] = useState({
-    failureTrend: { percent: 0, type: '---', sector: '---' },
+    failureTrend: { percent: 0, type: '---', sector: '---', isCritical: false },
     mttr: { current: '0h', target: '6h', trend: 'down' as 'up' | 'down', bottleneck: 'Aguardando dados' },
-    riskSectors: [] as any[],
+    riskSectors: [] as { name: string; total: number; maintenance: number; percentage: number; isCritical: boolean }[],
     lifecycle: { warranties: 0, endOfLife: 0 },
     health: { score: 0, trend: 0 },
     productivity: { avgResolutionTime: '0h', resolvedCount: 0, reopenRate: 0 },
-    recommendations: [] as any[]
+    recommendations: [] as { title: string; reason: string; priority: 'Alta' | 'Média' | 'Baixa' }[]
   })
   const [loading, setLoading] = useState(true)
 
   const isViewer = role === 'Visualizador'
 
-  const getDashboardData = async () => {
+  const getDashboardData = useCallback(async () => {
     try {
       let query = supabase.from('v_inventario_geral').select('*')
 
@@ -118,15 +118,15 @@ export default function DashboardPage() {
         }, { total: 0, emUso: 0, manutencao: 0, disponivel: 0, riscoCritico: 0, garantiaVencendo: 0, emRisco: 0, operacionais: 0 })
 
         // BI & Hero Data Aggregation — Usando campo 'tipo' (real)
-        const typeMap: any = {}
-        const secMap: any = {}
+        const typeMap: Record<string, number> = {}
+        const secMap: Record<string, number> = {}
         ativos.forEach(a => {
           typeMap[a.tipo || 'Outros'] = (typeMap[a.tipo || 'Outros'] || 0) + 1
           secMap[a.setor || 'Sem Setor'] = (secMap[a.setor || 'Sem Setor'] || 0) + 1
         })
 
         // Mapear ícones por tipo real no banco
-        const typeIcons: Record<string, any> = {
+        const typeIcons: Record<string, React.ElementType> = {
           'Notebook': Laptop,
           'Computador': Monitor,
           'Monitor': Monitor,
@@ -316,7 +316,7 @@ export default function DashboardPage() {
 
         // Recomendações dinâmicas
         // Recomendações dinâmicas aprimoradas
-        const recommendations: any[] = []
+        const recommendations: { title: string; reason: string; priority: 'Alta' | 'Média' | 'Baixa' }[] = []
 
         // 1. Checar Setores Críticos (100% Parados) - PRIORIDADE MÁXIMA
         const criticalSector = sectorRiskList.find(s => s.isCritical)
@@ -400,33 +400,33 @@ export default function DashboardPage() {
           health: { score: healthScore, trend: manutCount30 < manutCountPrev ? 2 : (manutCount30 > manutCountPrev ? -2 : 0) },
           productivity: { avgResolutionTime: avgResolutionLabel, resolvedCount: resolvedThisMonth || 0, reopenRate: parsedReopenRate },
           recommendations
-        } as any)
+        } as typeof analytics)
       }
 
       const { count: collabCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true })
       setExtraStats(prev => ({ ...prev, colaboradores: collabCount || 0 }))
 
     } catch (error: unknown) { logger.error(error); }
-  }
+  }, [isViewer, profile])
 
-  const getHistorico = async () => {
+  const getHistorico = useCallback(async () => {
     const { data } = await supabase.from('movimentacoes').select('*, ativo:ativos!inner(nome, setor), usuario:profiles(full_name)').order('data_movimentacao', { ascending: false }).limit(5)
     setHistorico((data || []) as Movimentacao[])
-  }
+  }, [])
 
   useEffect(() => {
     const load = async () => { setLoading(true); await Promise.all([getDashboardData(), getHistorico()]); setLoading(false); }
     load()
     const channel = supabase.channel('realtime_dashboard_v4').on('postgres_changes', { event: '*', schema: 'public', table: 'ativos' }, () => getDashboardData()).subscribe()
     return () => { supabase.removeChannel(channel) }
-  }, [])
+  }, [getDashboardData, getHistorico])
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 lg:space-y-10 pb-12">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl lg:text-5xl font-black tracking-tighter text-slate-900 dark:text-white">Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold tracking-tighter text-slate-900 dark:text-white">Dashboard</h1>
           <p className="text-slate-500 dark:text-slate-400 font-bold tracking-tight text-xs lg:text-lg italic">Relatório em Tempo Real do Parque Tecnológico</p>
         </div>
       </div>
@@ -435,7 +435,7 @@ export default function DashboardPage() {
       <div className="space-y-4 lg:space-y-6">
         <div className="flex items-center gap-2 mb-2">
           <Sparkles className="h-5 w-5 text-indigo-500" />
-          <h2 className="text-sm font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] pl-1">Inteligência Operacional & Predições</h2>
+          <h2 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] pl-1">Inteligência Operacional & Predições</h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
@@ -488,16 +488,16 @@ export default function DashboardPage() {
 
       {/* BLOCO 1 — HERO OPERACIONAL */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 h-48 lg:h-64 animate-pulse bg-slate-100 dark:bg-white/5 rounded-[1.5rem] lg:rounded-[2.5rem]" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 h-48 lg:h-64 animate-pulse bg-slate-100 dark:bg-white/5 rounded-lg lg:rounded-xl" />
       ) : (
         <DashboardHero stats={{ criticos: stats.riscoCritico, emRisco: stats.emRisco, operacionais: stats.operacionais }} />
       )}
 
       {/* BLOCO 2 — MÉTRICAS RESUMO */}
       <div className="space-y-2 lg:space-y-4">
-        <h2 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] pl-1">Métricas e Volume</h2>
+        <h2 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] pl-1">Métricas e Volume</h2>
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 h-40 animate-pulse bg-slate-100 dark:bg-white/5 rounded-[2rem]" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 h-40 animate-pulse bg-slate-100 dark:bg-white/5 rounded-xl" />
         ) : (
           <DashboardCards stats={stats} />
         )}
@@ -511,7 +511,7 @@ export default function DashboardPage() {
           {/* BLOCO 3 — AÇÕES PRIORITÁRIAS */}
           {!isViewer && (
             <div className="space-y-2 lg:space-y-4">
-              <h2 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] pl-1">Prioridades de Decisão</h2>
+              <h2 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] pl-1">Prioridades de Decisão</h2>
               <AlertCenter />
             </div>
           )}
@@ -526,15 +526,15 @@ export default function DashboardPage() {
         {/* COLUNA DIREITA (CONTEXTO & HISTÓRICO) */}
         <div className="lg:col-span-4 space-y-4 lg:space-y-10">
           {/* BLOCO 5 — STATUS GLOBAL */}
-          <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-white/5 rounded-[1.5rem] lg:rounded-[3rem] p-4 lg:p-10 flex flex-col justify-between min-h-[220px] lg:min-h-[350px] relative overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-white/5 rounded-lg lg:rounded-xl p-4 lg:p-10 flex flex-col justify-between min-h-[220px] lg:min-h-[350px] relative overflow-hidden shadow-sm">
             <div className="absolute top-0 right-0 p-4 lg:p-10 opacity-5">
               <ShieldCheck className="h-24 w-24 lg:h-32 lg:w-32 text-primary-500" />
             </div>
             <div>
-              <h3 className="text-[10px] lg:text-xs font-black text-primary-600 uppercase tracking-[0.4em] mb-2 lg:mb-4">Status Global</h3>
+              <h3 className="text-[10px] lg:text-xs font-bold text-primary-600 uppercase tracking-[0.4em] mb-2 lg:mb-4">Status Global</h3>
               <div className="flex items-center gap-2 mb-2 lg:mb-4">
                 <div className="h-2 w-2 lg:h-3 lg:w-3 rounded-full bg-success-500 animate-pulse" />
-                <span className="text-xl lg:text-2xl font-black text-text-primary dark:text-white">Operação Estável</span>
+                <span className="text-xl lg:text-2xl font-bold text-text-primary dark:text-white">Operação Estável</span>
               </div>
               <p className="text-text-secondary dark:text-slate-400 text-sm font-semibold leading-relaxed">
                 A infraestrutura está operando em alta eficiência. {stats.riscoCritico > 0 ? `Avaliar prioridades críticas de hardware.` : 'Sem interrupções detectadas.'}
@@ -547,21 +547,21 @@ export default function DashboardPage() {
                   <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 shadow-sm flex items-center justify-center"><Users className="h-6 w-6 text-indigo-500" /></div>
                   <span className="text-sm font-bold text-text-secondary dark:text-slate-300">Colaboradores</span>
                 </div>
-                <span className="text-xl font-black text-text-primary dark:text-white">{extraStats.colaboradores}</span>
+                <span className="text-xl font-bold text-text-primary dark:text-white">{extraStats.colaboradores}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-2xl bg-success-50 dark:bg-success-900/20 shadow-sm flex items-center justify-center"><HardDrive className="h-6 w-6 text-success-500" /></div>
                   <span className="text-sm font-bold text-text-secondary dark:text-slate-300">Categorias</span>
                 </div>
-                <span className="text-xl font-black text-text-primary dark:text-white">{extraStats.tipos}</span>
+                <span className="text-xl font-bold text-text-primary dark:text-white">{extraStats.tipos}</span>
               </div>
             </div>
           </div>
 
           {/* BLOCO 6 — ATIVIDADE RECENTE */}
           <div className="space-y-6 pl-2">
-            <h2 className="text-xs font-black text-text-muted dark:text-slate-500 uppercase tracking-[0.3em]">Timeline de Atividade</h2>
+            <h2 className="text-xs font-bold text-text-muted dark:text-slate-500 uppercase tracking-[0.3em]">Timeline de Atividade</h2>
             <div className="space-y-6">
               {historico.map((h, i) => (
                 <div key={i} className="flex gap-4 group cursor-default">
@@ -572,7 +572,7 @@ export default function DashboardPage() {
                     {i !== historico.length - 1 && <div className="w-px h-full bg-slate-100 dark:bg-white/5 mt-2" />}
                   </div>
                   <div className="flex-1 pb-4">
-                    <p className="text-sm font-black text-text-primary dark:text-white group-hover:text-primary-700 transition-colors">{h.ativo?.nome}</p>
+                    <p className="text-sm font-bold text-text-primary dark:text-white group-hover:text-primary-700 transition-colors">{h.ativo?.nome}</p>
                     <p className="text-[10px] font-bold text-text-muted mt-0.5">{h.tipo_movimentacao} por {h.usuario?.full_name}</p>
                     <p className="text-[9px] font-medium text-slate-300 dark:text-slate-600 mt-1 uppercase tracking-wider">{new Date(h.data_movimentacao).toLocaleDateString()}</p>
                   </div>
@@ -586,3 +586,4 @@ export default function DashboardPage() {
     </motion.div>
   )
 }
+

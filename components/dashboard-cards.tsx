@@ -85,12 +85,12 @@ export function DashboardCards({ stats }: { stats: DashboardStats }) {
                     <div
                         key={card.title}
                         onClick={() => router.push(card.href)}
-                        className="bg-white dark:bg-zinc-900 group relative overflow-hidden p-6 shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.98] rounded-2xl"
+                        className="bg-white dark:bg-zinc-900 group relative overflow-hidden p-6 shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.98] rounded-xl"
                     >
                         <div className="relative z-10">
                             <div className="flex items-center justify-between mb-4">
                                 <div className={cn(
-                                    "h-12 w-12 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-110",
+                                    "h-12 w-12 rounded-lg flex items-center justify-center transition-all duration-200 group-hover:scale-110",
                                     card.bg,
                                     "bg-opacity-100 dark:bg-opacity-20"
                                 )}>
@@ -102,21 +102,21 @@ export function DashboardCards({ stats }: { stats: DashboardStats }) {
                                     ) : (
                                         <div className="h-0.5 w-2 bg-slate-300 dark:bg-slate-600 rounded-full" />
                                     )}
-                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">
+                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
                                         {card.trend === "up" ? "Alta" : "Estável"}
                                     </span>
                                 </div>
                             </div>
 
                             <div>
-                                <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-1">
+                                <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-1">
                                     {card.title}
                                 </p>
                                 <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                     <KPIInfo text={card.tooltip || ""} />
                                 </div>
                                 <div className="flex items-baseline gap-1.5">
-                                    <span className="text-4xl font-black tracking-tight text-text-primary dark:text-white">
+                                    <span className="text-4xl font-bold tracking-tight text-text-primary dark:text-white">
                                         {card.value}
                                     </span>
                                     <span className="text-[10px] font-bold text-text-muted lowercase">
@@ -142,3 +142,5 @@ export function DashboardCards({ stats }: { stats: DashboardStats }) {
         </div>
     )
 }
+
+

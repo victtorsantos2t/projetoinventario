@@ -119,7 +119,7 @@ export function InventoryToolbar({
                             <Filter className="h-4 w-4" />
                             Filtros
                             {activeFiltersCount > 0 && (
-                                <span className="h-5 w-5 rounded-full bg-white/20 text-[10px] font-black flex items-center justify-center">
+                                <span className="h-5 w-5 rounded-full bg-white/20 text-[10px] font-bold flex items-center justify-center">
                                     {activeFiltersCount}
                                 </span>
                             )}
@@ -320,3 +320,4 @@ export function InventoryToolbar({
         </div>
     )
 }
+

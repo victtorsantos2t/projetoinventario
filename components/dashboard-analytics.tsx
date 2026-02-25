@@ -38,17 +38,17 @@ function AnalyticsCard({ title, objective, priority, children, className }: Anal
 
     return (
         <div className={cn(
-            "glass-card p-4 lg:p-6 rounded-[1.5rem] lg:rounded-[2.5rem] flex flex-col h-full hover:shadow-premium transition-all duration-300",
+            "glass-card p-4 lg:p-6 rounded-lg lg:rounded-lg flex flex-col h-full hover:shadow-premium transition-all duration-300",
             className
         )}>
             <div className="flex items-start justify-between mb-4">
                 <div>
                     <div className="flex items-center gap-2 mb-1">
-                        <span className={cn("text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full", priorityColors[priority])}>
+                        <span className={cn("text-[8px] font-bold uppercase tracking-[0.2em] px-2 py-0.5 rounded-full", priorityColors[priority])}>
                             Prioridade {priority}
                         </span>
                     </div>
-                    <h3 className="text-sm lg:text-base font-black text-slate-900 dark:text-white leading-tight">{title}</h3>
+                    <h3 className="text-sm lg:text-base font-bold text-slate-900 dark:text-white leading-tight">{title}</h3>
                 </div>
                 <div className="text-slate-400 flex items-center gap-2">
                     <KPIInfo text={objective || "Métrica chave de desempenho."} />
@@ -68,21 +68,21 @@ export function FailureTrendCard({ data }: { data: { percent: number, type: stri
         <AnalyticsCard title="Tendência de Falhas" objective="Monitora o aumento percentual de falhas nos últimos 30 dias. Altas taxas indicam instabilidade na infraestrutura." priority="Alta">
             <div className="space-y-4">
                 <div className="flex items-baseline gap-2">
-                    <span className={cn("text-2xl lg:text-3xl font-black tracking-tighter", isUp ? "text-rose-500" : "text-emerald-500")}>
+                    <span className={cn("text-2xl lg:text-3xl font-bold tracking-tighter", isUp ? "text-rose-500" : "text-emerald-500")}>
                         {isUp ? "↑" : "↓"} {Math.abs(data.percent)}%
                     </span>
                     <span className="text-[10px] font-bold text-slate-400 uppercase">vs 30 dias</span>
                 </div>
                 <div className="grid grid-cols-1 gap-2">
-                    <div className="bg-slate-50 dark:bg-white/5 p-2 rounded-xl flex items-center justify-between">
+                    <div className="bg-slate-50 dark:bg-white/5 p-2 rounded-lg flex items-center justify-between">
                         <span className="text-[10px] font-bold text-slate-500">Principal Origem</span>
-                        <span className="text-[10px] font-black text-slate-900 dark:text-white">{data.type}</span>
+                        <span className="text-[10px] font-bold text-slate-900 dark:text-white">{data.type}</span>
                     </div>
-                    <div className={cn("p-2 rounded-xl flex items-center justify-between", data.isCritical ? "bg-rose-50 dark:bg-rose-500/20 border border-rose-100 dark:border-rose-500/30" : "bg-slate-50 dark:bg-white/5")}>
+                    <div className={cn("p-2 rounded-lg flex items-center justify-between", data.isCritical ? "bg-rose-50 dark:bg-rose-500/20 border border-rose-100 dark:border-rose-500/30" : "bg-slate-50 dark:bg-white/5")}>
                         <span className={cn("text-[10px] font-bold", data.isCritical ? "text-rose-600 dark:text-rose-300" : "text-slate-500")}>
                             {data.isCritical ? "Setor em Colapso" : "Setor Crítico"}
                         </span>
-                        <span className={cn("text-[10px] font-black", data.isCritical ? "text-rose-700 dark:text-rose-100" : "text-slate-900 dark:text-white")}>
+                        <span className={cn("text-[10px] font-bold", data.isCritical ? "text-rose-700 dark:text-rose-100" : "text-slate-900 dark:text-white")}>
                             {data.sector}
                         </span>
                     </div>
@@ -99,7 +99,7 @@ export function MTTRCard({ data }: { data: { current: string, target: string, tr
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">{data.current}</p>
+                        <p className="text-3xl font-bold text-slate-900 dark:text-white tracking-tighter">{data.current}</p>
                         <p className="text-[10px] font-bold text-slate-400">Meta operacional: {data.target}</p>
                     </div>
                     <div className={cn("h-10 w-10 rounded-full flex items-center justify-center", data.current < data.target ? "bg-emerald-50 text-emerald-500" : "bg-rose-50 text-rose-500")}>
@@ -107,7 +107,7 @@ export function MTTRCard({ data }: { data: { current: string, target: string, tr
                     </div>
                 </div>
                 <div className="pt-2 border-t border-slate-100 dark:border-white/5">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Gargalo Identificado</p>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Gargalo Identificado</p>
                     <p className="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                         <ShieldAlert className="h-3 w-3" />
                         {data.bottleneck}
@@ -121,9 +121,9 @@ export function MTTRCard({ data }: { data: { current: string, target: string, tr
 // 3. Score de Risco Operacional por Setor (Refatorado para Foco em Manutenção)
 export function SectorRiskScore({ sectors }: { sectors: { name: string, total: number, maintenance: number, percentage: number, isCritical: boolean }[] }) {
     return (
-        <div className="glass-card p-4 lg:p-6 rounded-[1.5rem] lg:rounded-[2.5rem] space-y-6">
+        <div className="glass-card p-4 lg:p-6 rounded-lg lg:rounded-lg space-y-6">
             <div className="flex items-center justify-between">
-                <h3 className="text-sm lg:text-base font-black text-slate-900 dark:text-white uppercase tracking-wider">Risco de Parada por Setor</h3>
+                <h3 className="text-sm lg:text-base font-bold text-slate-900 dark:text-white uppercase tracking-wider">Risco de Parada por Setor</h3>
                 <KPIInfo text="Identifica setores com maior volume de equipamentos parados ou críticos. Priorize ações onde o impacto operacional é maior." />
             </div>
             <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
@@ -132,7 +132,7 @@ export function SectorRiskScore({ sectors }: { sectors: { name: string, total: n
                 ) : (
                     sectors.map((s, i) => (
                         <div key={i} className={cn(
-                            "flex items-center gap-4 bg-slate-50 dark:bg-white/5 p-3 rounded-2xl group transition-all relative overflow-hidden",
+                            "flex items-center gap-4 bg-slate-50 dark:bg-white/5 p-3 rounded-xl group transition-all relative overflow-hidden",
                             s.isCritical && "bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20"
                         )}>
                             {s.isCritical && (
@@ -140,7 +140,7 @@ export function SectorRiskScore({ sectors }: { sectors: { name: string, total: n
                             )}
 
                             <div className={cn(
-                                "h-10 w-10 shrink-0 rounded-xl flex items-center justify-center text-xs font-black z-10",
+                                "h-10 w-10 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold z-10",
                                 s.isCritical ? "bg-rose-500 text-white shadow-lg shadow-rose-500/30" :
                                     s.percentage > 50 ? "bg-amber-500 text-white" : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
                             )}>
@@ -149,7 +149,7 @@ export function SectorRiskScore({ sectors }: { sectors: { name: string, total: n
 
                             <div className="min-w-0 flex-1 z-10">
                                 <div className="flex justify-between items-baseline">
-                                    <p className="text-sm font-black text-slate-900 dark:text-white truncate">{s.name}</p>
+                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{s.name}</p>
                                     <p className="text-[10px] font-bold text-slate-400">{s.percentage}% Impacto</p>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -181,20 +181,20 @@ export function SectorRiskScore({ sectors }: { sectors: { name: string, total: n
 export function LifecyclePrediction({ data }: { data: { warranties: number, endOfLife: number } }) {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-white/5 p-4 rounded-3xl relative">
+            <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-white/5 p-4 rounded-xl relative">
                 <div className="absolute top-4 right-4">
                     <KPIInfo text="Previsão de garantias expirando nos próximos 60 dias. Planeje renovações para evitar custos extras." />
                 </div>
                 <Calendar className="h-5 w-5 text-indigo-500 mb-3" />
-                <p className="text-2xl font-black text-text-primary dark:text-white leading-none">{data.warranties}</p>
+                <p className="text-2xl font-bold text-text-primary dark:text-white leading-none">{data.warranties}</p>
                 <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Garantias / 60 dias</p>
             </div>
-            <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-white/5 p-4 rounded-3xl relative">
+            <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-white/5 p-4 rounded-xl relative">
                 <div className="absolute top-4 right-4">
                     <KPIInfo text="Ativos atingindo o fim do ciclo de vida útil (EndOfLife). Considere substituição para manter a performance." />
                 </div>
                 <Activity className="h-5 w-5 text-rose-500 mb-3" />
-                <p className="text-2xl font-black text-text-primary dark:text-white leading-none">{data.endOfLife}</p>
+                <p className="text-2xl font-bold text-text-primary dark:text-white leading-none">{data.endOfLife}</p>
                 <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Fim de Vida / 90 dias</p>
             </div>
         </div>
@@ -204,19 +204,19 @@ export function LifecyclePrediction({ data }: { data: { warranties: number, endO
 // 6. Score Geral de Saúde da Infraestrutura
 export function InfrastructureHealthScore({ score, trend }: { score: number, trend: number }) {
     return (
-        <div className="bg-slate-900 dark:bg-primary-950 p-6 lg:p-8 rounded-[2rem] lg:rounded-[3rem] text-white overflow-hidden relative">
+        <div className="bg-slate-900 dark:bg-primary-950 p-6 lg:p-8 rounded-lg lg:rounded-lg text-white overflow-hidden relative">
             <div className="absolute top-0 right-0 p-8 opacity-10">
                 <Stethoscope className="h-32 w-32" />
             </div>
             <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
-                    <p className="text-[10px] lg:text-xs font-black uppercase tracking-[0.4em] text-primary-400">Saúde Geral da Infraestrutura</p>
+                    <p className="text-[10px] lg:text-xs font-bold uppercase tracking-[0.4em] text-primary-400">Saúde Geral da Infraestrutura</p>
                     <KPIInfo text="Índice global de saúde da TI, calculado com base em chamados, manutenções ativas e idade dos ativos." />
                 </div>
                 <div className="flex items-center gap-4">
-                    <span className="text-5xl lg:text-6xl font-black tracking-tighter">{score}%</span>
+                    <span className="text-5xl lg:text-6xl font-bold tracking-tighter">{score}%</span>
                     <div className="flex flex-col">
-                        <span className={cn("text-sm font-black flex items-center gap-1", trend > 0 ? "text-emerald-400" : "text-rose-400")}>
+                        <span className={cn("text-sm font-bold flex items-center gap-1", trend > 0 ? "text-emerald-400" : "text-rose-400")}>
                             {trend > 0 ? "↑" : "↓"} {Math.abs(trend)}%
                         </span>
                         <span className="text-[10px] font-bold text-slate-500">vs semana passada</span>
@@ -237,19 +237,19 @@ export function InfrastructureHealthScore({ score, trend }: { score: number, tre
 // 7. Produtividade Operacional
 export function TeamProductivity({ data }: { data: { avgResolutionTime: string, resolvedCount: number, reopenRate: number } }) {
     return (
-        <div className="glass-card p-4 lg:p-6 rounded-[1.5rem] lg:rounded-[2.5rem] space-y-6">
+        <div className="glass-card p-4 lg:p-6 rounded-lg lg:rounded-lg space-y-6">
             <div className="flex items-center justify-between">
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.3em]">Eficiência da Equipe TI</h3>
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-[0.3em]">Eficiência da Equipe TI</h3>
                 <KPIInfo text="Mede a eficiência da equipe de suporte através do tempo de resolução e taxa de reabertura." />
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                     <p className="text-[10px] font-bold text-slate-400">Tempo Médio</p>
-                    <p className="text-lg font-black text-slate-900 dark:text-white">{data.avgResolutionTime}</p>
+                    <p className="text-lg font-bold text-slate-900 dark:text-white">{data.avgResolutionTime}</p>
                 </div>
                 <div className="space-y-1">
                     <p className="text-[10px] font-bold text-slate-400">Taxa Reabertura</p>
-                    <p className="text-lg font-black text-rose-500">{data.reopenRate}%</p>
+                    <p className="text-lg font-bold text-rose-500">{data.reopenRate}%</p>
                 </div>
             </div>
             <div className="flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-white/5">
@@ -266,7 +266,7 @@ export function AutomaticRecommendations({ recommendations }: { recommendations:
 
     return (
         <div className={cn(
-            "p-4 lg:p-6 rounded-[2rem] border transition-all duration-500",
+            "p-4 lg:p-6 rounded-lg border transition-all duration-500",
             hasReplacement
                 ? "bg-red-50 dark:bg-red-950/20 border-red-100 dark:border-red-900/30 shadow-lg shadow-red-500/5"
                 : "bg-indigo-50 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-900/20"
@@ -276,7 +276,7 @@ export function AutomaticRecommendations({ recommendations }: { recommendations:
                     "h-5 w-5 animate-pulse",
                     hasReplacement ? "text-red-500" : "text-indigo-500"
                 )} />
-                <h3 className="text-sm lg:text-base font-black text-slate-900 dark:text-white uppercase tracking-tight">Recomendações Automáticas</h3>
+                <h3 className="text-sm lg:text-base font-bold text-slate-900 dark:text-white uppercase tracking-tight">Recomendações Automáticas</h3>
                 <div className="ml-auto">
                     <KPIInfo text="Sugestões geradas por IA baseadas em padrões identificados nos dados de inventário e manutenção." />
                 </div>
@@ -290,7 +290,7 @@ export function AutomaticRecommendations({ recommendations }: { recommendations:
                             <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
                         )}
                         <div>
-                            <p className="text-sm font-black text-slate-900 dark:text-white leading-tight mb-1">{rec.title}</p>
+                            <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight mb-1">{rec.title}</p>
                             <p className="text-xs font-medium text-slate-500 dark:text-slate-400 leading-relaxed">{rec.reason}</p>
                         </div>
                     </div>
@@ -299,3 +299,5 @@ export function AutomaticRecommendations({ recommendations }: { recommendations:
         </div>
     )
 }
+
+

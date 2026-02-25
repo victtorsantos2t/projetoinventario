@@ -39,11 +39,20 @@ export function NotificationsPopover() {
             return
         }
 
-        // Filtrar notificações do próprio usuário e notificações inválidas (sem título/mensagem)
-        const filteredData = data.filter((n: any) =>
-            (!n.actor_id || n.actor_id !== profile?.id) &&
-            n.titulo && n.mensagem
-        ).slice(0, 20)
+        // Filtrar notificações do próprio usuário e notificações inválidas
+        const filteredData = data.filter((n: any) => {
+            if ((n.actor_id && n.actor_id === profile?.id) || !n.titulo || !n.mensagem) return false
+
+            // Se for Visualizador, filtrar por cargo/setor se for uma notificação direcionada
+            if (profile?.role === 'Visualizador') {
+                if (n.alvo_colaborador || n.alvo_setor) {
+                    const matchColaborador = n.alvo_colaborador === profile?.full_name
+                    const matchSetor = n.alvo_setor === profile?.setor?.nome
+                    if (!matchColaborador && !matchSetor) return false
+                }
+            }
+            return true
+        }).slice(0, 20)
 
         // Buscar status de leitura se o usuário estiver logado
         let readStatuses: any[] = []
@@ -74,6 +83,16 @@ export function NotificationsPopover() {
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notificacoes' }, (payload: any) => {
                 // Ignorar notificações geradas pelo próprio usuário ou inválidas
                 if ((payload.new && payload.new.actor_id === profile?.id) || (!payload.new.titulo || !payload.new.mensagem)) return
+
+                // Aplicar lógica de filtragem no channel
+                if (profile?.role === 'Visualizador') {
+                    if (payload.new.alvo_colaborador || payload.new.alvo_setor) {
+                        const matchColaborador = payload.new.alvo_colaborador === profile?.full_name
+                        const matchSetor = payload.new.alvo_setor === profile?.setor?.nome
+                        if (!matchColaborador && !matchSetor) return
+                    }
+                }
+
                 fetchNotifications()
             })
             .subscribe()

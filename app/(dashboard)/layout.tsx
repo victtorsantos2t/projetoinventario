@@ -11,6 +11,7 @@ import { UserProvider } from "@/contexts/user-context"
 import { Loader2 } from "lucide-react"
 
 import { CommandMenu } from "@/components/command-menu"
+import { RoleGuard } from "@/components/role-guard"
 
 export default function DashboardLayout({
     children,
@@ -58,7 +59,9 @@ export default function DashboardLayout({
                     <Header />
                     <main className="flex-1 p-4 lg:p-6 xl:p-8 overflow-y-auto bg-neutral-app dark:bg-zinc-950 custom-scrollbar">
                         <ErrorBoundary>
-                            {children}
+                            <RoleGuard>
+                                {children}
+                            </RoleGuard>
                         </ErrorBoundary>
                     </main>
                 </div>

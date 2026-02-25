@@ -60,7 +60,7 @@ function CustomTooltip({ active, payload, label }: any) {
         <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl px-4 py-3 shadow-xl">
             {label && <p className="text-xs font-bold text-slate-500 mb-1">{label}</p>}
             {payload.map((p: any, i: number) => (
-                <p key={i} className="text-sm font-black" style={{ color: p.color || p.fill }}>
+                <p key={i} className="text-sm font-bold" style={{ color: p.color || p.fill }}>
                     {p.name}: {p.value}
                 </p>
             ))}
@@ -86,7 +86,7 @@ function KpiCard({ icon: Icon, label, value, color, sub }: {
                 </div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide leading-tight">{label}</span>
             </div>
-            <p className="text-2xl font-black text-slate-800">{value}</p>
+            <p className="text-2xl font-bold text-slate-800">{value}</p>
             {sub && <p className="text-[11px] text-slate-400 mt-1">{sub}</p>}
         </div>
     )
@@ -96,7 +96,7 @@ function KpiCard({ icon: Icon, label, value, color, sub }: {
 function ChartCard({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
     return (
         <div className={`bg-white rounded-2xl border border-slate-100 shadow-sm p-6 ${className}`}>
-            <h3 className="text-sm font-black text-slate-700 mb-4">{title}</h3>
+            <h3 className="text-sm font-bold text-slate-700 mb-4">{title}</h3>
             {children}
         </div>
     )
@@ -305,7 +305,7 @@ export default function AnalyticsPage() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
                         <Wrench className="h-7 w-7 text-indigo-500" />
                         Central de Manutenções
                     </h1>
@@ -619,7 +619,7 @@ function SoftwareAnalyticsSection() {
     return (
         <div className="space-y-6 mt-10">
             <div className="border-t border-slate-200 pt-8">
-                <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 mb-1">
+                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2 mb-1">
                     <Activity className="h-6 w-6 text-indigo-500" />
                     Licenças e Softwares
                 </h2>
@@ -694,3 +694,4 @@ function SoftwareAnalyticsSection() {
         </div>
     )
 }
+

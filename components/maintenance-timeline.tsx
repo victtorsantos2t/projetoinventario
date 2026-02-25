@@ -140,7 +140,7 @@ export function MaintenanceTimeline({ movements, loading }: MaintenanceTimelineP
 
     if (!movements || movements.length === 0) {
         return (
-            <div className="py-12 text-center bg-slate-50/50 rounded-[2rem] border border-dashed border-slate-200">
+            <div className="py-12 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
                 <Clock className="h-8 w-8 text-slate-300 mx-auto mb-2" />
                 <p className="text-slate-400 text-sm font-bold uppercase tracking-widest text-[10px]">Nenhum histórico registrado</p>
             </div>
@@ -166,7 +166,7 @@ export function MaintenanceTimeline({ movements, loading }: MaintenanceTimelineP
                         <div className="flex-1 pt-0.5">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                                 <span className={cn(
-                                    "font-black uppercase text-[10px] tracking-[0.2em] px-3 py-1 rounded-full border",
+                                    "font-bold uppercase text-[10px] tracking-[0.2em] px-3 py-1 rounded-full border",
                                     config.bg, config.border, config.color
                                 )}>
                                     {config.label}
@@ -177,12 +177,12 @@ export function MaintenanceTimeline({ movements, loading }: MaintenanceTimelineP
                                 </div>
                             </div>
 
-                            <div className="bg-white border border-slate-100 rounded-[2.2rem] p-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all group">
+                            <div className="bg-white border border-slate-100 rounded-xl p-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all group">
                                 {formatObservation(movement.observacao || "")}
 
                                 {movement.usuario && (
                                     <div className="flex items-center gap-3 mt-5 pt-5 border-t border-slate-50">
-                                        <div className="h-8 w-8 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 uppercase">
+                                        <div className="h-8 w-8 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400 uppercase">
                                             {movement.usuario.full_name?.charAt(0) || <User className="h-3 w-3" />}
                                         </div>
                                         <div className="flex flex-col">
@@ -199,3 +199,4 @@ export function MaintenanceTimeline({ movements, loading }: MaintenanceTimelineP
         </div>
     )
 }
+

@@ -44,8 +44,9 @@ export function UserProfileModal({ open, onClose }: UserProfileModalProps) {
             if (error) throw error
             await refreshProfile()
             toast.success("Nome atualizado!")
-        } catch (error: any) {
-            toast.error("Erro ao atualizar nome: " + error.message)
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Erro desconhecido"
+            toast.error("Erro ao atualizar nome: " + msg)
         } finally {
             setSaving(false)
         }
@@ -63,8 +64,9 @@ export function UserProfileModal({ open, onClose }: UserProfileModalProps) {
             toast.success("Senha atualizada com sucesso!")
             setPassword("")
             setConfirmPassword("")
-        } catch (error: any) {
-            toast.error("Erro ao atualizar senha: " + error.message)
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Erro desconhecido"
+            toast.error("Erro ao atualizar senha: " + msg)
         } finally {
             setSaving(false)
         }
@@ -103,9 +105,10 @@ export function UserProfileModal({ open, onClose }: UserProfileModalProps) {
             setAvatarUrl(publicUrl)
             await refreshProfile()
             toast.success("Foto de perfil atualizada!")
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error)
-            toast.error("Erro no upload: " + error.message)
+            const msg = error instanceof Error ? error.message : "Erro desconhecido"
+            toast.error("Erro no upload: " + msg)
         } finally {
             setUploading(false)
         }
@@ -113,9 +116,9 @@ export function UserProfileModal({ open, onClose }: UserProfileModalProps) {
 
     return (
         <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-            <DialogContent className="max-w-xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
+            <DialogContent className="max-w-xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-xl border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
                 <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
-                    <DialogTitle className="text-xl font-black text-text-primary dark:text-white">Meu Perfil</DialogTitle>
+                    <DialogTitle className="text-xl font-bold text-text-primary dark:text-white">Meu Perfil</DialogTitle>
                     <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium">
                         Gerencie suas informações de conta com segurança.
                     </DialogDescription>
@@ -125,30 +128,30 @@ export function UserProfileModal({ open, onClose }: UserProfileModalProps) {
                     {/* Profile Picture Section Padronizada */}
                     <div className="flex flex-col items-center gap-5">
                         <div className="relative group">
-                            <div className="absolute -inset-1 bg-gradient-to-tr from-primary-600 to-purple-500 rounded-[2.2rem] blur opacity-20 group-hover:opacity-40 transition duration-500" />
-                            <Avatar className="h-32 w-32 rounded-[2rem] border-4 border-white dark:border-zinc-800 shadow-2xl relative overflow-hidden transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div className="absolute -inset-1 bg-gradient-to-tr from-primary-600 to-purple-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500" />
+                            <Avatar className="h-32 w-32 rounded-xl border-4 border-white dark:border-zinc-800 shadow-2xl relative overflow-hidden transition-transform duration-500 group-hover:scale-[1.02]">
                                 <AvatarImage src={avatarUrl} className="object-cover" />
-                                <AvatarFallback className="bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-4xl font-black">
+                                <AvatarFallback className="bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-4xl font-bold">
                                     {(fullName?.[0] || profile?.email?.[0] || '?').toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
-                            <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 text-white rounded-[2rem] opacity-0 group-hover:opacity-100 cursor-pointer transition-all backdrop-blur-[4px] z-20">
+                            <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 text-white rounded-xl opacity-0 group-hover:opacity-100 cursor-pointer transition-all backdrop-blur-[4px] z-20">
                                 {uploading ? (
                                     <Loader2 className="h-8 w-8 animate-spin" />
                                 ) : (
                                     <>
                                         <Camera className="h-8 w-8 mb-1" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Alterar</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest">Alterar</span>
                                     </>
                                 )}
                                 <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" disabled={uploading} />
                             </label>
                         </div>
                         <div className="text-center space-y-2">
-                            <h3 className="text-xl font-black text-text-primary dark:text-white tracking-tight">{profile?.full_name}</h3>
+                            <h3 className="text-xl font-bold text-text-primary dark:text-white tracking-tight">{profile?.full_name}</h3>
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-500/10">
                                 <span className="h-1.5 w-1.5 rounded-full bg-primary-500 animate-pulse" />
-                                <p className="text-[10px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-widest">{profile?.role}</p>
+                                <p className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-widest">{profile?.role}</p>
                             </div>
                         </div>
                     </div>
@@ -160,13 +163,13 @@ export function UserProfileModal({ open, onClose }: UserProfileModalProps) {
                                 <User className="h-5 w-5 text-primary-600 dark:text-primary-400" />
                             </div>
                             <div>
-                                <h4 className="text-sm font-black text-text-primary dark:text-white uppercase tracking-tight">Informações Pessoais</h4>
+                                <h4 className="text-sm font-bold text-text-primary dark:text-white uppercase tracking-tight">Informações Pessoais</h4>
                                 <p className="text-[10px] text-text-muted font-medium">Atualize como você é visto no sistema.</p>
                             </div>
                         </div>
 
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Nome Completo</label>
+                            <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">Nome Completo</label>
                             <div className="flex gap-3">
                                 <div className="flex-1">
                                     <Input
@@ -179,7 +182,7 @@ export function UserProfileModal({ open, onClose }: UserProfileModalProps) {
                                 <Button
                                     onClick={handleUpdateName}
                                     disabled={saving || fullName === profile?.full_name}
-                                    className="h-12 px-8 rounded-xl font-black bg-primary-600 hover:bg-primary-700 text-white shadow-xl shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50"
+                                    className="h-12 px-8 rounded-xl font-bold bg-primary-600 hover:bg-primary-700 text-white shadow-xl shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50"
                                 >
                                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Salvar"}
                                 </Button>
@@ -194,14 +197,14 @@ export function UserProfileModal({ open, onClose }: UserProfileModalProps) {
                                 <Lock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                             </div>
                             <div>
-                                <h4 className="text-sm font-black text-text-primary dark:text-white uppercase tracking-tight">Segurança da Conta</h4>
+                                <h4 className="text-sm font-bold text-text-primary dark:text-white uppercase tracking-tight">Segurança da Conta</h4>
                                 <p className="text-[10px] text-text-muted font-medium">Proteja seu acesso trocando sua senha.</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Nova Senha</label>
+                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">Nova Senha</label>
                                 <Input
                                     type="password"
                                     value={password}
@@ -211,7 +214,7 @@ export function UserProfileModal({ open, onClose }: UserProfileModalProps) {
                                 />
                             </div>
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Confirmar Senha</label>
+                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">Confirmar Senha</label>
                                 <Input
                                     type="password"
                                     value={confirmPassword}
@@ -224,7 +227,7 @@ export function UserProfileModal({ open, onClose }: UserProfileModalProps) {
                         <Button
                             onClick={handleUpdatePassword}
                             disabled={saving || !password || password !== confirmPassword}
-                            className="w-full h-12 rounded-xl font-black bg-slate-900 dark:bg-white/10 hover:bg-slate-800 dark:hover:bg-white/20 text-white shadow-xl shadow-slate-900/20 transition-all mt-4 disabled:opacity-50"
+                            className="w-full h-12 rounded-xl font-bold bg-slate-900 dark:bg-white/10 hover:bg-slate-800 dark:hover:bg-white/20 text-white shadow-xl shadow-slate-900/20 transition-all mt-4 disabled:opacity-50"
                         >
                             {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                             Atualizar Senha
@@ -235,3 +238,4 @@ export function UserProfileModal({ open, onClose }: UserProfileModalProps) {
         </Dialog>
     )
 }
+

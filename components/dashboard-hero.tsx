@@ -68,14 +68,14 @@ export function DashboardHero({ stats }: HeroProps) {
                     onClick={() => router.push(item.href)}
                     className={cn(
                         "group relative overflow-hidden border p-4 sm:p-5 lg:p-8 cursor-pointer transition-all duration-200 hover:-translate-y-1",
-                        "rounded-[1.5rem] lg:rounded-[2.5rem]",
+                        "rounded-lg lg:rounded-lg",
                         item.cardStyles,
                         item.shadow
                     )}
                 >
                     <div className="relative z-10 flex flex-col h-full justify-between">
                         <div className="flex items-center justify-between mb-3 lg:mb-6">
-                            <div className={cn("h-10 w-10 lg:h-14 lg:w-14 rounded-xl lg:rounded-2xl flex items-center justify-center transition-all duration-200 group-hover:scale-110", item.iconBg)}>
+                            <div className={cn("h-10 w-10 lg:h-14 lg:w-14 rounded-lg lg:rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-110", item.iconBg)}>
                                 <item.icon className={cn("h-5 w-5 lg:h-7 lg:w-7", item.iconColor)} />
                             </div>
                             <div className="h-7 w-7 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
@@ -84,11 +84,11 @@ export function DashboardHero({ stats }: HeroProps) {
                         </div>
 
                         <div>
-                            <p className={cn("text-[8px] lg:text-[10px] font-black uppercase tracking-[0.3em] mb-1", item.labelColor)}>
+                            <p className={cn("text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.3em] mb-1", item.labelColor)}>
                                 {item.label}
                             </p>
                             <div className="flex items-baseline gap-2">
-                                <span className={cn("text-2xl sm:text-3xl lg:text-5xl font-black tracking-tighter", item.valueColor)}>
+                                <span className={cn("text-2xl sm:text-3xl lg:text-5xl font-bold tracking-tighter", item.valueColor)}>
                                     {item.value}
                                 </span>
                                 <span className="text-[10px] lg:text-xs font-bold text-slate-400">ativos</span>
@@ -103,3 +103,5 @@ export function DashboardHero({ stats }: HeroProps) {
         </div>
     )
 }
+
+

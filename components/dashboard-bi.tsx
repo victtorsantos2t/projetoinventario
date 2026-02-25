@@ -9,14 +9,14 @@ interface ChartData {
     label: string
     value: number
     color: string
-    icon: any
+    icon: React.ElementType
 }
 
 export function AssetDistributionChart({ data, total }: { data: ChartData[], total: number }) {
     return (
-        <div className="glass-card p-4 lg:p-6 h-full flex flex-col rounded-[1.5rem] lg:rounded-xl hover:shadow-premium transition-all duration-200">
+        <div className="glass-card p-4 lg:p-6 h-full flex flex-col rounded-lg lg:rounded-lg hover:shadow-premium transition-all duration-200">
             <div className="flex items-center justify-between mb-3 lg:mb-6">
-                <h3 className="text-[10px] lg:text-sm font-black text-slate-400 dark:text-white uppercase tracking-widest">Distribuição da Frota</h3>
+                <h3 className="text-[10px] lg:text-sm font-bold text-slate-400 dark:text-white uppercase tracking-widest">Distribuição da Frota</h3>
                 <KPIInfo text="Visão geral da composição da frota por tipo de equipamento. Ajuda a entender a diversidade do parque tecnológico." />
             </div>
 
@@ -41,8 +41,8 @@ export function AssetDistributionChart({ data, total }: { data: ChartData[], tot
                                 <item.icon className={cn("h-4 w-4", item.color.replace('bg-', 'text-'))} />
                             </div>
                             <div className="min-w-0">
-                                <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase truncate">{item.label}</p>
-                                <p className="text-xs lg:text-sm font-black text-slate-900 dark:text-white">
+                                <p className="text-[8px] lg:text-[10px] font-bold text-slate-400 uppercase truncate">{item.label}</p>
+                                <p className="text-xs lg:text-sm font-bold text-slate-900 dark:text-white">
                                     {item.value} <span className="text-[8px] lg:text-[10px] font-bold text-slate-400 lowercase italic">unid</span>
                                 </p>
                             </div>
@@ -58,9 +58,9 @@ export function SectorRanking({ sectors }: { sectors: { name: string, count: num
     const max = Math.max(...sectors.map(s => s.count), 1)
 
     return (
-        <div className="glass-card p-4 lg:p-6 h-full flex flex-col rounded-[1.5rem] lg:rounded-xl hover:shadow-premium transition-all duration-200">
+        <div className="glass-card p-4 lg:p-6 h-full flex flex-col rounded-lg lg:rounded-lg hover:shadow-premium transition-all duration-200">
             <div className="flex items-center justify-between mb-3 lg:mb-6">
-                <h3 className="text-[10px] lg:text-sm font-black text-slate-400 dark:text-white uppercase tracking-widest">Ativos por Setor</h3>
+                <h3 className="text-[10px] lg:text-sm font-bold text-slate-400 dark:text-white uppercase tracking-widest">Ativos por Setor</h3>
                 <KPIInfo text="Ranking de setores por volume de ativos alocados. Indica onde estão concentrados os recursos da empresa." />
             </div>
             <div className="space-y-4 flex-1">
@@ -70,7 +70,7 @@ export function SectorRanking({ sectors }: { sectors: { name: string, count: num
                             <span className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate pr-4">
                                 {sector.name || "Não atribuído"}
                             </span>
-                            <span className="text-xs font-black text-primary">
+                            <span className="text-xs font-bold text-primary">
                                 {sector.count}
                             </span>
                         </div>
@@ -86,3 +86,5 @@ export function SectorRanking({ sectors }: { sectors: { name: string, count: num
         </div>
     )
 }
+
+

@@ -95,27 +95,27 @@ export function SectorManagement() {
     return (
         <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
             <div>
-                <h3 className="text-2xl font-black text-slate-900">Gestão de Setores</h3>
+                <h3 className="text-2xl font-bold text-slate-900">Gestão de Setores</h3>
                 <p className="text-sm text-slate-400 font-medium">Cadastre os departamentos para organizar colaboradores e ativos.</p>
             </div>
 
-            <div className="flex gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100">
+            <div className="flex gap-4 p-6 bg-slate-50 rounded-xl border border-slate-100">
                 <div className="relative flex-1">
                     <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                     <Input
                         value={newSector}
                         onChange={(e) => setNewSector(e.target.value)}
                         placeholder="Nome do novo setor (ex: Recursos Humanos)"
-                        className="pl-10 rounded-xl border-slate-200 bg-white"
+                        className="pl-10 rounded-lg border-slate-200 bg-white"
                         onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
                     />
                 </div>
-                <Button onClick={handleAdd} className="rounded-xl gap-2 font-bold px-6 shadow-sm">
+                <Button onClick={handleAdd} className="rounded-lg gap-2 font-bold px-6 shadow-sm">
                     <Plus className="h-4 w-4" /> Adicionar Setor
                 </Button>
             </div>
 
-            <div className="border border-slate-100 rounded-[2rem] overflow-hidden bg-white shadow-sm">
+            <div className="border border-slate-100 rounded-lg overflow-hidden bg-white shadow-sm">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-slate-50/50 border-none">
@@ -198,3 +198,5 @@ export function SectorManagement() {
         </div>
     )
 }
+
+

@@ -103,7 +103,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
+            <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-xl border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
                 {/* Header Padronizado */}
                 <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
                     <div className="flex items-center gap-4">
@@ -111,7 +111,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
                             <Edit2 className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
+                            <DialogTitle className="text-xl font-bold text-text-primary dark:text-white">
                                 Editar Colaborador
                             </DialogTitle>
                             <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium">
@@ -131,7 +131,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
                                     <Mail className="h-6 w-6 text-slate-400" />
                                 </div>
                                 <div className="flex-1 w-full space-y-1">
-                                    <Label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">E-mail (Identificador)</Label>
+                                    <Label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">E-mail (Identificador)</Label>
                                     <Input
                                         value={user?.email || ""}
                                         disabled
@@ -141,7 +141,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
                             </div>
 
                             <div className="space-y-2 md:col-span-2">
-                                <Label htmlFor="edit-nome" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Nome Completo</Label>
+                                <Label htmlFor="edit-nome" className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">Nome Completo</Label>
                                 <div className="relative">
                                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
                                     <Input
@@ -155,7 +155,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
                             </div>
 
                             <div className="space-y-2 md:col-span-2">
-                                <Label htmlFor="edit-avatar" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">URL da Foto (Avatar)</Label>
+                                <Label htmlFor="edit-avatar" className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">URL da Foto (Avatar)</Label>
                                 <div className="relative">
                                     <Image className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted transition-all" />
                                     <Input
@@ -169,7 +169,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="edit-cpf" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">CPF</Label>
+                                <Label htmlFor="edit-cpf" className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">CPF</Label>
                                 <Input
                                     id="edit-cpf"
                                     value={formData.cpf}
@@ -180,7 +180,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="edit-cargo" className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Cargo</Label>
+                                <Label htmlFor="edit-cargo" className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">Cargo</Label>
                                 <Input
                                     id="edit-cargo"
                                     value={formData.cargo}
@@ -191,7 +191,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Setor / Departamento</Label>
+                                <Label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">Setor / Departamento</Label>
                                 <Select
                                     value={formData.setor_id}
                                     onValueChange={(val) => setFormData({ ...formData, setor_id: val })}
@@ -210,7 +210,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Nível de Acesso</Label>
+                                <Label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">Nível de Acesso</Label>
                                 <Select
                                     value={formData.role}
                                     onValueChange={(val) => setFormData({ ...formData, role: val })}
@@ -236,7 +236,7 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
                                         className="h-5 w-5 rounded border-slate-300 text-primary-600 focus:ring-primary-600 transition-all"
                                     />
                                     <div className="flex flex-col">
-                                        <span className="text-xs font-black text-text-primary dark:text-white uppercase tracking-tighter">Responsável de Setor</span>
+                                        <span className="text-xs font-bold text-text-primary dark:text-white uppercase tracking-tighter">Responsável de Setor</span>
                                         <span className="text-[10px] text-text-muted font-bold">Permite que este colaborador tenha múltiplos computadores vinculados.</span>
                                     </div>
                                 </label>
@@ -250,14 +250,14 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
                             type="button"
                             variant="ghost"
                             onClick={() => onOpenChange(false)}
-                            className="px-6 py-2.5 text-sm font-black text-text-muted hover:text-text-primary transition-all"
+                            className="px-6 py-2.5 text-sm font-bold text-text-muted hover:text-text-primary transition-all"
                         >
                             Cancelar
                         </Button>
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="flex items-center gap-2 px-8 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-black hover:bg-primary-700 shadow-xl shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50"
+                            className="flex items-center gap-2 px-8 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-bold hover:bg-primary-700 shadow-xl shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50"
                         >
                             {loading ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
                             Salvar Alterações
@@ -268,3 +268,4 @@ export function EditUserModal({ user, open, onOpenChange, onSuccess }: EditUserM
         </Dialog>
     )
 }
+

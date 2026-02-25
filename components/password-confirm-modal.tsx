@@ -83,7 +83,7 @@ export function PasswordConfirmModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-md p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
+            <DialogContent className="max-w-md p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-xl border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
                 {/* Header Padronizado */}
                 <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
                     <div className="flex items-center gap-4">
@@ -96,7 +96,7 @@ export function PasswordConfirmModal({
                             {variant === 'destructive' ? <AlertTriangle className="h-6 w-6" /> : <Lock className="h-6 w-6" />}
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
+                            <DialogTitle className="text-xl font-bold text-text-primary dark:text-white">
                                 {title}
                             </DialogTitle>
                             <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium leading-tight">
@@ -108,7 +108,7 @@ export function PasswordConfirmModal({
 
                 <div className="p-8 space-y-6 bg-white dark:bg-zinc-900">
                     <div className="space-y-3">
-                        <Label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1 flex items-center gap-1.5">
+                        <Label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1 flex items-center gap-1.5">
                             <Lock className="h-3 w-3" />
                             Confirme sua senha
                         </Label>
@@ -132,7 +132,7 @@ export function PasswordConfirmModal({
                     <Button
                         variant="ghost"
                         onClick={() => onOpenChange(false)}
-                        className="flex-1 h-12 rounded-xl font-black text-text-muted hover:text-text-primary transition-all"
+                        className="flex-1 h-12 rounded-xl font-bold text-text-muted hover:text-text-primary transition-all"
                     >
                         Cancelar
                     </Button>
@@ -140,7 +140,7 @@ export function PasswordConfirmModal({
                         onClick={handleConfirm}
                         disabled={loading || !password}
                         className={cn(
-                            "flex-1 h-12 rounded-xl font-black shadow-lg transition-all active:scale-95 disabled:opacity-50",
+                            "flex-1 h-12 rounded-xl font-bold shadow-lg transition-all active:scale-95 disabled:opacity-50",
                             variant === 'destructive'
                                 ? "bg-red-500 hover:bg-red-600 text-white shadow-red-500/20"
                                 : "bg-slate-900 dark:bg-white/10 hover:bg-slate-800 dark:hover:bg-white/20 text-white shadow-slate-900/20"
@@ -154,3 +154,4 @@ export function PasswordConfirmModal({
         </Dialog>
     )
 }
+

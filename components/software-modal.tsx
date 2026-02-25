@@ -139,9 +139,10 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
             }
             onSuccess()
             onClose()
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error)
-            toast.error("Erro ao salvar software: " + error.message)
+            const msg = error instanceof Error ? error.message : "Erro desconhecido"
+            toast.error("Erro ao salvar software: " + msg)
         } finally {
             setLoading(false)
         }
@@ -157,8 +158,9 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
             toast.success("Software excluído!")
             onSuccess()
             onClose()
-        } catch (error: any) {
-            toast.error("Erro ao excluir: " + error.message)
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Erro desconhecido"
+            toast.error("Erro ao excluir: " + msg)
         } finally {
             setLoading(false)
             setShowDeleteConfirm(false)
@@ -169,7 +171,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
 
     return (
         <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
-            <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
+            <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-xl border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
                 {/* Header */}
                 <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
                     <div className="flex items-center gap-4">
@@ -177,7 +179,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                             <Layers className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
+                            <DialogTitle className="text-xl font-bold text-text-primary dark:text-white">
                                 {isCreate ? "Novo Software" : isView ? "Detalhes do Software" : "Editar Software"}
                             </DialogTitle>
                             {!isCreate && software?.nome && (
@@ -194,13 +196,13 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                     <div className="px-8 pt-2 border-b border-slate-100 dark:border-white/5 flex gap-8 bg-white dark:bg-zinc-900">
                         <button
                             onClick={() => setActiveTab('geral')}
-                            className={`pb-3 text-sm font-black border-b-2 transition-all ${activeTab === 'geral' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
+                            className={`pb-3 text-sm font-bold border-b-2 transition-all ${activeTab === 'geral' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
                         >
                             Dados Gerais
                         </button>
                         <button
                             onClick={() => setActiveTab('licencas')}
-                            className={`pb-3 text-sm font-black border-b-2 transition-all ${activeTab === 'licencas' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
+                            className={`pb-3 text-sm font-bold border-b-2 transition-all ${activeTab === 'licencas' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
                         >
                             <div className="flex items-center gap-2">
                                 <Key className="h-4 w-4" />
@@ -209,7 +211,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                         </button>
                         <button
                             onClick={() => setActiveTab('instalacoes')}
-                            className={`pb-3 text-sm font-black border-b-2 transition-all ${activeTab === 'instalacoes' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
+                            className={`pb-3 text-sm font-bold border-b-2 transition-all ${activeTab === 'instalacoes' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
                         >
                             <div className="flex items-center gap-2">
                                 <Monitor className="h-4 w-4" />
@@ -224,7 +226,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                     {activeTab === 'geral' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2 md:col-span-2">
-                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Nome do Software</label>
+                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Nome do Software</label>
                                 <Input
                                     value={form.nome}
                                     onChange={e => handleChange('nome', e.target.value)}
@@ -235,7 +237,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Desenvolvedor</label>
+                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Desenvolvedor</label>
                                 <Input
                                     value={form.desenvolvedor}
                                     onChange={e => handleChange('desenvolvedor', e.target.value)}
@@ -246,7 +248,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Versão</label>
+                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Versão</label>
                                 <Input
                                     value={form.versao}
                                     onChange={e => handleChange('versao', e.target.value)}
@@ -257,7 +259,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Categoria</label>
+                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Categoria</label>
                                 <select
                                     value={form.categoria}
                                     onChange={e => handleChange('categoria', e.target.value)}
@@ -270,7 +272,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Site / URL</label>
+                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Site / URL</label>
                                 <Input
                                     value={form.site_url}
                                     onChange={e => handleChange('site_url', e.target.value)}
@@ -282,10 +284,10 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
 
                             {!isCreate && software && (
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Valor Total em Licenças</label>
+                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Valor Total em Licenças</label>
                                     <div className="h-11 px-4 bg-success-50 dark:bg-success-900/20 border border-success-100 dark:border-success-900/30 rounded-xl flex items-center gap-3">
                                         <ShoppingCart className="h-4 w-4 text-success-600 dark:text-success-400" />
-                                        <span className="text-sm font-black text-success-700 dark:text-success-300">
+                                        <span className="text-sm font-bold text-success-700 dark:text-success-300">
                                             {software?.id ? <SoftwareTotalCost softwareId={software.id} /> : "R$ 0,00"}
                                         </span>
                                     </div>
@@ -293,7 +295,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                             )}
 
                             <div className="space-y-2 md:col-span-2">
-                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Descrição</label>
+                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Descrição</label>
                                 <textarea
                                     value={form.descricao}
                                     onChange={e => handleChange('descricao', e.target.value)}
@@ -326,7 +328,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                         <button
                             onClick={() => setShowDeleteConfirm(true)}
                             disabled={loading}
-                            className="flex items-center gap-2 px-5 py-2.5 text-critical-600 bg-critical-50 dark:bg-critical-900/10 hover:bg-critical-100 dark:hover:bg-critical-900/20 rounded-xl text-xs font-black transition-all"
+                            className="flex items-center gap-2 px-5 py-2.5 text-critical-600 bg-critical-50 dark:bg-critical-900/10 hover:bg-critical-100 dark:hover:bg-critical-900/20 rounded-xl text-xs font-bold transition-all"
                         >
                             <Trash2 className="h-4 w-4" /> Excluir Software
                         </button>
@@ -344,7 +346,7 @@ export function SoftwareModal({ software, open, onClose, onSuccess, mode = 'crea
                             <button
                                 onClick={subformActive ? (subformAction || undefined) : handleSave}
                                 disabled={loading || subformLoading}
-                                className="flex items-center gap-3 px-8 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-black hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex items-center gap-3 px-8 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-bold hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading || subformLoading ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -396,3 +398,4 @@ function SoftwareTotalCost({ softwareId }: { softwareId: string }) {
     if (total === null) return "Calculando..."
     return `R$ ${total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
 }
+

@@ -27,13 +27,13 @@ const ativos = [
     { setor: 'RH', status: 'Em uso' },
 ]
 
-const secMap: any = {}
+const secMap: Record<string, number> = {}
 ativos.forEach(a => {
     secMap[a.setor] = (secMap[a.setor] || 0) + 1
 })
 
 const sectorRiskList = Object.entries(secMap)
-    .map(([name, count]) => {
+    .map(([name]) => {
         const sectorAtivos = ativos.filter(a => a.setor === name)
         const total = sectorAtivos.length
         const maintenance = sectorAtivos.filter(a => a.status === 'Manutenção').length

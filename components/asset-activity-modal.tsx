@@ -87,15 +87,15 @@ export function AssetActivityModal({ ativoId, ativoNome, open, onOpenChange }: A
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-3xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
+            <DialogContent className="max-w-3xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-lg border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
                 {/* Header Padronizado */}
                 <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
                     <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
+                        <div className="h-12 w-12 rounded-xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
                             <History className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
+                            <DialogTitle className="text-xl font-bold text-text-primary dark:text-white">
                                 Histórico do Ativo
                             </DialogTitle>
                             <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[400px]">
@@ -107,14 +107,14 @@ export function AssetActivityModal({ ativoId, ativoNome, open, onOpenChange }: A
 
                 {/* Banner de Restauração de Saúde Padronizado */}
                 {dataRestauracao && (
-                    <div className="mx-8 mt-6 p-5 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-500/20 rounded-3xl flex items-center gap-5 animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/5">
-                        <div className="h-11 w-11 shrink-0 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <div className="mx-8 mt-6 p-5 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-500/20 rounded-xl flex items-center gap-5 animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/5">
+                        <div className="h-11 w-11 shrink-0 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
                             <ShieldCheck className="h-6 w-6 text-white" />
                         </div>
                         <div className="space-y-1">
-                            <h4 className="text-sm font-black text-emerald-900 dark:text-emerald-400 uppercase tracking-tight">Saúde Restaurada!</h4>
+                            <h4 className="text-sm font-bold text-emerald-900 dark:text-emerald-400 uppercase tracking-tight">Saúde Restaurada!</h4>
                             <p className="text-xs text-emerald-700 dark:text-emerald-400/80 font-medium leading-relaxed">
-                                Equipamento restaurado em <span className="font-black underline decoration-emerald-300 dark:decoration-emerald-500/50 underline-offset-2">{new Date(dataRestauracao).toLocaleDateString()}</span>.
+                                Equipamento restaurado em <span className="font-bold underline decoration-emerald-300 dark:decoration-emerald-500/50 underline-offset-2">{new Date(dataRestauracao).toLocaleDateString()}</span>.
                                 A contagem de risco foi reiniciada para garantir confiabilidade máxima.
                             </p>
                         </div>
@@ -123,14 +123,14 @@ export function AssetActivityModal({ ativoId, ativoNome, open, onOpenChange }: A
 
                 {/* Banner de Sugestão de Troca Padronizado */}
                 {counts.saude >= 5 && (
-                    <div className="mx-8 mt-6 p-5 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-500/20 rounded-3xl flex items-start gap-5 animate-in fade-in slide-in-from-top-4 duration-500 shadow-sm shadow-amber-500/5">
-                        <div className="h-11 w-11 shrink-0 rounded-2xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                    <div className="mx-8 mt-6 p-5 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-500/20 rounded-xl flex items-start gap-5 animate-in fade-in slide-in-from-top-4 duration-500 shadow-sm shadow-amber-500/5">
+                        <div className="h-11 w-11 shrink-0 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
                             <AlertTriangle className="h-6 w-6 text-white" />
                         </div>
                         <div className="space-y-1">
-                            <h4 className="text-sm font-black text-amber-900 dark:text-amber-400 uppercase tracking-tight">Risco Crítico Detectado!</h4>
+                            <h4 className="text-sm font-bold text-amber-900 dark:text-amber-400 uppercase tracking-tight">Risco Crítico Detectado!</h4>
                             <p className="text-xs text-amber-700 dark:text-amber-400/80 font-medium leading-relaxed">
-                                Equipamento com <span className="font-black text-amber-600 dark:text-amber-500">{counts.saude} intervenções</span> acumuladas.
+                                Equipamento com <span className="font-bold text-amber-600 dark:text-amber-500">{counts.saude} intervenções</span> acumuladas.
                                 Sugerimos **AVALIAÇÃO PARA SUBSTITUIÇÃO** imediata para evitar paradas críticas.
                             </p>
                         </div>
@@ -141,7 +141,7 @@ export function AssetActivityModal({ ativoId, ativoNome, open, onOpenChange }: A
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-24 gap-4">
                             <Loader2 className="h-10 w-10 text-primary-600 dark:text-primary-400 animate-spin" />
-                            <p className="text-text-muted font-black uppercase text-[10px] tracking-widest">Compilando linha do tempo...</p>
+                            <p className="text-text-muted font-bold uppercase text-[10px] tracking-widest">Compilando linha do tempo...</p>
                         </div>
                     ) : (
                         <MaintenanceTimeline movements={historico} />
@@ -151,3 +151,5 @@ export function AssetActivityModal({ ativoId, ativoNome, open, onOpenChange }: A
         </Dialog>
     )
 }
+
+

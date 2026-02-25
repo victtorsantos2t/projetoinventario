@@ -106,16 +106,16 @@ export function CollaboratorAssetsModal({ collaborator, open, onOpenChange }: Co
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
+            <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-lg border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
                 {/* Header Padronizado */}
                 <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
+                            <div className="h-12 w-12 rounded-xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
                                 <Package className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                             </div>
                             <div>
-                                <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
+                                <DialogTitle className="text-xl font-bold text-text-primary dark:text-white">
                                     Equipamentos em Posse
                                 </DialogTitle>
                                 <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[300px]">
@@ -128,7 +128,7 @@ export function CollaboratorAssetsModal({ collaborator, open, onOpenChange }: Co
                                 onClick={handleGenerateTerm}
                                 disabled={generating}
                                 variant="outline"
-                                className="h-10 px-4 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-xs font-black gap-2 transition-all active:scale-95"
+                                className="h-10 px-4 rounded-lg border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-xs font-bold gap-2 transition-all active:scale-95"
                             >
                                 {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5" />}
                                 Emitir Termo
@@ -141,18 +141,18 @@ export function CollaboratorAssetsModal({ collaborator, open, onOpenChange }: Co
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-12 gap-3">
                             <Loader2 className="h-8 w-8 text-primary animate-spin" />
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Consultando Inventário...</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Consultando Inventário...</p>
                         </div>
                     ) : assets.length === 0 ? (
-                        <div className="py-12 text-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
+                        <div className="py-12 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
                             <Search className="h-10 w-10 text-slate-200 mx-auto mb-3" />
                             <p className="text-slate-400 font-bold text-sm">Nenhum ativo vinculado a este perfil.</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
                             {assets.map((asset) => (
-                                <div key={asset.id} className="group flex items-center gap-4 p-4 rounded-3xl bg-white border border-slate-100 hover:border-primary/20 hover:shadow-lg hover:shadow-slate-200/50 transition-all duration-300">
-                                    <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                <div key={asset.id} className="group flex items-center gap-4 p-4 rounded-xl bg-white border border-slate-100 hover:border-primary/20 hover:shadow-lg hover:shadow-slate-200/50 transition-all duration-300">
+                                    <div className="h-12 w-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                                         {getIcon(asset.tipo)}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -177,7 +177,7 @@ export function CollaboratorAssetsModal({ collaborator, open, onOpenChange }: Co
 
                 {/* Footer de Info Padronizado */}
                 <div className="px-8 py-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/2 flex items-center justify-center">
-                    <p className="text-[10px] font-black text-text-muted dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <p className="text-[10px] font-bold text-text-muted dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
                         <Info className="h-3.5 w-3.5" />
                         Rastreabilidade Total Fase-3 (Termo de Responsabilidade)
                     </p>
@@ -194,3 +194,5 @@ function Info({ className }: { className?: string }) {
         </svg>
     )
 }
+
+

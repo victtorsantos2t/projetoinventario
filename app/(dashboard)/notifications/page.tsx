@@ -141,7 +141,7 @@ export default function NotificationsPage() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-text-primary dark:text-white flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-text-primary dark:text-white flex items-center gap-3">
                         <Bell className="h-8 w-8 text-primary" />
                         Notificações
                     </h1>
@@ -181,7 +181,7 @@ export default function NotificationsPage() {
                             key={t.id}
                             onClick={() => setFilter(t.id)}
                             className={cn(
-                                "px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all border",
+                                "px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border",
                                 filter === t.id
                                     ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
                                     : "bg-white dark:bg-zinc-900 text-slate-500 border-slate-200 hover:border-slate-300"
@@ -231,7 +231,7 @@ export default function NotificationsPage() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between mb-1">
-                                        <h3 className={cn("font-black text-sm", n.lido ? "text-slate-600" : "text-slate-900")}>
+                                        <h3 className={cn("font-bold text-sm", n.lido ? "text-slate-600" : "text-slate-900")}>
                                             {n.titulo}
                                         </h3>
                                         <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold uppercase tracking-widest whitespace-nowrap">
@@ -245,7 +245,7 @@ export default function NotificationsPage() {
 
                                     <div className="mt-4 flex items-center gap-4">
                                         {n.link && (
-                                            <Button variant="link" className="p-0 h-auto text-[11px] font-black text-primary uppercase tracking-widest">
+                                            <Button variant="link" className="p-0 h-auto text-[11px] font-bold text-primary uppercase tracking-widest">
                                                 Visualizar Detalhes →
                                             </Button>
                                         )}
@@ -255,7 +255,7 @@ export default function NotificationsPage() {
                                                     e.stopPropagation()
                                                     markAsRead(n.id)
                                                 }}
-                                                className="text-[10px] font-black text-emerald-600 uppercase tracking-widest border border-emerald-100 bg-emerald-50 px-2 py-0.5 rounded-md hover:bg-emerald-100 transition-colors"
+                                                className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest border border-emerald-100 bg-emerald-50 px-2 py-0.5 rounded-md hover:bg-emerald-100 transition-colors"
                                             >
                                                 Lido
                                             </button>
@@ -270,3 +270,4 @@ export default function NotificationsPage() {
         </div>
     )
 }
+

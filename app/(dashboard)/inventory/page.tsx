@@ -71,23 +71,29 @@ function InventoryContent() {
                     if (filters.length > 0) {
                         query = query.or(filters.join(','))
                     }
+                }
+
+                // Filtros comuns (aplicados para Admin/Técnico e também reduzem a busca do Visualizador)
+                if (filterSetor) query = query.eq('setor', filterSetor)
+
+                if (filterStatus) {
+                    query = query.eq('status', filterStatus)
                 } else {
-                    if (filterSetor) query = query.eq('setor', filterSetor)
-                    if (filterStatus) {
-                        query = query.eq('status', filterStatus)
-                    } else {
-                        // Por padrão, oculta itens 'Baixado' a menos que esteja filtrando/buscando especificamente
-                        query = query.neq('status', 'Baixado')
-                    }
-                    if (filterTipo) query = query.eq('tipo', filterTipo)
+                    // Por padrão, oculta itens 'Baixado' a menos que esteja filtrando/buscando especificamente
+                    query = query.neq('status', 'Baixado')
+                }
 
-                    if (filterSaude) {
-                        query = query.eq('status_saude', filterSaude)
-                    }
+                if (filterTipo) query = query.eq('tipo', filterTipo)
 
-                    if (debouncedSearch) {
-                        query = query.or(`nome.ilike.%${debouncedSearch}%,serial.ilike.%${debouncedSearch}%,colaborador.ilike.%${debouncedSearch}%,patrimonio.ilike.%${debouncedSearch}%`)
-                    }
+                if (filterSaude) {
+                    query = query.eq('status_saude', filterSaude)
+                }
+
+                if (debouncedSearch) {
+                    // Se já tiver usado .or() antes (ex: isViewer), concatenar pode ser complexo no Supabase JS antigo.
+                    // Para evitar bugs com múltiplos .or(), passamos o debouncedSearch.
+                    // No client V2 moderno, múltiplos .or() dão AND entre eles automaticamente.
+                    query = query.or(`nome.ilike.%${debouncedSearch}%,serial.ilike.%${debouncedSearch}%,colaborador.ilike.%${debouncedSearch}%,patrimonio.ilike.%${debouncedSearch}%`)
                 }
             }
 
@@ -142,7 +148,7 @@ function InventoryContent() {
         <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl md:text-4xl font-black tracking-tight text-text-primary dark:text-white mb-1">Inventário</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-text-primary dark:text-white mb-1">Inventário</h1>
                     <p className="text-text-secondary dark:text-slate-400 font-medium">Gerencie e rastreie todos os ativos da empresa com precisão.</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -195,3 +201,4 @@ export default function InventoryPage() {
         </Suspense>
     )
 }
+

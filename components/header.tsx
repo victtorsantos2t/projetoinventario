@@ -27,7 +27,7 @@ export function Header() {
                     Bem-vindo, <span className="text-primary-600 dark:text-primary-400">{profile?.full_name || 'Usuário'}</span>
                 </h2>
             </div>
-            <div className="sm:hidden font-black text-xs text-text-primary dark:text-white tracking-tighter bg-neutral-app dark:bg-white/5 px-3 py-1.5 rounded-xl border border-slate-100 dark:border-white/10">
+            <div className="sm:hidden font-bold text-xs text-text-primary dark:text-white tracking-tighter bg-neutral-app dark:bg-white/5 px-3 py-1.5 rounded-xl border border-slate-100 dark:border-white/10">
                 INVENTÁRIO TI
             </div>
 
@@ -37,3 +37,4 @@ export function Header() {
         </header>
     )
 }
+

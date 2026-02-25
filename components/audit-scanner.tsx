@@ -60,7 +60,7 @@ export function AuditScanner({ onResult, onClose }: AuditScannerProps) {
 
     return (
         <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-6 bg-opacity-95 backdrop-blur-sm">
-            <div className="w-full max-w-sm relative aspect-square bg-slate-900 rounded-[2.5rem] overflow-hidden border-2 border-white/20 shadow-2xl">
+            <div className="w-full max-w-sm relative aspect-square bg-slate-900 rounded-lg overflow-hidden border-2 border-white/20 shadow-2xl">
                 <div id="reader" className="w-full h-full" />
 
                 <div className="absolute inset-0 pointer-events-none">
@@ -75,7 +75,7 @@ export function AuditScanner({ onResult, onClose }: AuditScannerProps) {
                 </div>
 
                 {error && (
-                    <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 p-4 bg-rose-500/90 text-white rounded-2xl text-center text-sm font-bold flex flex-col items-center gap-2">
+                    <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 p-4 bg-rose-500/90 text-white rounded-xl text-center text-sm font-bold flex flex-col items-center gap-2">
                         <AlertCircle className="h-8 w-8" />
                         {error}
                         <Button variant="outline" className="mt-2 bg-white text-rose-500 border-0" onClick={onClose}>Fechar</Button>
@@ -98,3 +98,5 @@ export function AuditScanner({ onResult, onClose }: AuditScannerProps) {
         </div>
     )
 }
+
+

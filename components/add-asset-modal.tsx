@@ -197,21 +197,21 @@ export function AddAssetModal() {
 
     return (
         <>
-            <button onClick={() => setOpen(true)} className="flex items-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-xl font-black text-sm hover:bg-primary-700 transition-all shadow-lg shadow-primary-600/20 active:scale-95">
+            <button onClick={() => setOpen(true)} className="flex items-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-primary-700 transition-all shadow-lg shadow-primary-600/20 active:scale-95">
                 <Plus className="h-4 w-4" />
                 Novo Ativo
             </button>
 
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300 flex flex-col max-h-[90vh]">
+                <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-lg border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300 flex flex-col max-h-[90vh]">
                     {/* Header Padronizado */}
                     <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900 shrink-0">
                         <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
+                            <div className="h-12 w-12 rounded-xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
                                 <Plus className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                             </div>
                             <div>
-                                <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
+                                <DialogTitle className="text-xl font-bold text-text-primary dark:text-white">
                                     Cadastrar Novo Ativo
                                 </DialogTitle>
                                 <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium">
@@ -225,14 +225,14 @@ export function AddAssetModal() {
                     <div className="px-8 pt-2 border-b border-slate-100 dark:border-white/5 flex gap-8 bg-white dark:bg-zinc-900 shrink-0">
                         <button
                             onClick={() => setActiveTab('geral')}
-                            className={`pb-3 text-sm font-black border-b-2 transition-all ${activeTab === 'geral' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
+                            className={`pb-3 text-sm font-bold border-b-2 transition-all ${activeTab === 'geral' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
                         >
                             Dados Gerais
                         </button>
                         {(isHardware || isMonitor) && (
                             <button
                                 onClick={() => setActiveTab('tecnico')}
-                                className={`pb-3 text-sm font-black border-b-2 transition-all ${activeTab === 'tecnico' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
+                                className={`pb-3 text-sm font-bold border-b-2 transition-all ${activeTab === 'tecnico' ? 'border-primary-600 text-primary-600' : 'border-transparent text-text-muted hover:text-text-primary'}`}
                             >
                                 Especificações Técnicas
                             </button>
@@ -245,12 +245,12 @@ export function AddAssetModal() {
                                 {/* Basic Info Padronizado */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Nome do Ativo *</label>
-                                        <Input value={form.nome} onChange={(e) => handleChange('nome', e.target.value)} placeholder="Ex: PC-RH-001" className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
+                                        <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Nome do Ativo *</label>
+                                        <Input value={form.nome} onChange={(e) => handleChange('nome', e.target.value)} placeholder="Ex: PC-RH-001" className="h-11 rounded-lg bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Tipo de Equipamento *</label>
-                                        <select value={form.tipo} onChange={(e) => handleChange('tipo', e.target.value)} className="w-full h-11 px-4 bg-neutral-app dark:bg-white/5 border border-transparent rounded-xl text-sm font-bold focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-primary-600/20 transition-all outline-none shadow-sm dark:text-white">
+                                        <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Tipo de Equipamento *</label>
+                                        <select value={form.tipo} onChange={(e) => handleChange('tipo', e.target.value)} className="w-full h-11 px-4 bg-neutral-app dark:bg-white/5 border border-transparent rounded-lg text-sm font-bold focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-primary-600/20 transition-all outline-none shadow-sm dark:text-white">
                                             <option value="">Selecione...</option>
                                             {categories.length > 0 ? (
                                                 categories.map(c => <option key={c.id} value={c.nome}>{c.nome}</option>)
@@ -260,41 +260,41 @@ export function AddAssetModal() {
                                         </select>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Número de Série *</label>
-                                        <Input value={form.serial} onChange={(e) => handleChange('serial', e.target.value)} placeholder="SN-XXXXX" className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
+                                        <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Número de Série *</label>
+                                        <Input value={form.serial} onChange={(e) => handleChange('serial', e.target.value)} placeholder="SN-XXXXX" className="h-11 rounded-lg bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Patrimônio (Tag)</label>
-                                        <Input value={form.patrimonio} onChange={(e) => handleChange('patrimonio', e.target.value)} placeholder="Nº do patrimônio" className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
+                                        <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Patrimônio (Tag)</label>
+                                        <Input value={form.patrimonio} onChange={(e) => handleChange('patrimonio', e.target.value)} placeholder="Nº do patrimônio" className="h-11 rounded-lg bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Setor / Departamento</label>
-                                        <select value={form.setor} onChange={(e) => handleChange('setor', e.target.value)} className="w-full h-11 px-4 bg-neutral-app dark:bg-white/5 border border-transparent rounded-xl text-sm font-bold focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-primary-600/20 transition-all outline-none shadow-sm dark:text-white">
+                                        <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Setor / Departamento</label>
+                                        <select value={form.setor} onChange={(e) => handleChange('setor', e.target.value)} className="w-full h-11 px-4 bg-neutral-app dark:bg-white/5 border border-transparent rounded-lg text-sm font-bold focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-primary-600/20 transition-all outline-none shadow-sm dark:text-white">
                                             <option value="">Sem setor (Estoque)</option>
                                             {setores.map(s => <option key={s.id} value={s.nome}>{s.nome}</option>)}
                                         </select>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Status Operacional</label>
-                                        <select value={form.status} onChange={(e) => handleChange('status', e.target.value)} className="w-full h-11 px-4 bg-neutral-app dark:bg-white/5 border border-transparent rounded-xl text-sm font-bold focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-primary-600/20 transition-all outline-none shadow-sm dark:text-white">
+                                        <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Status Operacional</label>
+                                        <select value={form.status} onChange={(e) => handleChange('status', e.target.value)} className="w-full h-11 px-4 bg-neutral-app dark:bg-white/5 border border-transparent rounded-lg text-sm font-bold focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-primary-600/20 transition-all outline-none shadow-sm dark:text-white">
                                             {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
                                         </select>
                                     </div>
                                 </div>
 
                                 {/* Warranty Section Padronizada */}
-                                <div className="space-y-4 p-6 bg-emerald-50 dark:bg-white/5 rounded-2xl border border-transparent">
+                                <div className="space-y-4 p-6 bg-emerald-50 dark:bg-white/5 rounded-xl border border-transparent">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className="h-8 w-8 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center shadow-sm">
                                                 <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                             </div>
-                                            <h3 className="text-sm font-black text-text-primary dark:text-white uppercase tracking-tighter">Políticas & Garantia</h3>
+                                            <h3 className="text-sm font-bold text-text-primary dark:text-white uppercase tracking-tighter">Políticas & Garantia</h3>
                                         </div>
                                         <select
                                             value={form.condicao}
                                             onChange={(e) => handleChange('condicao', e.target.value)}
-                                            className="h-10 px-3 bg-white dark:bg-zinc-800 border-transparent rounded-xl text-xs font-black outline-none shadow-sm dark:text-white"
+                                            className="h-10 px-3 bg-white dark:bg-zinc-800 border-transparent rounded-lg text-xs font-bold outline-none shadow-sm dark:text-white"
                                         >
                                             <option value="Novo">Novo</option>
                                             <option value="Semi-novo">Semi-novo</option>
@@ -302,24 +302,24 @@ export function AddAssetModal() {
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
-                                        <label className="flex items-center gap-3 cursor-pointer group bg-white dark:bg-zinc-900 px-4 py-3 rounded-xl border border-slate-100 dark:border-white/5 shadow-sm">
+                                        <label className="flex items-center gap-3 cursor-pointer group bg-white dark:bg-zinc-900 px-4 py-3 rounded-lg border border-slate-100 dark:border-white/5 shadow-sm">
                                             <input
                                                 type="checkbox"
                                                 checked={form.tem_garantia}
                                                 onChange={(e) => handleChange('tem_garantia', e.target.checked.toString())}
                                                 className="h-5 w-5 rounded border-slate-300 text-primary-600 focus:ring-primary-600 transition-all"
                                             />
-                                            <span className="text-xs font-black text-text-primary dark:text-white uppercase tracking-tighter">Ativar Cobertura de Garantia</span>
+                                            <span className="text-xs font-bold text-text-primary dark:text-white uppercase tracking-tighter">Ativar Cobertura de Garantia</span>
                                         </label>
 
                                         {form.tem_garantia && (
                                             <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Duração (Meses)</label>
+                                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Duração (Meses)</label>
                                                 <Input
                                                     type="number"
                                                     value={form.garantia_meses}
                                                     onChange={(e) => handleChange('garantia_meses', e.target.value)}
-                                                    className="h-11 rounded-xl bg-white dark:bg-zinc-800 border-transparent transition-all shadow-sm"
+                                                    className="h-11 rounded-lg bg-white dark:bg-zinc-800 border-transparent transition-all shadow-sm"
                                                 />
                                             </div>
                                         )}
@@ -328,12 +328,12 @@ export function AddAssetModal() {
 
                                 <div className="space-y-4">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Colaborador Responsável</label>
+                                        <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Colaborador Responsável</label>
                                         <select
                                             value={form.colaborador}
                                             onChange={(e) => handleChange('colaborador', e.target.value)}
                                             disabled={!form.setor}
-                                            className="w-full h-11 px-4 bg-neutral-app dark:bg-white/5 border border-transparent rounded-xl text-sm font-bold focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-primary-600/20 transition-all outline-none shadow-sm dark:text-white disabled:opacity-50"
+                                            className="w-full h-11 px-4 bg-neutral-app dark:bg-white/5 border border-transparent rounded-lg text-sm font-bold focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-primary-600/20 transition-all outline-none shadow-sm dark:text-white disabled:opacity-50"
                                         >
                                             <option value="">{form.setor ? "Selecione um responsável..." : "Selecione um setor primeiro"}</option>
                                             {usuarios
@@ -355,31 +355,31 @@ export function AddAssetModal() {
                                 {/* Hardware Specs Padronizado */}
                                 {isHardware && (
                                     <div className="space-y-6">
-                                        <div className="space-y-4 p-6 bg-slate-50 dark:bg-white/5 rounded-2xl border border-transparent">
+                                        <div className="space-y-4 p-6 bg-slate-50 dark:bg-white/5 rounded-xl border border-transparent">
                                             <div className="flex items-center gap-3">
                                                 <div className="h-8 w-8 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center shadow-sm">
                                                     <Cpu className="h-5 w-5 text-primary-600 dark:text-primary-400" />
                                                 </div>
-                                                <h3 className="text-sm font-black text-text-primary dark:text-white uppercase tracking-tighter">Especificações de Hardware</h3>
+                                                <h3 className="text-sm font-bold text-text-primary dark:text-white uppercase tracking-tighter">Especificações de Hardware</h3>
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Processador</label>
-                                                    <select value={form.processador} onChange={(e) => handleChange('processador', e.target.value)} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
+                                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Processador</label>
+                                                    <select value={form.processador} onChange={(e) => handleChange('processador', e.target.value)} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-lg text-sm font-bold outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
                                                         <option value="">Selecione</option>
                                                         {CPU_GENERATIONS.map(c => <option key={c} value={c}>{c}</option>)}
                                                     </select>
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Memória RAM</label>
-                                                    <select value={form.memoria_ram} onChange={(e) => handleChange('memoria_ram', e.target.value)} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
+                                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Memória RAM</label>
+                                                    <select value={form.memoria_ram} onChange={(e) => handleChange('memoria_ram', e.target.value)} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-lg text-sm font-bold outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
                                                         <option value="">Selecione</option>
                                                         {RAM_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
                                                     </select>
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Armazenamento</label>
-                                                    <select value={form.armazenamento} onChange={(e) => handleChange('armazenamento', e.target.value)} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
+                                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Armazenamento</label>
+                                                    <select value={form.armazenamento} onChange={(e) => handleChange('armazenamento', e.target.value)} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-lg text-sm font-bold outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
                                                         <option value="">Selecione</option>
                                                         {STORAGE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
                                                     </select>
@@ -388,31 +388,31 @@ export function AddAssetModal() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Acesso Remoto</label>
-                                            <Input value={form.acesso_remoto} onChange={(e) => handleChange('acesso_remoto', e.target.value)} placeholder="Ex: ID AnyDesk / TeamViewer" className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
+                                            <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Acesso Remoto</label>
+                                            <Input value={form.acesso_remoto} onChange={(e) => handleChange('acesso_remoto', e.target.value)} placeholder="Ex: ID AnyDesk / TeamViewer" className="h-11 rounded-lg bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
                                         </div>
                                     </div>
                                 )}
 
                                 {/* Monitor Specs Padronizado */}
                                 {isMonitor && (
-                                    <div className="space-y-4 p-6 bg-slate-50 dark:bg-white/5 rounded-2xl border border-transparent">
+                                    <div className="space-y-4 p-6 bg-slate-50 dark:bg-white/5 rounded-xl border border-transparent">
                                         <div className="flex items-center gap-3">
                                             <div className="h-8 w-8 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center shadow-sm">
                                                 <Monitor className="h-5 w-5 text-primary-600 dark:text-primary-400" />
                                             </div>
-                                            <h3 className="text-sm font-black text-text-primary dark:text-white uppercase tracking-tighter">Especificações do Display</h3>
+                                            <h3 className="text-sm font-bold text-text-primary dark:text-white uppercase tracking-tighter">Especificações do Display</h3>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Tamanho (Pol)</label>
-                                                <select value={form.polegadas} onChange={(e) => handleChange('polegadas', e.target.value)} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
+                                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Tamanho (Pol)</label>
+                                                <select value={form.polegadas} onChange={(e) => handleChange('polegadas', e.target.value)} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-lg text-sm font-bold outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
                                                     <option value="">Selecione</option>
                                                     {MONITOR_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
                                                 </select>
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1 block">Interfaces de Vídeo</label>
+                                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1 block">Interfaces de Vídeo</label>
                                                 <div className="flex flex-wrap gap-2">
                                                     {VIDEO_OUTPUTS.map(output => (
                                                         <button
@@ -420,7 +420,7 @@ export function AddAssetModal() {
                                                             type="button"
                                                             onClick={() => toggleVideoOutput(output)}
                                                             className={cn(
-                                                                "h-10 px-4 rounded-xl border text-xs font-black transition-all",
+                                                                "h-10 px-4 rounded-lg border text-xs font-bold transition-all",
                                                                 form.saidas_video.includes(output)
                                                                     ? "bg-primary-600 text-white border-transparent shadow-md shadow-primary-600/20"
                                                                     : "bg-white dark:bg-zinc-800 border-slate-200 dark:border-white/10 text-text-muted hover:border-primary-600"
@@ -442,14 +442,14 @@ export function AddAssetModal() {
                     <div className="px-8 py-6 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/2 flex items-center justify-end gap-3 shrink-0">
                         <button
                             onClick={() => setOpen(false)}
-                            className="px-6 py-2.5 text-sm font-black text-text-muted hover:text-text-primary transition-all"
+                            className="px-6 py-2.5 text-sm font-bold text-text-muted hover:text-text-primary transition-all"
                         >
                             Cancelar
                         </button>
                         <button
                             onClick={handleSubmit}
                             disabled={saving || !form.nome || !form.serial || !form.tipo}
-                            className="flex items-center gap-2 px-8 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-black hover:bg-primary-700 shadow-xl shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50"
+                            className="flex items-center gap-2 px-8 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 shadow-xl shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50"
                         >
                             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                             Cadastrar Ativo
@@ -460,3 +460,5 @@ export function AddAssetModal() {
         </>
     )
 }
+
+

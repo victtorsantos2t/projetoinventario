@@ -21,7 +21,6 @@ export async function generateResponsibilityTerm(
     const doc = new jsPDF()
     const margin = 14
     const pageWidth = 210
-    const marginX = 14
 
     // Helper para linhas
     let currentY = 15
@@ -106,7 +105,7 @@ export async function generateResponsibilityTerm(
         margin: { left: margin, right: margin }
     })
 
-    // @ts-ignore
+    // @ts-expect-error Types for autoTable might be missing or incorrect
     currentY = doc.lastAutoTable.finalY + 15
 
     // 5. Cláusulas de Responsabilidade

@@ -292,7 +292,7 @@ export default function AuditPage() {
                 </div>
                 <div>
                     <h1 className="text-xl font-bold text-slate-900">Auditoria Mobile</h1>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Gestão de Inventário Físico</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Gestão de Inventário Físico</p>
                 </div>
             </div>
 
@@ -304,7 +304,7 @@ export default function AuditPage() {
                         <p className="text-sm text-slate-500 mb-6">Inicie um novo ciclo de conferência para escanear os ativos físicos do escritório.</p>
                         <div className="space-y-4 mb-6">
                             <div className="relative group">
-                                <label className="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1.5 block text-left">Setor para Auditoria</label>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1.5 block text-left">Setor para Auditoria</label>
                                 <div className="relative">
                                     <select
                                         value={selectedStartSetor}
@@ -330,10 +330,10 @@ export default function AuditPage() {
                             {selectedStartSetor && (
                                 <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
                                     <div className="text-left">
-                                        <p className="text-[10px] font-black text-indigo-600 uppercase">Ativos Localizados</p>
+                                        <p className="text-[10px] font-bold text-indigo-600 uppercase">Ativos Localizados</p>
                                         <p className="text-sm font-bold text-slate-700">Setor {selectedStartSetor}</p>
                                     </div>
-                                    <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center font-black text-indigo-600 shadow-sm border border-indigo-100">
+                                    <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center font-bold text-indigo-600 shadow-sm border border-indigo-100">
                                         {loadingPreCount ? <Loader2 className="h-4 w-4 animate-spin" /> : preCount}
                                     </div>
                                 </div>
@@ -343,7 +343,7 @@ export default function AuditPage() {
                         <Button
                             onClick={startNewAudit}
                             disabled={loadingPreCount}
-                            className="w-full h-14 rounded-2xl font-black text-sm gap-3 shadow-xl shadow-indigo-200 group bg-indigo-600 hover:bg-slate-900 transition-all"
+                            className="w-full h-14 rounded-2xl font-bold text-sm gap-3 shadow-xl shadow-indigo-200 group bg-indigo-600 hover:bg-slate-900 transition-all"
                         >
                             Começar Auditoria <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
@@ -358,7 +358,7 @@ export default function AuditPage() {
                         <CardContent className="p-6 relative">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <p className="text-indigo-100 text-[10px] font-black uppercase tracking-widest mb-1">
+                                    <p className="text-indigo-100 text-[10px] font-bold uppercase tracking-widest mb-1">
                                         {currentAudit?.setor_alvo ? `Auditoria: Setor ${currentAudit.setor_alvo}` : "Auditoria Geral"}
                                     </p>
                                     <h4 className="text-2xl font-bold">Ciclo Atual</h4>
@@ -369,13 +369,13 @@ export default function AuditPage() {
                             <div className="flex gap-8 mb-4">
                                 <div>
                                     <p className="text-indigo-200 text-[10px] font-bold uppercase">Progresso</p>
-                                    <p className="text-xl font-black">
+                                    <p className="text-xl font-bold">
                                         {stats.checked} <span className="text-sm font-normal text-indigo-200">/ {stats.total}</span>
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-indigo-200 text-[10px] font-bold uppercase">Faltam</p>
-                                    <p className="text-xl font-black">{stats.total - stats.checked}</p>
+                                    <p className="text-xl font-bold">{stats.total - stats.checked}</p>
                                 </div>
                             </div>
 
@@ -391,14 +391,14 @@ export default function AuditPage() {
                     <div className="flex gap-2">
                         <Button
                             onClick={() => setIsScanning(true)}
-                            className="flex-1 h-16 rounded-[2rem] text-lg font-black gap-3 shadow-xl"
+                            className="flex-1 h-16 rounded-xl text-lg font-bold gap-3 shadow-xl"
                         >
                             <QrCode className="h-6 w-6" /> ESCANEAR
                         </Button>
                         <Button
                             variant="outline"
                             onClick={finalizeAudit}
-                            className="h-16 w-16 rounded-[2rem] border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all flex items-center justify-center p-0"
+                            className="h-16 w-16 rounded-xl border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all flex items-center justify-center p-0"
                             title="Finalizar Auditoria"
                         >
                             <ShieldCheck className="h-8 w-8" />
@@ -418,7 +418,7 @@ export default function AuditPage() {
 
                     <div className="space-y-3">
                         <div className="flex items-center justify-between px-1">
-                            <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                            <h5 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
                                 {showAllItems ? 'Todas as Verificações' : 'Últimas Verificações'}
                             </h5>
                             <Button
@@ -480,7 +480,7 @@ export default function AuditPage() {
 
             {pendingAsset && (
                 <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-                    <Card className="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border-0 animate-in fade-in slide-in-from-bottom-10 duration-300">
+                    <Card className="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden border-0 animate-in fade-in slide-in-from-bottom-10 duration-300">
                         <CardContent className="p-8">
                             <div className="flex justify-center mb-6">
                                 <div className="h-20 w-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center">
@@ -491,21 +491,21 @@ export default function AuditPage() {
                             </div>
 
                             <div className="text-center mb-8">
-                                <h3 className="text-2xl font-black text-slate-900 leading-tight mb-1">{pendingAsset.nome}</h3>
-                                <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Confirmação de Inventário</p>
+                                <h3 className="text-2xl font-bold text-slate-900 leading-tight mb-1">{pendingAsset.nome}</h3>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Confirmação de Inventário</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 mb-8">
                                 <div className="p-4 bg-slate-50 rounded-3xl border border-slate-100">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Setor Atual</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Setor Atual</p>
                                     <p className="text-sm font-bold text-slate-700">{pendingAsset.setor || 'Não definido'}</p>
                                 </div>
                                 <div className="p-4 bg-slate-50 rounded-3xl border border-slate-100">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Patrimônio</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Patrimônio</p>
                                     <p className="text-sm font-bold text-slate-700">{pendingAsset.patrimonio || 'S/P'}</p>
                                 </div>
                                 <div className="col-span-2 p-4 bg-slate-50 rounded-3xl border border-slate-100">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Responsável</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Responsável</p>
                                     <p className="text-sm font-bold text-slate-700">{pendingAsset.colaborador || 'Sem responsável'}</p>
                                 </div>
                             </div>
@@ -529,7 +529,7 @@ export default function AuditPage() {
                                             <ShieldAlert className="h-5 w-5" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Auditoria</p>
+                                            <p className="text-[10px] font-bold text-rose-600 uppercase tracking-widest">Auditoria</p>
                                             <p className="text-sm font-bold text-slate-700">Não Conformidade?</p>
                                         </div>
                                     </div>
@@ -549,7 +549,7 @@ export default function AuditPage() {
 
                                 {hasNC && (
                                     <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1.5 block">Tipo de Divergência</label>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1.5 block">Tipo de Divergência</label>
                                         <select
                                             value={ncType}
                                             onChange={(e) => setNcType(e.target.value)}
@@ -567,7 +567,7 @@ export default function AuditPage() {
                                 )}
 
                                 <div>
-                                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1.5 block">Observações (Opcional)</label>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1.5 block">Observações (Opcional)</label>
                                     <Input
                                         placeholder="Ex: Teclado falhando, gabinete arranhado..."
                                         value={observation}
@@ -591,7 +591,7 @@ export default function AuditPage() {
                                     <Button
                                         onClick={confirmVerification}
                                         disabled={isSubmitting}
-                                        className="flex-[2] h-14 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-200"
+                                        className="flex-[2] h-14 rounded-2xl font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-200"
                                     >
                                         {isSubmitting ? 'Salvando...' : 'Confirmar'}
                                     </Button>
@@ -621,3 +621,4 @@ export default function AuditPage() {
         </div>
     )
 }
+

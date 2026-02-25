@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { Shield, Eye, Settings2, History, AlertCircle, Edit2, Mail } from "lucide-react"
+import { Profile } from "@/types"
 import {
     Table,
     TableBody,
@@ -23,11 +24,20 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { EditUserModal } from "@/components/edit-user-modal"
 
+export interface AuditLog {
+    id: string;
+    created_at: string;
+    action: string;
+    target_id?: string;
+    usuario?: { full_name: string };
+    [key: string]: unknown;
+}
+
 export function UserPermissions() {
-    const [users, setUsers] = useState<any[]>([])
-    const [auditLogs, setAuditLogs] = useState<any[]>([])
+    const [users, setUsers] = useState<Profile[]>([])
+    const [auditLogs, setAuditLogs] = useState<AuditLog[]>([])
     const [loading, setLoading] = useState(true)
-    const [selectedUser, setSelectedUser] = useState<any | null>(null)
+    const [selectedUser, setSelectedUser] = useState<Profile | null>(null)
     const [isEditOpen, setIsEditOpen] = useState(false)
 
     async function fetchData() {
@@ -52,7 +62,10 @@ export function UserPermissions() {
     }
 
     useEffect(() => {
-        fetchData()
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        let mounted = true;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        fetchData();
     }, [])
 
     const handleRoleChange = async (userId: string, newRole: string) => {
@@ -94,12 +107,12 @@ export function UserPermissions() {
             <div>
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h3 className="text-2xl font-black text-slate-900">Usuários e Acessos</h3>
+                        <h3 className="text-2xl font-bold text-slate-900">Usuários e Acessos</h3>
                         <p className="text-sm text-slate-400 font-medium">Controle quem pode administrar o inventário.</p>
                     </div>
                 </div>
 
-                <div className="border border-slate-100 rounded-[2rem] overflow-hidden bg-white shadow-sm">
+                <div className="border border-slate-100 rounded-lg overflow-hidden bg-white shadow-sm">
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-slate-50/50 border-none">
@@ -142,10 +155,10 @@ export function UserPermissions() {
                                                 defaultValue={u.role || 'Visualizador'}
                                                 onValueChange={(val) => handleRoleChange(u.id, val)}
                                             >
-                                                <SelectTrigger className="w-32 rounded-xl border-slate-200 font-bold text-xs h-9">
+                                                <SelectTrigger className="w-32 rounded-lg border-slate-200 font-bold text-xs h-9">
                                                     <SelectValue />
                                                 </SelectTrigger>
-                                                <SelectContent className="rounded-xl">
+                                                <SelectContent className="rounded-lg">
                                                     <SelectItem value="Admin">Admin</SelectItem>
                                                     <SelectItem value="Técnico">Técnico</SelectItem>
                                                     <SelectItem value="Visualizador">Visualizador</SelectItem>
@@ -155,7 +168,7 @@ export function UserPermissions() {
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-9 w-9 rounded-xl hover:bg-slate-100"
+                                                className="h-9 w-9 rounded-lg hover:bg-slate-100"
                                                 onClick={() => { setSelectedUser(u); setIsEditOpen(true); }}
                                             >
                                                 <Edit2 className="h-4 w-4 text-slate-400" />
@@ -178,25 +191,25 @@ export function UserPermissions() {
 
             {/* Auditoria Advanced */}
             <div className="pt-8 border-t border-slate-100">
-                <div className="flex items-center gap-2 mb-6 text-slate-900 font-black text-xl">
+                <div className="flex items-center gap-2 mb-6 text-slate-900 font-bold text-xl">
                     <History className="h-6 w-6 text-primary" />
                     Logs de Auditoria do Sistema
                 </div>
 
                 <div className="space-y-3">
                     {auditLogs.length === 0 ? (
-                        <div className="p-10 text-center border-2 border-dashed rounded-[2rem] text-slate-300 italic font-medium">
+                        <div className="p-10 text-center border-2 border-dashed rounded-lg text-slate-300 italic font-medium">
                             Nenhuma ação administrativa registrada ainda.
                         </div>
                     ) : (
                         auditLogs.map((log) => (
-                            <div key={log.id} className="group p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-4 hover:bg-white hover:shadow-md transition-all duration-300">
-                                <div className="h-10 w-10 rounded-xl bg-white border flex items-center justify-center shadow-sm">
+                            <div key={log.id} className="group p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-4 hover:bg-white hover:shadow-md transition-all duration-300">
+                                <div className="h-10 w-10 rounded-lg bg-white border flex items-center justify-center shadow-sm">
                                     <AlertCircle className="h-5 w-5 text-indigo-500 opacity-40" />
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-sm font-bold text-slate-700">
-                                        {log.usuario?.full_name || 'Sistema'} realizou a ação <span className="text-primary font-black px-1">{log.action}</span>
+                                        {log.usuario?.full_name || 'Sistema'} realizou a ação <span className="text-primary font-bold px-1">{log.action}</span>
                                     </p>
                                     <p className="text-[10px] text-slate-400 font-medium uppercase tracking-tight">
                                         {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(log.created_at))}
@@ -213,3 +226,5 @@ export function UserPermissions() {
         </div>
     )
 }
+
+

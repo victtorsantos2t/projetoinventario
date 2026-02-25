@@ -302,7 +302,7 @@ export function LicenseManager({ softwareId, onFormToggle }: LicenseManagerProps
                                             {lic.qtd_adquirida} Instalações
                                         </span>
                                         {lic.custo && (
-                                            <span className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-md text-emerald-700 font-black border border-emerald-100">
+                                            <span className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-md text-emerald-700 font-bold border border-emerald-100">
                                                 <ShoppingCart className="h-3.5 w-3.5 text-emerald-500" />
                                                 R$ {Number(lic.custo).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                             </span>
@@ -347,3 +347,4 @@ export function LicenseManager({ softwareId, onFormToggle }: LicenseManagerProps
         </div>
     )
 }
+

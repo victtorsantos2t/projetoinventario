@@ -63,7 +63,7 @@ export function CommandMenu() {
     return (
         <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md animate-in fade-in duration-300 flex items-center justify-center p-4">
             <Command
-                className="w-full max-w-xl bg-white dark:bg-zinc-950 rounded-[2rem] shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden"
+                className="w-full max-w-xl bg-white dark:bg-zinc-950 rounded-lg shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden"
                 onKeyDown={(e) => {
                     if (e.key === "Escape") setOpen(false)
                 }}
@@ -87,7 +87,7 @@ export function CommandMenu() {
                     </Command.Empty>
 
                     {results.assets.length > 0 && (
-                        <Command.Group heading="Ativos" className="px-2 mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        <Command.Group heading="Ativos" className="px-2 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                             {results.assets.map((asset) => (
                                 <Item
                                     key={asset.id}
@@ -101,7 +101,7 @@ export function CommandMenu() {
                     )}
 
                     {results.users.length > 0 && (
-                        <Command.Group heading="Colaboradores" className="px-2 mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        <Command.Group heading="Colaboradores" className="px-2 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                             {results.users.map((user) => (
                                 <Item
                                     key={user.id}
@@ -115,7 +115,7 @@ export function CommandMenu() {
                     )}
 
                     {results.softwares.length > 0 && (
-                        <Command.Group heading="Softwares" className="px-2 mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        <Command.Group heading="Softwares" className="px-2 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                             {results.softwares.map((sw) => (
                                 <Item
                                     key={sw.id}
@@ -127,7 +127,7 @@ export function CommandMenu() {
                         </Command.Group>
                     )}
 
-                    <Command.Group heading="Ações Rápidas" className="px-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    <Command.Group heading="Ações Rápidas" className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                         <Item
                             icon={Package}
                             label="Novo Ativo"
@@ -149,9 +149,9 @@ function Item({ icon: Icon, label, subLabel, onClick }: any) {
     return (
         <Command.Item
             onSelect={onClick}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 aria-selected:bg-slate-50 dark:aria-selected:bg-white/5 transition-colors group"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 aria-selected:bg-slate-50 dark:aria-selected:bg-white/5 transition-colors group"
         >
-            <div className="h-8 w-8 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+            <div className="h-8 w-8 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                 <Icon className="h-4 w-4 text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors" />
             </div>
             <div className="flex flex-col">
@@ -161,3 +161,5 @@ function Item({ icon: Icon, label, subLabel, onClick }: any) {
         </Command.Item>
     )
 }
+
+

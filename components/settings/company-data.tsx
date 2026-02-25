@@ -86,13 +86,13 @@ export function CompanyData() {
         <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-black text-slate-900 mb-2">Dados da Empresa</h2>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-2">Dados da Empresa</h2>
                     <p className="text-slate-400 font-medium">Informações institucionais usadas em relatórios e documentos.</p>
                 </div>
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="flex items-center gap-2 bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg active:scale-95 disabled:opacity-50"
+                    className="flex items-center gap-2 bg-slate-900 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-slate-800 transition-all shadow-lg active:scale-95 disabled:opacity-50"
                 >
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                     Salvar Alterações
@@ -119,11 +119,11 @@ export function CompanyData() {
                 {/* Identidade Visual */}
                 <Section title="Identidade Visual" icon={<Camera className="h-5 w-5" />}>
                     <div className="space-y-4">
-                        <div className="p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 flex flex-col items-center gap-4">
+                        <div className="p-4 bg-slate-50 rounded-xl border border-dashed border-slate-200 flex flex-col items-center gap-4">
                             {form.logo_url ? (
                                 <img src={form.logo_url} alt="Logo" className="h-20 object-contain" />
                             ) : (
-                                <div className="h-20 w-20 rounded-2xl bg-white border flex items-center justify-center text-slate-300">
+                                <div className="h-20 w-20 rounded-xl bg-white border flex items-center justify-center text-slate-300">
                                     <Building2 className="h-10 w-10" />
                                 </div>
                             )}
@@ -173,7 +173,7 @@ export function CompanyData() {
                 </Section>
             </div>
 
-            <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl flex gap-4">
+            <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-4">
                 <Info className="h-5 w-5 text-blue-500 mt-1" />
                 <p className="text-sm text-blue-700 italic">
                     <strong>Importante:</strong> Estes dados são preenchidos automaticamente no cabeçalho de todos os relatórios gerados pelo sistema. Certifique-se de que o CNPJ e a Razão Social estejam corretos para fins de auditoria.
@@ -188,9 +188,9 @@ function Section({ title, icon, children }: any) {
         <div className="space-y-4">
             <div className="flex items-center gap-2 text-slate-400">
                 {icon}
-                <span className="text-xs font-black uppercase tracking-widest">{title}</span>
+                <span className="text-xs font-bold uppercase tracking-widest">{title}</span>
             </div>
-            <div className="p-6 bg-slate-50/50 rounded-[2rem] border border-slate-100">
+            <div className="p-6 bg-slate-50/50 rounded-lg border border-slate-100">
                 {children}
             </div>
         </div>
@@ -200,7 +200,7 @@ function Section({ title, icon, children }: any) {
 function Field({ label, value, onChange, placeholder, icon, maxLength }: { label: string, value: string | null, onChange: (v: string) => void, placeholder?: string, icon?: React.ReactNode, maxLength?: number }) {
     return (
         <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 uppercase ml-1 flex items-center gap-1">
+            <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 flex items-center gap-1">
                 {icon}
                 {label}
             </label>
@@ -210,8 +210,10 @@ function Field({ label, value, onChange, placeholder, icon, maxLength }: { label
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
                 maxLength={maxLength}
-                className="w-full h-10 px-4 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-slate-300"
+                className="w-full h-10 px-4 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-slate-300"
             />
         </div>
     )
 }
+
+

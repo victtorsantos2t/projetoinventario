@@ -79,7 +79,7 @@ export default function LoginPage() {
 
                     {/* Cabeçalho do Form */}
                     <div className="space-y-2 text-center lg:text-left">
-                        <h1 className="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                        <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
                             Entrar no Sistema
                         </h1>
                         <p className="text-slate-500 dark:text-slate-400 font-medium text-base">
@@ -91,7 +91,7 @@ export default function LoginPage() {
                         <div className="space-y-5">
                             {/* Campo Usuário */}
                             <div className="space-y-2">
-                                <Label htmlFor="email" className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1 hidden">
+                                <Label htmlFor="email" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 hidden">
                                     Usuário
                                 </Label>
                                 <div className="relative group transition-all duration-300">
@@ -112,7 +112,7 @@ export default function LoginPage() {
 
                             {/* Campo Senha */}
                             <div className="space-y-2">
-                                <Label htmlFor="password" className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1 hidden">
+                                <Label htmlFor="password" className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 hidden">
                                     Senha
                                 </Label>
                                 <div className="relative group transition-all duration-300">
@@ -185,7 +185,7 @@ export default function LoginPage() {
                     </form>
 
                     {/* Rodapé Visual Mobile */}
-                    <div className="lg:hidden pt-8 text-center text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                    <div className="lg:hidden pt-8 text-center text-[10px] font-bold text-slate-300 uppercase tracking-widest">
                         Inventário TI Enterprise © 2026
                     </div>
                 </div>
@@ -207,18 +207,18 @@ export default function LoginPage() {
                 <div className="relative z-10 w-full max-w-lg animate-in fade-in zoom-in duration-1000">
 
                     {/* Glassmorphism Card (Simulando a imagem de pessoa/tablet) */}
-                    <div className="relative aspect-[4/5] rounded-[3rem] bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl shadow-indigo-900/50 flex flex-col items-center justify-center overflow-hidden group">
+                    <div className="relative aspect-[4/5] rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl shadow-indigo-900/50 flex flex-col items-center justify-center overflow-hidden group">
 
                         {/* Fallback Visual Rico (já que a geração de imagem falhou) */}
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40 z-0" />
 
                         {/* Ilustração CSS Conceitual */}
                         <div className="relative z-10 flex flex-col items-center gap-6 p-8 text-center">
-                            <div className="h-32 w-32 rounded-[2.5rem] bg-white/10 backdrop-blur-xl border border-white/30 flex items-center justify-center shadow-lg mb-4 group-hover:scale-105 transition-transform duration-500">
+                            <div className="h-32 w-32 rounded-xl bg-white/10 backdrop-blur-xl border border-white/30 flex items-center justify-center shadow-lg mb-4 group-hover:scale-105 transition-transform duration-500">
                                 <ShieldCheck className="h-14 w-14 text-white drop-shadow-md" />
                             </div>
 
-                            <h2 className="text-4xl font-black text-white leading-tight drop-shadow-lg">
+                            <h2 className="text-4xl font-bold text-white leading-tight drop-shadow-lg">
                                 Gestão Corporativa<br />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-cyan-300">Inteligente</span>
                             </h2>
@@ -250,4 +250,5 @@ export default function LoginPage() {
         </div>
     )
 }
+
 

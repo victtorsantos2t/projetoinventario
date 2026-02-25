@@ -52,7 +52,7 @@ export function HistoryCards({ data, loading }: HistoryCardsProps) {
 
     if (data.length === 0) {
         return (
-            <div className="py-20 text-center bg-white rounded-[2.5rem] border-2 border-dashed border-slate-200">
+            <div className="py-20 text-center bg-white rounded-xl border-2 border-dashed border-slate-200">
                 <History className="h-12 w-12 text-slate-200 mx-auto mb-4" />
                 <p className="text-slate-400 font-medium text-lg">Nenhum registro encontrado</p>
                 <p className="text-sm text-slate-300 mt-1">Tente ajustar os filtros de busca.</p>
@@ -99,7 +99,7 @@ export function HistoryCards({ data, loading }: HistoryCardsProps) {
                                     >
                                         <div className="flex items-center gap-2 mb-1">
                                             <Box className="h-3.5 w-3.5 text-primary" />
-                                            <span className="text-xs font-black text-slate-700 uppercase tracking-tight truncate">{item.ativo.nome}</span>
+                                            <span className="text-xs font-bold text-slate-700 uppercase tracking-tight truncate">{item.ativo.nome}</span>
                                         </div>
                                         <p className="text-[10px] font-mono text-slate-400 pl-5.5">{item.ativo.serial}</p>
                                     </div>
@@ -146,3 +146,4 @@ export function HistoryCards({ data, loading }: HistoryCardsProps) {
         </>
     )
 }
+

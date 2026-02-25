@@ -40,17 +40,17 @@ export function UsersTable({ users, setores, isAdmin, onEdit, onDelete, onToggle
     }
 
     return (
-        <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-slate-50/50 border-b border-slate-100">
-                            <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Colaborador</th>
-                            <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Nível</th>
-                            <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Setor</th>
-                            <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Equipamentos</th>
-                            <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Status</th>
-                            <th className="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Ações</th>
+                            <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Colaborador</th>
+                            <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Nível</th>
+                            <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Setor</th>
+                            <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Equipamentos</th>
+                            <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Status</th>
+                            <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Ações</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
@@ -97,13 +97,13 @@ export function UsersTable({ users, setores, isAdmin, onEdit, onDelete, onToggle
                                         onClick={() => onViewAssets(user)}
                                         className="hover:scale-110 active:scale-95 transition-transform"
                                     >
-                                        <Badge variant="secondary" className={`px-2 py-0.5 rounded-lg text-[10px] font-black border-none shadow-none cursor-pointer ${user.ativos_count ? 'bg-primary/10 text-primary hover:bg-primary/20' : 'bg-slate-50 text-slate-400'}`}>
+                                        <Badge variant="secondary" className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border-none shadow-none cursor-pointer ${user.ativos_count ? 'bg-primary/10 text-primary hover:bg-primary/20' : 'bg-slate-50 text-slate-400'}`}>
                                             {user.ativos_count || 0}
                                         </Badge>
                                     </button>
                                 </td>
                                 <td className="px-6 py-4 text-center">
-                                    <Badge className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${user.status === 'Inativo'
+                                    <Badge className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${user.status === 'Inativo'
                                         ? "bg-slate-100 text-slate-400 border-slate-200"
                                         : "bg-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.3)]"
                                         }`}>
@@ -145,3 +145,4 @@ export function UsersTable({ users, setores, isAdmin, onEdit, onDelete, onToggle
         </div>
     )
 }
+

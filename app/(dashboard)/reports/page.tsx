@@ -637,7 +637,7 @@ export default function ReportsPage() {
                     iconBtn={<Printer className="h-4 w-4" />}
                 >
                     <div className="mt-4">
-                        <label className="block text-[10px] uppercase font-black text-emerald-600 mb-1.5 tracking-widest px-1">
+                        <label className="block text-[10px] uppercase font-bold text-emerald-600 mb-1.5 tracking-widest px-1">
                             Filtrar por Setor
                         </label>
                         <select
@@ -694,7 +694,7 @@ export default function ReportsPage() {
                 >
                     <div className="mt-4 grid grid-cols-2 gap-2">
                         <div>
-                            <label className="block text-[10px] uppercase font-black text-indigo-600 mb-1.5 tracking-widest px-1">
+                            <label className="block text-[10px] uppercase font-bold text-indigo-600 mb-1.5 tracking-widest px-1">
                                 Ciclo
                             </label>
                             <select
@@ -714,7 +714,7 @@ export default function ReportsPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[10px] uppercase font-black text-indigo-600 mb-1.5 tracking-widest px-1">
+                            <label className="block text-[10px] uppercase font-bold text-indigo-600 mb-1.5 tracking-widest px-1">
                                 Setor
                             </label>
                             <select
@@ -738,7 +738,7 @@ export default function ReportsPage() {
 
 function ReportCard({ title, description, icon, bgColor, onGenerate, loading, iconBtn, children }: any) {
     return (
-        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-indigo-50/50 transition-all duration-300 group">
+        <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-indigo-50/50 transition-all duration-300 group">
             <div className={`h-12 w-12 rounded-2xl ${bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                 {icon}
             </div>
@@ -756,3 +756,4 @@ function ReportCard({ title, description, icon, bgColor, onGenerate, loading, ic
         </div>
     )
 }
+

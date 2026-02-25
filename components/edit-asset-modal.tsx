@@ -182,7 +182,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
 
                 // Only update if the DB value is different from calculated
                 if (currentDbHealth !== calculated) {
-                    console.log(`[Health Correction] Updating health from ${currentDbHealth} to ${calculated}`)
+
                     await updateAssetHealth(maintsRes.data as any)
                     onSuccess?.()
                 }
@@ -673,7 +673,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                     filter: `id=eq.${ativo.id}`
                 },
                 (payload) => {
-                    console.log('Realtime update received:', payload.new)
+
                     setMonitoringData(payload.new as Partial<Ativo>)
                 }
             )
@@ -691,11 +691,11 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
         <Dialog open={open} onOpenChange={(val) => {
             if (!val) onClose()
         }}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-50 dark:bg-zinc-950 p-0 gap-0 rounded-[2.5rem] border border-slate-100 dark:border-white/10 shadow-2xl">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-50 dark:bg-zinc-950 p-0 gap-0 rounded-xl border border-slate-100 dark:border-white/10 shadow-2xl">
                 <div className="sticky top-0 z-10 flex items-center justify-between px-8 py-6 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-slate-100 dark:border-white/5">
                     <div>
                         <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2 text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                            <DialogTitle className="flex items-center gap-2 text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                                 <div className="p-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl border border-indigo-100 dark:border-indigo-500/20">
                                     <Layers className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                                 </div>
@@ -734,7 +734,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                         <TabsContent value="geral" className="space-y-8 focus-visible:ring-0 mt-0">
                             {/* Health Status Card */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="md:col-span-2 p-6 bg-white dark:bg-zinc-900 rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm">
+                                <div className="md:col-span-2 p-6 bg-white dark:bg-zinc-900 rounded-xl border border-slate-100 dark:border-white/5 shadow-sm">
                                     <div className="flex items-center gap-4">
                                         <div className={cn(
                                             "h-16 w-16 rounded-full flex items-center justify-center border-4",
@@ -746,7 +746,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-2 mb-1">
-                                                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">Saúde Operacional</h3>
+                                                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Saúde Operacional</h3>
                                                 <Badge className={cn(
                                                     "text-[10px] px-2 py-0.5 h-5",
                                                     displayAtivo?.saude_info?.status_saude === 'Excelente' ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100" :
@@ -763,8 +763,8 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                     </div>
                                 </div>
 
-                                <div className="p-6 bg-white dark:bg-zinc-900 rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-sm">
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Status Atual</label>
+                                <div className="p-6 bg-white dark:bg-zinc-900 rounded-xl border border-slate-100 dark:border-white/5 shadow-sm">
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Status Atual</label>
                                     <Select
                                         disabled={saving || isViewMode}
                                         onValueChange={(val) => handleChange('status', val)}
@@ -776,7 +776,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                         <SelectContent>
                                             <SelectItem value="Em uso" className="font-medium">Em uso</SelectItem>
                                             <SelectItem value="Disponível" className="font-medium">Disponível</SelectItem>
-                                            <SelectItem value="Em manutenção" className="font-medium">Em manutenção</SelectItem>
+                                            <SelectItem value="Manutenção" className="font-medium">Manutenção</SelectItem>
                                             <SelectItem value="Baixado" className="font-medium">Baixado</SelectItem>
                                         </SelectContent>
                                     </Select>
@@ -788,7 +788,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                 <div className="p-5 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/20">
                                     <div className="flex items-center gap-2 mb-4">
                                         <Activity className="h-4 w-4 text-blue-500" />
-                                        <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">Monitoramento em Tempo Real</span>
+                                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Monitoramento em Tempo Real</span>
                                         {(() => {
                                             const lastConnection = displayAtivo.ultima_conexao ? new Date(displayAtivo.ultima_conexao) : null
                                             const timeDiff = lastConnection ? (new Date().getTime() - lastConnection.getTime()) / 1000 / 60 : 999
@@ -834,11 +834,11 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                             {/* Main Form Padronizado */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Nome do Ativo *</label>
+                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Nome do Ativo *</label>
                                     <Input value={form.nome} onChange={(e) => handleChange('nome', e.target.value)} disabled={isViewMode} className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Tipo *</label>
+                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Tipo *</label>
                                     <select value={form.tipo} onChange={(e) => handleChange('tipo', e.target.value)} disabled={isViewMode} className="w-full h-11 px-4 bg-neutral-app dark:bg-white/5 border border-transparent rounded-xl text-sm font-bold focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-primary-600/20 transition-all outline-none shadow-sm dark:text-white">
                                         <option value="">Selecione</option>
                                         {categories.length > 0 ? (
@@ -849,15 +849,15 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Número de Série *</label>
+                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Número de Série *</label>
                                     <Input value={form.serial} onChange={(e) => handleChange('serial', e.target.value)} disabled={isViewMode} className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Patrimônio</label>
+                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Patrimônio</label>
                                     <Input value={form.patrimonio} onChange={(e) => handleChange('patrimonio', e.target.value)} disabled={isViewMode} className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Setor *</label>
+                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Setor *</label>
                                     <select
                                         value={form.setor}
                                         onChange={(e) => handleChange('setor', e.target.value)}
@@ -869,7 +869,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Responsável *</label>
+                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Responsável *</label>
                                     <select
                                         value={form.colaborador}
                                         onChange={(e) => handleChange('colaborador', e.target.value)}
@@ -888,7 +888,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Condição</label>
+                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Condição</label>
                                     <select
                                         value={form.condicao}
                                         onChange={(e) => handleChange('condicao', e.target.value)}
@@ -901,7 +901,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                 </div>
                                 {(form as any).condicao === 'Novo' && (
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Garantia (Meses)</label>
+                                        <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Garantia (Meses)</label>
                                         <Input
                                             type="number"
                                             value={(form as any).garantia_meses}
@@ -920,20 +920,20 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                         <div className="h-8 w-8 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center shadow-sm">
                                             <Cpu className="h-5 w-5 text-primary-600 dark:text-primary-400" />
                                         </div>
-                                        <h3 className="text-sm font-black text-text-primary dark:text-white uppercase tracking-tighter">Especificações de Hardware</h3>
+                                        <h3 className="text-sm font-bold text-text-primary dark:text-white uppercase tracking-tighter">Especificações de Hardware</h3>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center justify-between">
+                                            <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center justify-between">
                                                 Processador
                                                 {monitoringData?.processador && monitoringData.processador !== 'Desconhecido' && (
-                                                    <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1">
+                                                    <span className="text-[9px] text-indigo-500 font-bold tracking-tighter uppercase flex items-center gap-1">
                                                         <Cpu className="h-2.5 w-2.5" /> Auto
                                                     </span>
                                                 )}
                                             </label>
                                             {monitoringData?.processador && monitoringData.processador !== 'Desconhecido' ? (
-                                                <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-black flex items-center text-slate-700 dark:text-indigo-300">
+                                                <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-bold flex items-center text-slate-700 dark:text-indigo-300">
                                                     {monitoringData.processador}
                                                 </div>
                                             ) : (
@@ -942,21 +942,21 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                                     onChange={(e) => handleChange('processador', e.target.value)}
                                                     disabled={isViewMode}
                                                     placeholder="Ex: Intel Core i5"
-                                                    className="h-10 rounded-xl bg-white dark:bg-zinc-800 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm font-black text-sm"
+                                                    className="h-10 rounded-xl bg-white dark:bg-zinc-800 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm font-bold text-sm"
                                                 />
                                             )}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center justify-between">
+                                            <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center justify-between">
                                                 Memória RAM
                                                 {monitoringData?.memoria_ram && monitoringData.memoria_ram !== 'Desconhecido' && (
-                                                    <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1">
+                                                    <span className="text-[9px] text-indigo-500 font-bold tracking-tighter uppercase flex items-center gap-1">
                                                         <Activity className="h-2.5 w-2.5" /> Auto
                                                     </span>
                                                 )}
                                             </label>
                                             {monitoringData?.memoria_ram && monitoringData.memoria_ram !== 'Desconhecido' ? (
-                                                <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-black flex items-center text-slate-700 dark:text-indigo-300">
+                                                <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-bold flex items-center text-slate-700 dark:text-indigo-300">
                                                     {monitoringData.memoria_ram}
                                                 </div>
                                             ) : (
@@ -965,21 +965,21 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                                     onChange={(e) => handleChange('memoria_ram', e.target.value)}
                                                     disabled={isViewMode}
                                                     placeholder="Ex: 16 GB"
-                                                    className="h-10 rounded-xl bg-white dark:bg-zinc-800 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm font-black text-sm"
+                                                    className="h-10 rounded-xl bg-white dark:bg-zinc-800 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm font-bold text-sm"
                                                 />
                                             )}
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center justify-between">
+                                            <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center justify-between">
                                                 Armazenamento
                                                 {monitoringData?.armazenamento && monitoringData.armazenamento !== 'Desconhecido' && (
-                                                    <span className="text-[9px] text-indigo-500 font-black tracking-tighter uppercase flex items-center gap-1">
+                                                    <span className="text-[9px] text-indigo-500 font-bold tracking-tighter uppercase flex items-center gap-1">
                                                         <History className="h-2.5 w-2.5" /> Auto
                                                     </span>
                                                 )}
                                             </label>
                                             {monitoringData?.armazenamento && monitoringData.armazenamento !== 'Desconhecido' ? (
-                                                <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-black flex items-center text-slate-700 dark:text-indigo-300">
+                                                <div className="h-10 px-3 bg-indigo-50/30 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10 rounded-xl text-sm font-bold flex items-center text-slate-700 dark:text-indigo-300">
                                                     {monitoringData.armazenamento}
                                                 </div>
                                             ) : (
@@ -988,7 +988,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                                     onChange={(e) => handleChange('armazenamento', e.target.value)}
                                                     disabled={isViewMode}
                                                     placeholder="Ex: 512 GB SSD"
-                                                    className="h-10 rounded-xl bg-white dark:bg-zinc-800 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm font-black text-sm"
+                                                    className="h-10 rounded-xl bg-white dark:bg-zinc-800 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm font-bold text-sm"
                                                 />
                                             )}
                                         </div>
@@ -1003,7 +1003,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                                     className="h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600 transition-all disabled:opacity-50"
                                                 />
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs font-black text-text-primary dark:text-white uppercase tracking-tighter">Responsável de Setor</span>
+                                                    <span className="text-xs font-bold text-text-primary dark:text-white uppercase tracking-tighter">Responsável de Setor</span>
                                                     <span className="text-[10px] text-text-muted font-bold">Permite vincular este computador mesmo se o colaborador já tiver outro.</span>
                                                 </div>
                                             </label>
@@ -1018,18 +1018,18 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                         <div className="h-8 w-8 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center shadow-sm">
                                             <Monitor className="h-5 w-5 text-primary-600 dark:text-primary-400" />
                                         </div>
-                                        <h3 className="text-sm font-black text-text-primary dark:text-white uppercase tracking-tighter">Especificações do Display</h3>
+                                        <h3 className="text-sm font-bold text-text-primary dark:text-white uppercase tracking-tighter">Especificações do Display</h3>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Tamanho (Pol)</label>
-                                            <select value={form.polegadas} onChange={(e) => handleChange('polegadas', e.target.value)} disabled={isViewMode} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
+                                            <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Tamanho (Pol)</label>
+                                            <select value={form.polegadas} onChange={(e) => handleChange('polegadas', e.target.value)} disabled={isViewMode} className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm">
                                                 <option value="">Selecione</option>
                                                 {MONITOR_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
                                             </select>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-text-muted uppercase tracking-widest block">Interfaces de Vídeo</label>
+                                            <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest block">Interfaces de Vídeo</label>
                                             <div className="flex flex-wrap gap-2">
                                                 {VIDEO_OUTPUTS.map(output => (
                                                     <button
@@ -1037,7 +1037,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                                         onClick={() => !isViewMode && toggleVideoOutput(output)}
                                                         disabled={isViewMode}
                                                         className={cn(
-                                                            "h-10 px-4 rounded-xl border text-xs font-black transition-all",
+                                                            "h-10 px-4 rounded-xl border text-xs font-bold transition-all",
                                                             form.saidas_video.includes(output)
                                                                 ? "bg-primary-600 text-white border-transparent shadow-md shadow-primary-600/20"
                                                                 : "bg-white dark:bg-zinc-800 border-slate-200 dark:border-white/10 text-text-muted hover:border-primary-600"
@@ -1055,7 +1055,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                             {/* Access Remote */}
                             {isHardware && (
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Acesso Remoto</label>
+                                    <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Acesso Remoto</label>
                                     <Input value={form.acesso_remoto} onChange={(e) => handleChange('acesso_remoto', e.target.value)} disabled={isViewMode} placeholder="AnyDesk, TeamViewer..." className="h-11 rounded-xl bg-neutral-app dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-800 transition-all shadow-sm" />
                                 </div>
                             )}
@@ -1067,7 +1067,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                         <AlertTriangle className="h-6 w-6" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-black text-red-900 dark:text-red-400">Substituição Recomendada</p>
+                                        <p className="text-sm font-bold text-red-900 dark:text-red-400">Substituição Recomendada</p>
                                         <p className="text-xs text-red-600 dark:text-red-500/80 font-medium">Este ativo atingiu {correctiveCount} manutenções corretivas. Considere a troca por um novo equipamento.</p>
                                     </div>
                                 </div>
@@ -1079,11 +1079,11 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                 <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-2xl border border-transparent space-y-4 animate-in fade-in slide-in-from-top-2">
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em]">Registro de Intervenção</span>
+                                            <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em]">Registro de Intervenção</span>
                                             <span className="text-xs text-text-muted font-medium">Preencha os dados do serviço realizado.</span>
                                         </div>
                                         {form.status !== "Manutenção" && (
-                                            <div className="px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-lg text-[9px] font-black uppercase flex items-center gap-1.5 border border-amber-100 dark:border-amber-900/30">
+                                            <div className="px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-lg text-[9px] font-bold uppercase flex items-center gap-1.5 border border-amber-100 dark:border-amber-900/30">
                                                 <AlertCircle className="h-3 w-3" /> Status "Manutenção" Obrigatório
                                             </div>
                                         )}
@@ -1092,7 +1092,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-4">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Data do Serviço</label>
+                                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Data do Serviço</label>
                                                 <Input
                                                     type="date"
                                                     value={newMaint.data_manutencao}
@@ -1101,11 +1101,11 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Tipo de Intervenção</label>
+                                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Tipo de Intervenção</label>
                                                 <select
                                                     value={newMaint.tipo}
                                                     onChange={(e) => setNewMaint({ ...newMaint, tipo: e.target.value })}
-                                                    className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm"
+                                                    className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm"
                                                 >
                                                     <option value="Corretiva">Corretiva</option>
                                                     <option value="Preventiva">Preventiva</option>
@@ -1117,11 +1117,11 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
 
                                         <div className="space-y-4">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Técnico Responsável</label>
+                                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Técnico Responsável</label>
                                                 <select
                                                     value={newMaint.tecnico_id}
                                                     onChange={(e) => setNewMaint({ ...newMaint, tecnico_id: e.target.value })}
-                                                    className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-black outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm"
+                                                    className="w-full h-10 px-3 bg-white dark:bg-zinc-800 border border-transparent rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-primary-600/20 transition-all dark:text-white shadow-sm"
                                                 >
                                                     <option value="">Selecione o técnico...</option>
                                                     {usuarios.map(u => (
@@ -1138,7 +1138,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                                         className="h-5 w-5 rounded border-slate-300 text-primary-600 focus:ring-primary-600 transition-all"
                                                     />
                                                     <div className="flex flex-col">
-                                                        <span className="text-[10px] font-black text-text-primary dark:text-white uppercase tracking-tighter">Restaurar Saúde Operational</span>
+                                                        <span className="text-[10px] font-bold text-text-primary dark:text-white uppercase tracking-tighter">Restaurar Saúde Operational</span>
                                                         <span className="text-[8px] text-text-muted font-medium">Resetar indicadores de desgaste.</span>
                                                     </div>
                                                 </label>
@@ -1147,7 +1147,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-text-muted uppercase tracking-widest">Relatório Técnico</label>
+                                        <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Relatório Técnico</label>
                                         <textarea
                                             value={newMaint.descricao}
                                             onChange={(e) => setNewMaint({ ...newMaint, descricao: e.target.value })}
@@ -1160,7 +1160,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                         <button
                                             onClick={handleAddMaintenance}
                                             disabled={savingMaint || !newMaint.descricao || form.status !== "Manutenção"}
-                                            className="px-8 h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 disabled:opacity-50 disabled:grayscale"
+                                            className="px-8 h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 disabled:opacity-50 disabled:grayscale"
                                         >
                                             {savingMaint ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                                             Gravar Manutenção
@@ -1173,16 +1173,16 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                         <TabsContent value="historico" className="p-8 space-y-6 m-0">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em]">Registro Histórico</span>
+                                    <span className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-[0.2em]">Registro Histórico</span>
                                     <span className="text-xs text-text-muted font-medium">Todas as intervenções realizadas neste ativo.</span>
                                 </div>
-                                <div className="px-3 py-1 bg-slate-100 dark:bg-white/5 text-[10px] font-black text-text-muted rounded-lg border border-slate-200 dark:border-white/10">
+                                <div className="px-3 py-1 bg-slate-100 dark:bg-white/5 text-[10px] font-bold text-text-muted rounded-lg border border-slate-200 dark:border-white/10">
                                     {maintenances.length} REGISTROS
                                 </div>
                             </div>
                             <div className="space-y-4">
                                 {maintenances.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center py-12 bg-neutral-app dark:bg-white/5 rounded-[2rem] border border-dashed border-slate-200 dark:border-white/10 opacity-60">
+                                    <div className="flex flex-col items-center justify-center py-12 bg-neutral-app dark:bg-white/5 rounded-xl border border-dashed border-slate-200 dark:border-white/10 opacity-60">
                                         <History className="h-8 w-8 text-text-muted mb-2" />
                                         <p className="text-sm font-bold text-text-muted">Nenhum histórico disponível</p>
                                     </div>
@@ -1190,14 +1190,14 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                     maintenances.map(m => (
                                         <div key={m.id} className="p-5 bg-white dark:bg-zinc-800 border border-slate-100 dark:border-white/5 rounded-2xl shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
                                             {m.restaurar_saude && (
-                                                <div className="absolute top-0 right-0 px-3 py-1 bg-success-600 text-[9px] font-black text-white uppercase tracking-widest rounded-bl-xl flex items-center gap-1">
+                                                <div className="absolute top-0 right-0 px-3 py-1 bg-success-600 text-[9px] font-bold text-white uppercase tracking-widest rounded-bl-xl flex items-center gap-1">
                                                     <ShieldCheck className="h-3 w-3" /> Saúde Restaurada
                                                 </div>
                                             )}
                                             <div className="flex justify-between items-start mb-3">
                                                 <div className="flex items-center gap-3">
                                                     <span className={cn(
-                                                        "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider",
+                                                        "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider",
                                                         m.tipo === 'Preventiva' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400' :
                                                             m.tipo === 'Upgrade' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' :
                                                                 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400'
@@ -1206,7 +1206,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                                     </span>
                                                     <div className="flex items-center gap-1.5 text-text-muted">
                                                         <Calendar className="h-3.5 w-3.5" />
-                                                        <span className="text-[11px] font-black">{format(new Date(m.data_manutencao || m.created_at), "dd 'de' MMM, yyyy", { locale: ptBR })}</span>
+                                                        <span className="text-[11px] font-bold">{format(new Date(m.data_manutencao || m.created_at), "dd 'de' MMM, yyyy", { locale: ptBR })}</span>
                                                     </div>
                                                 </div>
                                                 <button
@@ -1222,7 +1222,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                                             </div>
                                             <p className="text-sm text-text-secondary dark:text-slate-300 leading-relaxed font-medium">{m.descricao}</p>
                                             <div className="mt-4 flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-white/5">
-                                                <div className="h-6 w-6 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-[10px] font-black">
+                                                <div className="h-6 w-6 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-[10px] font-bold">
                                                     {(Array.isArray(m.tecnico) ? m.tecnico[0]?.full_name : m.tecnico?.full_name)?.charAt(0) || 'T'}
                                                 </div>
                                                 <span className="text-[11px] font-bold text-text-muted uppercase tracking-tighter">
@@ -1251,7 +1251,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                         {!isViewMode && (
                             <button
                                 onClick={() => setShowDeleteConfirm(true)}
-                                className="flex items-center gap-2 px-6 py-2.5 text-red-600 dark:text-red-400 text-sm font-black hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
+                                className="flex items-center gap-2 px-6 py-2.5 text-red-600 dark:text-red-400 text-sm font-bold hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
                             >
                                 <Trash2 className="h-4 w-4" />
                                 Excluir Ativo
@@ -1261,7 +1261,7 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                     <div className="flex items-center gap-3">
                         <button
                             onClick={onClose}
-                            className="px-6 py-2.5 text-sm font-black text-text-muted hover:text-text-primary transition-all"
+                            className="px-6 py-2.5 text-sm font-bold text-text-muted hover:text-text-primary transition-all"
                         >
                             {isViewMode ? "Fechar" : "Cancelar"}
                         </button>
@@ -1269,14 +1269,14 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="flex items-center gap-2 px-8 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-black hover:bg-indigo-700 shadow-xl shadow-indigo-600/20 transition-all active:scale-95 disabled:opacity-50"
+                                className="flex items-center gap-2 px-8 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-xl shadow-indigo-600/20 transition-all active:scale-95 disabled:opacity-50"
                             >
                                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                                 Salvar Ativo
                             </button>
                         )}
                         {!isViewMode && activeTab === 'manutencao' && (
-                            <div className="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-xl text-[10px] font-black text-text-muted uppercase tracking-widest border border-slate-200 dark:border-white/10">
+                            <div className="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-xl text-[10px] font-bold text-text-muted uppercase tracking-widest border border-slate-200 dark:border-white/10">
                                 Use o botão interno para gravar
                             </div>
                         )}
@@ -1324,3 +1324,5 @@ export function EditAssetModal({ ativo, open, onClose, onSuccess, mode = 'edit' 
         </Dialog>
     )
 }
+
+

@@ -39,7 +39,7 @@ import {
 interface MenuItem {
     href: string
     label: string
-    icon: any
+    icon: React.ElementType
     adminOnly?: boolean
     technicianOnly?: boolean
 }
@@ -53,7 +53,7 @@ const menuSections: MenuSection[] = [
     {
         title: "Workspace",
         items: [
-            { href: "/", label: "Dashboard", icon: LayoutDashboard },
+            { href: "/", label: "Dashboard", icon: LayoutDashboard, technicianOnly: true },
         ]
     },
     {
@@ -109,8 +109,8 @@ export function Sidebar() {
             <div className="px-6 py-5 lg:py-6 flex items-center justify-between border-b border-slate-50 dark:border-white/5 gap-4">
                 {!collapsed && (
                     <div className="pl-12 lg:pl-0 group cursor-default">
-                        <h1 className="text-lg font-black text-text-primary dark:text-white tracking-tighter transition-colors group-hover:text-primary-600">Inventário</h1>
-                        <p className="text-[9px] font-black text-primary-500 uppercase tracking-[0.3em] mt-0.5">Enterprise System</p>
+                        <h1 className="text-lg font-bold text-text-primary dark:text-white tracking-tighter transition-colors group-hover:text-primary-600">Inventário</h1>
+                        <p className="text-[9px] font-bold text-primary-500 uppercase tracking-[0.3em] mt-0.5">Enterprise System</p>
                     </div>
                 )}
                 <button
@@ -135,7 +135,7 @@ export function Sidebar() {
                     return (
                         <div key={idx} className="space-y-1">
                             {!collapsed && (
-                                <p className="px-3 pb-1 text-[9px] font-black text-text-muted dark:text-slate-600 uppercase tracking-[0.15em]">
+                                <p className="px-3 pb-1 text-[9px] font-bold text-text-muted dark:text-slate-600 uppercase tracking-[0.15em]">
                                     {section.title}
                                 </p>
                             )}
@@ -177,14 +177,14 @@ export function Sidebar() {
                 >
                     <Avatar className="h-10 w-10 rounded-xl border-2 border-primary-100 dark:border-primary-900/30 shrink-0 transition-transform group-hover:scale-105">
                         <AvatarImage src={profile?.avatar_url || ""} />
-                        <AvatarFallback className="bg-primary-50 text-primary-600 font-black text-xs">
+                        <AvatarFallback className="bg-primary-50 text-primary-600 font-bold text-xs">
                             {(profile?.full_name?.[0] || profile?.email?.[0] || 'U').toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
 
                     {!collapsed && (
                         <div className="flex-1 min-w-0">
-                            <p className="text-xs font-black text-text-primary dark:text-white truncate group-hover:text-primary-600 transition-colors">
+                            <p className="text-xs font-bold text-text-primary dark:text-white truncate group-hover:text-primary-600 transition-colors">
                                 {profile?.full_name || 'Usuário'}
                             </p>
                             <p className="text-[10px] font-bold text-text-muted truncate">
@@ -211,7 +211,7 @@ export function Sidebar() {
 
             {/* Confirm Logout Dialog */}
             <AlertDialog open={isLogoutOpen} onOpenChange={setIsLogoutOpen}>
-                <AlertDialogContent className="rounded-[2rem] border-slate-100 dark:border-white/5 shadow-2xl">
+                <AlertDialogContent className="rounded-xl border-slate-100 dark:border-white/5 shadow-2xl">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-xl font-bold">Deseja realmente sair?</AlertDialogTitle>
                         <AlertDialogDescription className="text-slate-500 dark:text-slate-400 font-medium">
@@ -274,3 +274,4 @@ export function Sidebar() {
         </>
     )
 }
+

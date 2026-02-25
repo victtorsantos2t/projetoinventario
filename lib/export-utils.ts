@@ -10,16 +10,16 @@ interface ExportColumn {
  * Exporta dados para um arquivo Excel (.xlsx)
  */
 export function exportToExcel(
-    data: Record<string, any>[],
+    data: Record<string, unknown>[],
     columns: ExportColumn[],
     filename: string = 'export'
 ) {
     // Mapear dados pelas colunas definidas
     const rows = data.map(item =>
         columns.reduce((row, col) => {
-            row[col.header] = item[col.key] ?? '—'
+            row[col.header] = (item[col.key] as string | number) ?? '—'
             return row
-        }, {} as Record<string, any>)
+        }, {} as Record<string, unknown>)
     )
 
     const worksheet = XLSX.utils.json_to_sheet(rows)

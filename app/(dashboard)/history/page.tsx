@@ -182,7 +182,7 @@ export default function HistoryPage() {
             />
 
             {viewMode === 'list' ? (
-                <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+                <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
@@ -241,7 +241,7 @@ export default function HistoryPage() {
                                                         <button
                                                             onClick={() => openAssetHistory(item.ativo!.id, item.ativo!.nome)}
                                                             title="Clique para ver toda a Linha do Tempo"
-                                                            className="text-xs font-black text-primary uppercase tracking-tighter bg-primary/5 px-3 py-1 rounded-xl w-fit hover:bg-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 group/btn shadow-sm border border-primary/10"
+                                                            className="text-xs font-bold text-primary uppercase tracking-tighter bg-primary/5 px-3 py-1 rounded-xl w-fit hover:bg-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 group/btn shadow-sm border border-primary/10"
                                                         >
                                                             <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
                                                             {item.ativo.nome} — {item.ativo.serial}
@@ -263,7 +263,7 @@ export default function HistoryPage() {
                                                         {item.usuario?.avatar_url ? (
                                                             <img src={item.usuario.avatar_url} alt="" className="h-full w-full object-cover" />
                                                         ) : (
-                                                            <span className="text-xs font-black text-slate-500">
+                                                            <span className="text-xs font-bold text-slate-500">
                                                                 {(item.usuario?.full_name?.[0] || 'S').toUpperCase()}
                                                             </span>
                                                         )}
@@ -291,3 +291,4 @@ export default function HistoryPage() {
         </div>
     )
 }
+

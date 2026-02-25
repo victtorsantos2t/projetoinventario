@@ -113,16 +113,16 @@ export function UsersToolbar({
                             <List className="h-4 w-4" />
                         </Button>
                     </div>
-                    <div className="px-4 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <div className="px-4 py-2 bg-slate-50 border border-slate-100 rounded-2xl text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                         {totalUsers} Colaboradores
                     </div>
                 </div>
             </div>
 
             {showFilters && (
-                <div className="flex flex-wrap items-center gap-3 p-5 bg-slate-50/50 rounded-[2rem] border border-slate-100 animate-in slide-in-from-top-2 duration-300">
+                <div className="flex flex-wrap items-center gap-3 p-5 bg-slate-50/50 rounded-xl border border-slate-100 animate-in slide-in-from-top-2 duration-300">
                     <div className="flex flex-col gap-1.5 min-w-[180px]">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider ml-1">Status</label>
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Status</label>
                         <Select value={statusFilter} onValueChange={onStatusFilterChange}>
                             <SelectTrigger className="h-10 rounded-xl bg-white border-slate-200">
                                 <SelectValue placeholder="Todos Status" />
@@ -136,7 +136,7 @@ export function UsersToolbar({
                     </div>
 
                     <div className="flex flex-col gap-1.5 min-w-[200px]">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider ml-1">Setor</label>
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Setor</label>
                         <Select value={sectorFilter} onValueChange={onSectorFilterChange}>
                             <SelectTrigger className="h-10 rounded-xl bg-white border-slate-200">
                                 <SelectValue placeholder="Todos Setores" />
@@ -169,3 +169,4 @@ export function UsersToolbar({
         </div>
     )
 }
+

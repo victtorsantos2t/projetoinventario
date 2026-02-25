@@ -160,22 +160,22 @@ export function BulkImportModal() {
             <Button
                 onClick={() => setOpen(true)}
                 variant="outline"
-                className="flex items-center gap-2 h-11 px-6 rounded-xl font-bold text-sm border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 transition-all shadow-sm"
+                className="flex items-center gap-2 h-11 px-6 rounded-lg font-bold text-sm border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 transition-all shadow-sm"
             >
                 <FileUp className="h-4 w-4" />
                 Importar CSV
             </Button>
 
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-[2.5rem] border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
+                <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white dark:bg-zinc-900 rounded-lg border-slate-100 dark:border-white/5 shadow-2xl transition-all duration-300">
                     {/* Header Padronizado */}
                     <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-zinc-900">
                         <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
+                            <div className="h-12 w-12 rounded-xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
                                 <FileUp className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                             </div>
                             <div>
-                                <DialogTitle className="text-xl font-black text-text-primary dark:text-white">
+                                <DialogTitle className="text-xl font-bold text-text-primary dark:text-white">
                                     Importação em Lote
                                 </DialogTitle>
                                 <DialogDescription className="text-sm text-text-secondary dark:text-slate-400 font-medium">
@@ -189,20 +189,20 @@ export function BulkImportModal() {
                         {/* Download Template Padronizado */}
                         <div
                             onClick={downloadTemplate}
-                            className="group w-full flex items-center gap-5 p-5 bg-neutral-app dark:bg-white/5 rounded-2xl border border-transparent hover:border-primary-600/30 cursor-pointer transition-all active:scale-[0.99]"
+                            className="group w-full flex items-center gap-5 p-5 bg-neutral-app dark:bg-white/5 rounded-xl border border-transparent hover:border-primary-600/30 cursor-pointer transition-all active:scale-[0.99]"
                         >
-                            <div className="h-12 w-12 rounded-xl bg-white dark:bg-zinc-800 border border-slate-100 dark:border-white/5 flex items-center justify-center text-primary-600 dark:text-primary-400 shadow-sm group-hover:shadow-md transition-all">
+                            <div className="h-12 w-12 rounded-lg bg-white dark:bg-zinc-800 border border-slate-100 dark:border-white/5 flex items-center justify-center text-primary-600 dark:text-primary-400 shadow-sm group-hover:shadow-md transition-all">
                                 <Download className="h-6 w-6" />
                             </div>
                             <div>
-                                <p className="text-sm font-black text-text-primary dark:text-white uppercase tracking-tight">Baixar Modelo CSV</p>
+                                <p className="text-sm font-bold text-text-primary dark:text-white uppercase tracking-tight">Baixar Modelo CSV</p>
                                 <p className="text-xs text-text-secondary dark:text-slate-400 font-medium">Use este modelo para estruturar seus dados.</p>
                             </div>
                         </div>
 
                         {/* File Upload Padronizado */}
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Arquivo CSV</Label>
+                            <Label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">Arquivo CSV</Label>
                             <div className="relative group">
                                 <input
                                     type="file"
@@ -214,19 +214,19 @@ export function BulkImportModal() {
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                 />
                                 <div className={cn(
-                                    "flex flex-col items-center justify-center gap-3 p-10 border-2 border-dashed rounded-3xl transition-all",
+                                    "flex flex-col items-center justify-center gap-3 p-10 border-2 border-dashed rounded-xl transition-all",
                                     file
                                         ? "border-primary-600/50 bg-primary-50/30 dark:bg-primary-900/5"
                                         : "border-slate-200 dark:border-white/10 bg-neutral-app dark:bg-white/2 hover:border-primary-600/30"
                                 )}>
                                     <div className={cn(
-                                        "h-14 w-14 rounded-2xl flex items-center justify-center transition-all",
+                                        "h-14 w-14 rounded-xl flex items-center justify-center transition-all",
                                         file ? "bg-primary-600 text-white" : "bg-white dark:bg-zinc-800 text-text-muted"
                                     )}>
                                         <Upload className="h-7 w-7" />
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-sm font-black text-text-primary dark:text-white">
+                                        <p className="text-sm font-bold text-text-primary dark:text-white">
                                             {file ? file.name : "Arraste ou selecione"}
                                         </p>
                                         <p className="text-xs text-text-muted mt-1">Apenas arquivos .csv são suportados</p>
@@ -239,7 +239,7 @@ export function BulkImportModal() {
                         {results && (
                             <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                                 {results.success > 0 && (
-                                    <div className="flex items-center gap-3 p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-500/20 text-sm font-black text-emerald-700 dark:text-emerald-400 shadow-sm">
+                                    <div className="flex items-center gap-3 p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-500/20 text-sm font-bold text-emerald-700 dark:text-emerald-400 shadow-sm">
                                         <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
                                             <CheckCircle2 className="h-5 w-5" />
                                         </div>
@@ -247,8 +247,8 @@ export function BulkImportModal() {
                                     </div>
                                 )}
                                 {results.errors.length > 0 && (
-                                    <div className="p-4 bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-100 dark:border-red-500/20">
-                                        <div className="flex items-center gap-3 text-sm font-black text-red-700 dark:text-red-400 mb-3">
+                                    <div className="p-4 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-500/20">
+                                        <div className="flex items-center gap-3 text-sm font-bold text-red-700 dark:text-red-400 mb-3">
                                             <div className="h-8 w-8 rounded-lg bg-red-500/10 flex items-center justify-center">
                                                 <AlertTriangle className="h-5 w-5" />
                                             </div>
@@ -273,14 +273,14 @@ export function BulkImportModal() {
                         <Button
                             variant="ghost"
                             onClick={handleClose}
-                            className="px-6 py-2.5 text-sm font-black text-text-muted hover:text-text-primary transition-all"
+                            className="px-6 py-2.5 text-sm font-bold text-text-muted hover:text-text-primary transition-all"
                         >
                             Fechar
                         </Button>
                         <Button
                             onClick={handleImport}
                             disabled={!file || importing}
-                            className="flex items-center gap-2 px-8 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-black hover:bg-primary-700 shadow-xl shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50"
+                            className="flex items-center gap-2 px-8 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 shadow-xl shadow-primary-600/20 transition-all active:scale-95 disabled:opacity-50"
                         >
                             {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
                             {importing ? "Importando..." : "Iniciar Importação"}
@@ -291,3 +291,5 @@ export function BulkImportModal() {
         </>
     )
 }
+
+

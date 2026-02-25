@@ -35,7 +35,7 @@ export function InventoryTable({ data, loading, onRefresh, highlightId }: Invent
 
     return (
         <>
-            <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
@@ -121,12 +121,14 @@ export function InventoryTable({ data, loading, onRefresh, highlightId }: Invent
                                                             </button>
                                                         </>
                                                     )}
-                                                    <button onClick={() => setQrAsset(ativo)} className="h-8 w-8 rounded-lg text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 flex items-center justify-center transition-colors" title="QR Code">
+                                                    <button onClick={() => setQrAsset(ativo)} className="h-8 w-8 rounded-lg text-slate-400 hover:text-indigo-50 hover:bg-indigo-50 flex items-center justify-center transition-colors" title="QR Code">
                                                         <QrCode className="h-3.5 w-3.5" />
                                                     </button>
-                                                    <button onClick={() => setActivityAsset({ id: ativo.id, nome: ativo.nome })} className="h-8 w-8 rounded-lg text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 flex items-center justify-center transition-colors" title="Histórico">
-                                                        <History className="h-3.5 w-3.5" />
-                                                    </button>
+                                                    {!isViewer && (
+                                                        <button onClick={() => setActivityAsset({ id: ativo.id, nome: ativo.nome })} className="h-8 w-8 rounded-lg text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 flex items-center justify-center transition-colors" title="Histórico">
+                                                            <History className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -175,3 +177,4 @@ export function InventoryTable({ data, loading, onRefresh, highlightId }: Invent
         </>
     )
 }
+

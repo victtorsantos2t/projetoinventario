@@ -177,9 +177,9 @@ export default function UsersPage() {
 
     if (!loadingRole && !isTecnico) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-slate-100 shadow-sm">
                 <Shield className="h-16 w-16 text-rose-500 mb-4 opacity-20" />
-                <h2 className="text-2xl font-black text-slate-900">Acesso Restrito</h2>
+                <h2 className="text-2xl font-bold text-slate-900">Acesso Restrito</h2>
                 <p className="text-slate-500 font-medium">Apenas administradores podem gerenciar colaboradores.</p>
             </div>
         )
@@ -190,7 +190,7 @@ export default function UsersPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-4xl font-black tracking-tight text-text-primary dark:text-white mb-1">Colaboradores</h1>
+                    <h1 className="text-4xl font-bold tracking-tight text-text-primary dark:text-white mb-1">Colaboradores</h1>
                     <p className="text-text-secondary dark:text-slate-400 font-medium">Gestão centralizada de equipamentos por pessoa e acessos.</p>
                 </div>
                 {isAdmin && <AddUserModal onSuccess={fetchData} />}
@@ -213,11 +213,11 @@ export default function UsersPage() {
             {loadingUsers ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {[...Array(8)].map((_, i) => (
-                        <div key={i} className="h-64 rounded-[2rem] bg-white border border-slate-100 shadow-sm animate-pulse" />
+                        <div key={i} className="h-64 rounded-xl bg-white border border-slate-100 shadow-sm animate-pulse" />
                     ))}
                 </div>
             ) : filteredUsers.length === 0 ? (
-                <div className="py-20 text-center bg-white rounded-[2.5rem] border-2 border-dashed border-slate-200">
+                <div className="py-20 text-center bg-white rounded-xl border-2 border-dashed border-slate-200">
                     <UserIcon className="h-12 w-12 text-slate-200 mx-auto mb-4" />
                     <p className="text-slate-500 font-medium text-lg">Nenhum colaborador encontrado com os filtros aplicados.</p>
                     <Button variant="ghost" className="mt-2 text-primary font-bold" onClick={() => {
@@ -244,7 +244,7 @@ export default function UsersPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredUsers.map((user) => (
-                        <div key={user.id} className={`group bg-white rounded-[2.5rem] p-6 border shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 relative overflow-hidden ${user.status === 'Inativo' ? 'border-slate-100 grayscale-[0.8] opacity-80' : 'border-slate-100'
+                        <div key={user.id} className={`group bg-white rounded-xl p-6 border shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 relative overflow-hidden ${user.status === 'Inativo' ? 'border-slate-100 grayscale-[0.8] opacity-80' : 'border-slate-100'
                             }`}>
                             <div className="flex items-start justify-between mb-6">
                                 <div className="flex items-center gap-2">
@@ -309,7 +309,7 @@ export default function UsersPage() {
                                         }}
                                         className="hover:scale-105 active:scale-95 transition-transform"
                                     >
-                                        <Badge variant="secondary" className={`text-[10px] font-black py-0.5 rounded-lg border-none shadow-none cursor-pointer ${user.ativos_count ? 'bg-primary-50 text-primary-600 hover:bg-primary-100 dark:bg-primary-900/10 dark:text-primary-400' : 'bg-neutral-app text-text-muted'}`}>
+                                        <Badge variant="secondary" className={`text-[10px] font-bold py-0.5 rounded-lg border-none shadow-none cursor-pointer ${user.ativos_count ? 'bg-primary-50 text-primary-600 hover:bg-primary-100 dark:bg-primary-900/10 dark:text-primary-400' : 'bg-neutral-app text-text-muted'}`}>
                                             {user.ativos_count || 0} ITENS
                                         </Badge>
                                     </button>
@@ -320,7 +320,7 @@ export default function UsersPage() {
                                         <span>Status de Acesso</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[10px] font-black text-slate-400 mr-1">{user.status || 'Ativo'}</span>
+                                        <span className="text-[10px] font-bold text-slate-400 mr-1">{user.status || 'Ativo'}</span>
                                         <span className={`h-2 w-2 rounded-full ${user.status === 'Inativo' ? 'bg-slate-300' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'}`} />
                                     </div>
                                 </div>
@@ -331,7 +331,7 @@ export default function UsersPage() {
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className={`text-[10px] font-black uppercase tracking-widest h-8 px-3 rounded-lg flex gap-1.5 ${user.status === 'Inativo' ? 'text-emerald-600 hover:bg-emerald-50' : 'text-amber-600 hover:bg-amber-50'
+                                        className={`text-[10px] font-bold uppercase tracking-widest h-8 px-3 rounded-lg flex gap-1.5 ${user.status === 'Inativo' ? 'text-emerald-600 hover:bg-emerald-50' : 'text-amber-600 hover:bg-amber-50'
                                             }`}
                                         onClick={() => setUserToToggle(user)}
                                     >
@@ -360,7 +360,7 @@ export default function UsersPage() {
 
             {/* Inactivate Confirmation */}
             <AlertDialog open={!!userToToggle} onOpenChange={(open) => !open && setUserToToggle(null)}>
-                <AlertDialogContent className="rounded-[2rem]">
+                <AlertDialogContent className="rounded-xl">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-xl font-bold flex items-center gap-2">
                             {userToToggle?.status === 'Inativo' ? <UserCheck className="h-6 w-6 text-emerald-500" /> : <UserMinus className="h-6 w-6 text-amber-500" />}
@@ -408,5 +408,6 @@ export default function UsersPage() {
         </div>
     )
 }
+
 
 
